@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blender on 旭旭</title>
+    <link>https://xuhongxu.com/tags/blender/</link>
+    <description>Recent content in Blender on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 31 Jul 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/blender/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>editflow系列（三）：使用Blender制作宣传片</title>
+      <link>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</guid>
+      <description>严格来说，这篇不是开发笔记。 最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>反向传播 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD/</link>
+    <description>Recent content in 反向传播 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Mon, 21 Nov 2016 08:53:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（十）神经网络反向传播算法</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 21 Nov 2016 08:53:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</guid>
+      <description>简述 前面介绍了人工神经网络的表示，了解了如何利用神经网络预测结果。但我们还不知道如何训练神经网络，确定轴突的权值。 即将介绍的反向传播（bac</description>
+    </item>
+    
+  </channel>
+</rss>

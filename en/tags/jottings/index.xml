@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jottings on Xu Xu</title>
+    <link>https://xuhongxu.com/en/tags/jottings/</link>
+    <description>Recent content in Jottings on Xu Xu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Mon, 09 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/en/tags/jottings/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My New Life</title>
+      <link>https://xuhongxu.com/en/2018/07/my-new-life/</link>
+      <pubDate>Mon, 09 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/2018/07/my-new-life/</guid>
+      <description>June 30, I left my school after graduation. I have no permission to re-enter my dorm.
+July 3, I started my new life working at Microsoft and living in my rented house with a roommate who was my roommate at school.
+ Nothing really changed so far.
+ I often go back to school to be with my girlfriend. I can still read books in the library and have lunch in canteen.</description>
+    </item>
+    
+  </channel>
+</rss>

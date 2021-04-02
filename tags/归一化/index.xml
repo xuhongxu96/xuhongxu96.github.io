@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>归一化 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E5%BD%92%E4%B8%80%E5%8C%96/</link>
+    <description>Recent content in 归一化 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sun, 23 Oct 2016 13:10:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E5%BD%92%E4%B8%80%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（四）特征归一化</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96/</link>
+      <pubDate>Sun, 23 Oct 2016 13:10:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96/</guid>
+      <description>简述 前面谈到了梯度下降算法，下降速度则与整个数据跨度有关。因此当存在多个特征时，如果特征数据范围不一致，可能会导致梯度下降的路径摇摆不定，效</description>
+    </item>
+    
+  </channel>
+</rss>

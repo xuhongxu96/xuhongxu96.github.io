@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>逻辑回归 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</link>
+    <description>Recent content in 逻辑回归 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Tue, 15 Nov 2016 19:35:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（七）逻辑回归与梯度下降</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</link>
+      <pubDate>Tue, 15 Nov 2016 19:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</guid>
+      <description>简化的代价函数 还记得上次的代价函数的Octave/MATLAB代码嘛： function [J, grad] = costFunction(theta, X, y) m = length(y); % number of training examples h = sigmoid(X * theta); J = 1 / m * (-y&amp;#39; * log(h) - (1 - y)&amp;#39; * log(1</description>
+    </item>
+    
+  </channel>
+</rss>

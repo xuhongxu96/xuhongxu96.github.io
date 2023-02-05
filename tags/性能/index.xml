@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>性能 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E6%80%A7%E8%83%BD/</link>
+    <description>Recent content in 性能 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Tue, 23 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E6%80%A7%E8%83%BD/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>读《Optimized-C&#43;&#43;》</title>
+      <link>https://xuhongxu.com/2020/06/%E8%AF%BBoptimized-c-/</link>
+      <pubDate>Tue, 23 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/06/%E8%AF%BBoptimized-c-/</guid>
+      <description>之前在Oreilly的Safari Books Online中看到过，大概浏览了目录，感觉讲解的角度非常全面，于是就加到了收藏书单里。然而电子书不常看，</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://xuhongxu.com/en/categories/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/categories/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/tags/cpp/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/tags/cpp/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/tags/cpp/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/categories/cpp/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/categories/cpp/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/categories/cpp/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/post/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/post/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/tags/rvalue/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/tags/rvalue/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/tags/rvalue/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/tags/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/tags/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/</loc>
+    <lastmod>2019-06-28T21:56:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/2019/05/c-virtual-table-explained-thru-assemblies/</loc>
+    <lastmod>2019-05-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/tags/virtual-table/</loc>
+    <lastmod>2019-05-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/tags/jottings/</loc>
+    <lastmod>2018-07-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/categories/life/</loc>
+    <lastmod>2018-07-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/2018/07/my-new-life/</loc>
+    <lastmod>2018-07-09T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/2018/07/%E6%96%B0%E7%94%9F%E6%B4%BB/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/2018/07/my-new-life/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://xuhongxu.com/en/about/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://xuhongxu.com/about/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://xuhongxu.com/en/about/"
+                />
+  </url>
+  
+</urlset>

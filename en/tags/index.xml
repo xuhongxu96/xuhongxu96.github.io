@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Xu Xu</title>
+    <link>https://xuhongxu.com/en/tags/</link>
+    <description>Recent content in Tags on Xu Xu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 28 Jun 2019 21:56:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/en/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>cpp</title>
+      <link>https://xuhongxu.com/en/tags/cpp/</link>
+      <pubDate>Fri, 28 Jun 2019 21:56:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/tags/cpp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rvalue</title>
+      <link>https://xuhongxu.com/en/tags/rvalue/</link>
+      <pubDate>Fri, 28 Jun 2019 21:56:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/tags/rvalue/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>virtual table</title>
+      <link>https://xuhongxu.com/en/tags/virtual-table/</link>
+      <pubDate>Sat, 04 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/tags/virtual-table/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jottings</title>
+      <link>https://xuhongxu.com/en/tags/jottings/</link>
+      <pubDate>Mon, 09 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/tags/jottings/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

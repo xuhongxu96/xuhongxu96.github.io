@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>React on 旭旭</title>
+    <link>https://xuhongxu.com/tags/react/</link>
+    <description>Recent content in React on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 31 Jul 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/react/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>editflow系列（三）：使用Blender制作宣传片</title>
+      <link>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</guid>
+      <description>严格来说，这篇不是开发笔记。 最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（二）：设计思路</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/</guid>
+      <description>几条设计原则 性能是首要考虑 性能是影响用户体验的重要因素，在极端情况下，性能更是能够使得产品具有排他性的首要因素。 所以我给自己定了一个小目标，</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（一）：科普React Hooks</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/</link>
+      <pubDate>Sun, 17 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/</guid>
+      <description>在讲解editflow相关设计之前，先来熟悉一下React Hooks。 React Hooks的函数式思维 官方文档中Hooks的例程非常简单： import React, { useState }</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（零）：简介</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Sun, 17 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/</guid>
+      <description>背景 随着AI的兴起，工作流也逐渐成为一个热点——通过工作流将数据收集、预处理，模型训练、调优、评测、发布等等流程简单直观地串起来，可以极大方</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（四）演示</title>
+      <link>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/</link>
+      <pubDate>Tue, 04 Sep 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/</guid>
+      <description>创建题型 只是创建了一个，对创建者说Hi~，对作答者说Hello World！哈哈的题型。 值得注意的是，“哈哈”二字，是从创建题目表单传至展示题</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（三）代码编辑器和组件动态调用</title>
+      <link>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/</link>
+      <pubDate>Sun, 02 Sep 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/</guid>
+      <description>前言 最开始讲过这个问卷系统的设计特点，可以让用户来自己写问卷的题型组件，而且要利用React的框架。 既然这样，那必不可少需要一个优秀的在线代</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（二）接口设计</title>
+      <link>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Wed, 08 Aug 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</guid>
+      <description>前言 上一节已经设计好了问卷系统的数据模型，同时提供了C#和TypeScript中对模型的定义。 在本节中，我将会设计并实现RESTful API</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（一）背景和模型设计</title>
+      <link>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%80%E8%83%8C%E6%99%AF%E5%92%8C%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Mon, 06 Aug 2018 21:18:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%80%E8%83%8C%E6%99%AF%E5%92%8C%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</guid>
+      <description>背景 一位经管院的同学需要定制一份问卷，希望能够让用户填写一题，就能保存提交一题，后台按照题目来查看，并不管用户是否全部做完。而现有的问卷系统</description>
+    </item>
+    
+  </channel>
+</rss>

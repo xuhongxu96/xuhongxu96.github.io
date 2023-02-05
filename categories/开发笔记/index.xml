@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>开发笔记 on 旭旭</title>
+    <link>https://xuhongxu.com/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/</link>
+    <description>Recent content in 开发笔记 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 31 Jul 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>editflow系列（三）：使用Blender制作宣传片</title>
+      <link>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/</guid>
+      <description>严格来说，这篇不是开发笔记。 最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（二）：设计思路</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/</guid>
+      <description>几条设计原则 性能是首要考虑 性能是影响用户体验的重要因素，在极端情况下，性能更是能够使得产品具有排他性的首要因素。 所以我给自己定了一个小目标，</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（一）：科普React Hooks</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/</link>
+      <pubDate>Sun, 17 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/</guid>
+      <description>在讲解editflow相关设计之前，先来熟悉一下React Hooks。 React Hooks的函数式思维 官方文档中Hooks的例程非常简单： import React, { useState }</description>
+    </item>
+    
+    <item>
+      <title>editflow系列（零）：简介</title>
+      <link>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/</link>
+      <pubDate>Sun, 17 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/</guid>
+      <description>背景 随着AI的兴起，工作流也逐渐成为一个热点——通过工作流将数据收集、预处理，模型训练、调优、评测、发布等等流程简单直观地串起来，可以极大方</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（四）演示</title>
+      <link>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/</link>
+      <pubDate>Tue, 04 Sep 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/</guid>
+      <description>创建题型 只是创建了一个，对创建者说Hi~，对作答者说Hello World！哈哈的题型。 值得注意的是，“哈哈”二字，是从创建题目表单传至展示题</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（三）代码编辑器和组件动态调用</title>
+      <link>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/</link>
+      <pubDate>Sun, 02 Sep 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/</guid>
+      <description>前言 最开始讲过这个问卷系统的设计特点，可以让用户来自己写问卷的题型组件，而且要利用React的框架。 既然这样，那必不可少需要一个优秀的在线代</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（二）接口设计</title>
+      <link>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Wed, 08 Aug 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</guid>
+      <description>前言 上一节已经设计好了问卷系统的数据模型，同时提供了C#和TypeScript中对模型的定义。 在本节中，我将会设计并实现RESTful API</description>
+    </item>
+    
+    <item>
+      <title>简易问卷系统（一）背景和模型设计</title>
+      <link>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%80%E8%83%8C%E6%99%AF%E5%92%8C%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Mon, 06 Aug 2018 21:18:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%80%E8%83%8C%E6%99%AF%E5%92%8C%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</guid>
+      <description>背景 一位经管院的同学需要定制一份问卷，希望能够让用户填写一题，就能保存提交一题，后台按照题目来查看，并不管用户是否全部做完。而现有的问卷系统</description>
+    </item>
+    
+    <item>
+      <title>北师大教务助手 开发记录（二）查、选、退课，查考试安排和成绩，批量评教，抢课策略…</title>
+      <link>https://xuhongxu.com/2016/03/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E6%9F%A5%E9%80%89%E9%80%80%E8%AF%BE%E6%9F%A5%E8%80%83%E8%AF%95%E5%AE%89%E6%8E%92%E5%92%8C%E6%88%90%E7%BB%A9%E6%89%B9%E9%87%8F%E8%AF%84%E6%95%99%E6%8A%A2%E8%AF%BE%E7%AD%96%E7%95%A5/</link>
+      <pubDate>Tue, 08 Mar 2016 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/03/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E6%9F%A5%E9%80%89%E9%80%80%E8%AF%BE%E6%9F%A5%E8%80%83%E8%AF%95%E5%AE%89%E6%8E%92%E5%92%8C%E6%88%90%E7%BB%A9%E6%89%B9%E9%87%8F%E8%AF%84%E6%95%99%E6%8A%A2%E8%AF%BE%E7%AD%96%E7%95%A5/</guid>
+      <description>补充选课相关问题 xktype参数在非选课时间一直为2，实际应为3。多亏了开学第一周可以补选课，让我得知了这个问题。同时，我觉得我也可以尝试提</description>
+    </item>
+    
+    <item>
+      <title>北师大教务助手 开发记录（一）开发背景、登录、获取课程列表、退选、选公选课</title>
+      <link>https://xuhongxu.com/2016/02/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E5%BC%80%E5%8F%91%E8%83%8C%E6%99%AF%E7%99%BB%E5%BD%95%E8%8E%B7%E5%8F%96%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8%E9%80%80%E9%80%89%E9%80%89%E5%85%AC%E9%80%89%E8%AF%BE/</link>
+      <pubDate>Wed, 24 Feb 2016 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/02/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E5%BC%80%E5%8F%91%E8%83%8C%E6%99%AF%E7%99%BB%E5%BD%95%E8%8E%B7%E5%8F%96%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8%E9%80%80%E9%80%89%E9%80%89%E5%85%AC%E9%80%89%E8%AF%BE/</guid>
+      <description>背景 回想高中的时候，我们有兴趣课程（官方叫校本课程），选课期间也会非常火爆，抢课成为了每学期的一大热门，尽管教务一再崩溃，也无法阻挡我们为了</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（六）后台</title>
+      <link>https://xuhongxu.com/2016/02/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E5%85%AD%E5%90%8E%E5%8F%B0/</link>
+      <pubDate>Wed, 24 Feb 2016 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/02/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E5%85%AD%E5%90%8E%E5%8F%B0/</guid>
+      <description>数据库终稿 未来仍会加新表以记录商业合作等信息，但涉及主要功能部分的这些表基本定型。 新后台管理设计 踏鸽行2.0的管理员不再单独记录，而是在用户</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（五）动态帮助页面</title>
+      <link>https://xuhongxu.com/2015/09/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%94%E5%8A%A8%E6%80%81%E5%B8%AE%E5%8A%A9%E9%A1%B5%E9%9D%A2/</link>
+      <pubDate>Mon, 07 Sep 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/09/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%94%E5%8A%A8%E6%80%81%E5%B8%AE%E5%8A%A9%E9%A1%B5%E9%9D%A2/</guid>
+      <description>原来踏鸽行帮助页面都是用代码码好的静态页面，全靠我一己之力完成，可是累煞我也。然而经过一学期的试运营，发现帮助文案缺少针对具体问题细分的解答</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（四）前端基本功能完成，部分改动说明</title>
+      <link>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E5%9B%9B%E5%89%8D%E7%AB%AF%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E5%AE%8C%E6%88%90%E9%83%A8%E5%88%86%E6%94%B9%E5%8A%A8%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Tue, 25 Aug 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E5%9B%9B%E5%89%8D%E7%AB%AF%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E5%AE%8C%E6%88%90%E9%83%A8%E5%88%86%E6%94%B9%E5%8A%A8%E8%AF%B4%E6%98%8E/</guid>
+      <description>最新已实现功能展示图 与前面的版本相比，数据库、路由、控制器等已经做过大量调整。这也是不断开发中积累的经验。 路由（控制器） 我写了几个Middl</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（三）完成身份认证和用户注册部分</title>
+      <link>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%89%E5%AE%8C%E6%88%90%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E5%92%8C%E7%94%A8%E6%88%B7%E6%B3%A8%E5%86%8C%E9%83%A8%E5%88%86/</link>
+      <pubDate>Fri, 07 Aug 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%89%E5%AE%8C%E6%88%90%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E5%92%8C%E7%94%A8%E6%88%B7%E6%B3%A8%E5%86%8C%E9%83%A8%E5%88%86/</guid>
+      <description>先放一张图演示一下～ 序 虽然目前就实现了这么一个功能，却也累得我够呛。毕竟是边学习Laravel边搞这个东西。就目前而言，Laravel方便了</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（二）完善Git配置、更改服务器配置以及完成微信接口挂接</title>
+      <link>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E5%AE%8C%E5%96%84git%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%94%B9%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%BB%A5%E5%8F%8A%E5%AE%8C%E6%88%90%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%8F%A3%E6%8C%82%E6%8E%A5/</link>
+      <pubDate>Wed, 05 Aug 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E5%AE%8C%E5%96%84git%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%94%B9%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%BB%A5%E5%8F%8A%E5%AE%8C%E6%88%90%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%8F%A3%E6%8C%82%E6%8E%A5/</guid>
+      <description>首先，GitHub虽然没被墙很值得欣慰，但其上传下载速度实在不敢恭维。所以我做了一个大胆的决定：换到国内Git托管平台上。 我选择了Codin</description>
+    </item>
+    
+    <item>
+      <title>踏鸽行2.0开发记录（一）数据库设计</title>
+      <link>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Tue, 04 Aug 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/</guid>
+      <description>几乎沿袭1.0的数据库设计，对users表和rent表改动较大，同时取消admin表。 对users表的主要改动为： 增加大量字段，方便与统一身</description>
+    </item>
+    
+  </channel>
+</rss>

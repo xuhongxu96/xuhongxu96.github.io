@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Git on 旭旭</title>
+    <link>https://xuhongxu.com/tags/git/</link>
+    <description>Recent content in Git on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Wed, 05 Aug 2015 10:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>踏鸽行2.0开发记录（二）完善Git配置、更改服务器配置以及完成微信接口挂接</title>
+      <link>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E5%AE%8C%E5%96%84git%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%94%B9%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%BB%A5%E5%8F%8A%E5%AE%8C%E6%88%90%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%8F%A3%E6%8C%82%E6%8E%A5/</link>
+      <pubDate>Wed, 05 Aug 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2015/08/%E8%B8%8F%E9%B8%BD%E8%A1%8C2.0%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%BA%8C%E5%AE%8C%E5%96%84git%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%94%B9%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%BB%A5%E5%8F%8A%E5%AE%8C%E6%88%90%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%8F%A3%E6%8C%82%E6%8E%A5/</guid>
+      <description>首先，GitHub虽然没被墙很值得欣慰，但其上传下载速度实在不敢恭维。所以我做了一个大胆的决定：换到国内Git托管平台上。 我选择了Codin</description>
+    </item>
+    
+  </channel>
+</rss>

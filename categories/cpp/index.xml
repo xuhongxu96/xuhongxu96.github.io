@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cpp on 旭旭</title>
+    <link>https://xuhongxu.com/categories/cpp/</link>
+    <description>Recent content in cpp on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sat, 09 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>判断类/结构体成员的Type Traits</title>
+      <link>https://xuhongxu.com/2020/05/%E5%88%A4%E6%96%AD%E7%B1%BB/%E7%BB%93%E6%9E%84%E4%BD%93%E6%88%90%E5%91%98%E7%9A%84type-traits/</link>
+      <pubDate>Sat, 09 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/%E5%88%A4%E6%96%AD%E7%B1%BB/%E7%BB%93%E6%9E%84%E4%BD%93%E6%88%90%E5%91%98%E7%9A%84type-traits/</guid>
+      <description>问题 假设我们有三个结构体： struct A { int a; }; struct B { float a; }; struct C { int b; }; 如何能够拥有一个函数f，对A类型输出int a成员的值，对B类型输出float a</description>
+    </item>
+    
+    <item>
+      <title>右值引用、构造函数和完美转发</title>
+      <link>https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Fri, 28 Jun 2019 21:56:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/</guid>
+      <description>背景 最近同学想到一个问题，有关C++的右值引用。我本以为自己读了两遍C++ Primer，总该得心应手，却发现越解释，越迷糊。 这篇文章不会介绍</description>
+    </item>
+    
+    <item>
+      <title>动态链接库的符号重名问题</title>
+      <link>https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 16 Sep 2018 20:27:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/</guid>
+      <description>背景 工作时，同事遇到一个编译和链接相关的问题，我跟着一起研究了一下。很有意思的问题，我也做了一些实验，在此记录。 问题描述 问题源自CNTK相关</description>
+    </item>
+    
+  </channel>
+</rss>

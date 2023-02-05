@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>测试 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E6%B5%8B%E8%AF%95/</link>
+    <description>Recent content in 测试 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sat, 27 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>读《软件测试》</title>
+      <link>https://xuhongxu.com/2020/06/%E8%AF%BB%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/</link>
+      <pubDate>Sat, 27 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/06/%E8%AF%BB%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/</guid>
+      <description>前面也说过我最近在做C++相关的重构，这是一个相对新的项目，因此软件工程中的各个方面都需要完善。软件测试是我能想到最直接的一个方面。 因为当前</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>RESTful on 旭旭</title>
+    <link>https://xuhongxu.com/tags/restful/</link>
+    <description>Recent content in RESTful on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Wed, 08 Aug 2018 22:00:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/restful/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>简易问卷系统（二）接口设计</title>
+      <link>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</link>
+      <pubDate>Wed, 08 Aug 2018 22:00:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/</guid>
+      <description>前言 上一节已经设计好了问卷系统的数据模型，同时提供了C#和TypeScript中对模型的定义。 在本节中，我将会设计并实现RESTful API</description>
+    </item>
+    
+  </channel>
+</rss>

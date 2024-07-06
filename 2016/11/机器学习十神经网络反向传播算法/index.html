@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="机器学习（十）神经网络反向传播算法" />
+<meta property="og:description" content="简述 前面介绍了人工神经网络的表示，了解了如何利用神经网络预测结果。但我们还不知道如何训练神经网络，确定轴突的权值。 即将介绍的反向传播（bac" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/" />
+<meta property="article:published_time" content="2016-11-21T08:53:00+00:00" />
+<meta property="article:modified_time" content="2016-11-21T08:53:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习（十）神经网络反向传播算法"/>
+<meta name="twitter:description" content="简述 前面介绍了人工神经网络的表示，了解了如何利用神经网络预测结果。但我们还不知道如何训练神经网络，确定轴突的权值。 即将介绍的反向传播（bac"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/">
+
+  <title>
+    
+    机器学习（十）神经网络反向传播算法 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/">机器学习（十）神经网络反向传播算法</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Nov 21, 2016
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+        <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="简述">简述</h2>
+<p>前面介绍了人工神经网络的表示，了解了如何利用神经网络预测结果。但我们还不知道如何训练神经网络，确定轴突的权值。</p>
+<p>即将介绍的反向传播（backpropagation）算法，就是实现这个目的的。</p>
+<h2 id="符号约定">符号约定</h2>
+<div>
+$$
+\begin{align*}
+z_i^{(j)} =& \text{第$j$层的第$i$个节点（神经元）的“计算值”} \newline    
+a_i^{(j)} =& \text{第$j$层的第$i$个节点（神经元）的“激活值”} \newline    
+\Theta^{(l)}_{i,j} =& \text{映射第$l$层到第$l+1$层的权值矩阵的第$i$行第$j$列的分量} \newline    
+L =& \text{神经网络总层数（包括输入层、隐层和输出层）} \newline    
+s_l =& \text{第$l$层节点（神经元）个数，不包括偏移量节点。} \newline     
+K =& \text{输出节点个数} \newline    
+h_{\theta}(x)_k =& \text{第$k$个预测输出结果} \newline    
+x^{(i)} =& \text{第$i$个样本特征向量} \newline    
+x^{(i)}_k =& \text{第$i$个样本的第$k$个特征值} \newline    
+y^{(i)} =& \text{第$i$个样本实际结果向量} \newline  
+y^{(i)}_k =& \text{第$i$个样本结果向量的第$k$个分量} \newline  
+\end{align*}
+$$
+</div>
+<h2 id="代价函数">代价函数</h2>
+<p>回顾一下正规化的逻辑回归的代价函数：</p>
+<div>
+$$
+J(\theta) = - \frac{1}{m} \sum_{i=1}^m \large[ y^{(i)}\ \log (h_\theta (x^{(i)})) + (1 - y^{(i)})\ \log (1 - h_\theta(x^{(i)}))\large] + \frac{\lambda}{2m}\sum_{j=1}^n \theta_j^2
+$$
+</div>
+<p>在神经网络中，代价是相对输出层的全部节点而言的，因此代价函数更复杂一些：</p>
+<div>
+$$
+\begin{gather*}\large J(\Theta) = - \frac{1}{m} \sum_{i=1}^m \sum_{k=1}^K \left[y^{(i)}_k \log ((h_\Theta (x^{(i)}))_k) + (1 - y^{(i)}_k)\log (1 - (h_\Theta(x^{(i)}))_k)\right] + \frac{\lambda}{2m}\sum_{l=1}^{L-1} \sum_{i=1}^{s_l} \sum_{j=1}^{s_{l+1}} ( \Theta_{j,i}^{(l)})^2\end{gather*}
+$$
+</div>
+<p>可以看到，正规化的部分也更加复杂，遍历了全部权值（除去偏移量）。</p>
+<h2 id="反向传播算法">反向传播算法</h2>
+<h3 id="目标">目标</h3>
+<p>求 <code>$ \min_\Theta J(\Theta) $</code></p>
+<h3 id="思路">思路</h3>
+<p>类似梯度下降法，给定一个初值后，计算出所有节点的计算值和激活值，然后根据代价函数的变化不断调整参数值（权值），最终不断逼近最优结果，使代价函数值最小。</p>
+<h3 id="推导">推导</h3>
+<p>为了实现上述思路，我们必须首先计算代价函数的偏导数：</p>
+<div>
+$$
+\dfrac{\partial}{\partial \Theta_{i,j}^{(l)}}J(\Theta)
+$$
+</div>
+<p>这个偏导并不好求，为了方便推导，我们假设只有一个样本（<code>$m=1$</code>，可忽略代价函数中的外部求和），并舍弃正规化部分，然后分为两种情况来求。</p>
+<h4 id="情况1-隐层rightarrow输出层">情况1 隐层<code>$\rightarrow$</code>输出层</h4>
+<p>我们知道：</p>
+<div>
+$$
+h_\Theta(x) = a^{(j+1)} = g(z^{(j+1)})
+$$
+</div>
+<div>
+$$
+z^{(j)} = \Theta^{(j-1)}a^{(j-1)}
+$$
+</div>
+<p>另外，输出层即第<code>$L$</code>层。</p>
+<p>所以：</p>
+<div>
+$$
+\dfrac{\partial}{\partial \Theta_{i,j}^{(L)}}J(\Theta)
+= \dfrac{\partial J(\Theta)}{\partial h_{\Theta}(x)_i} \dfrac{\partial h_{\Theta}(x)_i}{\partial z_i^{(L)}} \dfrac{\partial z_i^{(L)}}{\partial  \Theta_{i,j}^{(L)}}
+= \dfrac{\partial J(\Theta)}{\partial a_i^{(L)}} \dfrac{\partial a_i^{(L)}}{\partial z_i^{(L)}} \dfrac{\partial z_i^{(L)}}{\partial \Theta_{i,j}^{(L)}}
+$$
+</div>
+<p>其中：</p>
+<div>
+$$
+\dfrac{\partial J(\Theta)}{\partial a_i^{(L)}} = \dfrac{a_i^{(L)} - y_i}{(1 - a_i^{(L)})a_i^{(L)}}
+$$
+</div>
+<div>
+$$
+\dfrac{\partial a_i^{(L)}}{\partial z_i^{(L)}} = \dfrac{\partial g(z_i^{(L)})}{\partial z_i^{(L)}} = \dfrac{e^{z_i^{(L)}}}{(e^{z_i^{(L)}}+1)^2} = a_i^{(L)} (1 - a_i^{(L)})
+$$
+</div>
+<div>
+$$
+\dfrac{\partial z_i^{(L)}}{\partial \Theta_{i,j}^{(L)}} = \dfrac{\partial ( \sum_{k=0}^{s_{L-1}} \Theta_{i,k}^{(L)} a_k^{(L-1)})}{\partial  \Theta_{i,j}^{(L)}} = a_j^{(L-1)} 
+$$
+</div>
+<p>综上：</p>
+<div>
+$$
+\begin{split}
+\dfrac{\partial}{\partial \Theta_{i,j}^{(L)}}J(\Theta)
+=& \dfrac{\partial J(\Theta)}{\partial a_i^{(L)}} \dfrac{\partial a_i^{(L)}}{\partial z_i^{(L)}} \dfrac{\partial z_i^{(L)}}{\partial \Theta_{i,j}^{(L)}} \newline  
+=& \dfrac{a_i^{(L)} - y_i}{(1 - a_i^{(L)})a_i^{(L)}} a_i^{(L)} (1 - a_i^{(L)}) a_j^{(L-1)} \newline  
+=& (a_i^{(L)} - y_i)a_j^{(L-1)}
+\end{split}
+$$
+</div>
+<h4 id="情况2-隐层输入层rightarrow隐层">情况2 隐层/输入层<code>$\rightarrow$</code>隐层</h4>
+<p>因为<code>$ a^{(1)}=x $</code>，所以可以将输入层和隐层同样对待。</p>
+<div>
+$$
+\dfrac{\partial}{\partial \Theta_{i,j}^{(l)}}J(\Theta)
+=\dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} \dfrac{\partial a_i^{(l)}}{\partial z_i^{(l)}} \dfrac{\partial z_i^{(l)}}{\partial \Theta_{i,j}^{(l)}}\ (l = 1, 2, ..., L-1)
+$$
+</div>
+<p>其中后两部分偏导很容易根据前面所得类推出来：</p>
+<div>
+$$
+\dfrac{\partial a_i^{(l)}}{\partial z_i^{(l)}} = \dfrac{e^{z_i^{(l)}}}{(e^{z_i^{(l)}}+1)^2} = a_i^{(l)} (1 - a_i^{(l)})
+$$
+</div>
+<div>
+$$
+\dfrac{\partial z_i^{(l)}}{\partial \Theta_{i,j}^{(l)}} = a_j^{(l-1)} 
+$$
+</div>
+<p>第一部分偏导是不好求解的，或者说是没法直接求解的，我们可以得到一个递推式：</p>
+<div>
+$$
+\dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} 
+= \sum_{k=1}^{s_{l+1}} \Bigg[\dfrac{\partial J(\Theta)}{\partial a_k^{(l+1)}} \dfrac{\partial a_k^{(l+1)}}{\partial z_k^{(l+1)}} \dfrac{\partial z_k^{(l+1)}}{\partial a_i^{(l)}}\Bigg] 
+$$
+</div>
+<blockquote>
+<p>因为该层的激活值与下一层各节点都有关，链式法则求导时需一一求导，所以有上式中的求和。</p>
+</blockquote>
+<p>递推式中第一部分是递推项，后两部分同样易求：</p>
+<div>
+$$
+\dfrac{\partial a_k^{(l+1)}}{\partial z_{k}^{(l+1)}} = \dfrac{e^{z_{k}^{(l+1)}}}{(e^{z_{k}^{(l+1)}}+1)^2} = a_k^{(l+1)} (1 - a_k^{(l+1)})
+$$
+</div>
+<div>
+$$
+\dfrac{\partial z_k^{(l+1)}}{\partial a_i^{(l)}} = \dfrac{\partial ( \sum_{j=0}^{s_l} \Theta_{k,j}^{(l+1)} a_j^{(l)})}{\partial a_i^{(l)}} = \Theta_{k,i}^{(l+1)}
+$$
+</div>
+<p>所以，递推式为：</p>
+<div>
+$$
+\begin{split}
+\dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} 
+=& \sum_{k=1}^{s_{l+1}} \Bigg[\dfrac{\partial J(\Theta)}{\partial a_k^{(l+1)}} \dfrac{\partial a_k^{(l+1)}}{\partial z_k^{(l+1)}} \dfrac{\partial z_k^{(l+1)}}{\partial a_i^{(l)}}\Bigg] \newline  
+=& \sum_{k=1}^{s_{l+1}} \Bigg[ \dfrac{\partial J(\Theta)}{\partial a_k^{(l+1)}} \dfrac{\partial a_k^{(l+1)}}{\partial z_k^{(l+1)}} \Theta_{k,i}^{(l+1)} \Bigg] \newline  
+=& \sum_{k=1}^{s_{l+1}} \Bigg[ \dfrac{\partial J(\Theta)}{\partial a_k^{(l+1)}} a_k^{(l+1)} (1 - a_k^{(l+1)}) \Theta_{k,i}^{(l+1)} \Bigg]
+\end{split}
+$$
+</div>
+<p>为了简化表达式，定义第<code>$l$</code>层第<code>$i$</code>个节点的误差：</p>
+<div>
+$$
+\begin{split}
+\delta^{(l)}_i 
+=& \dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} \dfrac{\partial a_i^{(l)}}{\partial z_i^{(l)}} \newline  
+=& \dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} a_i^{(l)} (1 - a_i^{(l)})  \newline  
+=& \sum_{k=1}^{s_{l+1}} \Bigg[ \dfrac{\partial J(\Theta)}{\partial a_k^{(l+1)}} \dfrac{\partial a_k^{(l+1)}}{\partial z_k^{(l+1)}} \Theta_{k,i}^{(l+1)} \Bigg] a_i^{(l)} (1 - a_i^{(l)}) \newline  
+=& \sum_{k=1}^{s_{l+1}} \Big[\delta^{(l+1)}_k \Theta_{k,i}^{(l+1)} \Big] a_i^{(l)} (1 - a_i^{(l)})
+\end{split}
+$$
+</div>
+<p>可知，<strong>情况1</strong>的误差为：</p>
+<div>
+$$
+\begin{split}
+\delta^{(L)}_i 
+=& \dfrac{\partial J(\Theta)}{\partial a_i^{(L)}} \dfrac{\partial a_i^{(L)}}{\partial z_i^{(L)}} \newline  
+=& \dfrac{a_i^{(L)} - y_i}{(1 - a_i^{(L)})a_i^{(L)}} a_i^{(L)} (1 - a_i^{(L)}) \newline  
+=& a_i^{(L)} - y_i
+\end{split}
+$$
+</div>
+<p>则最终的代价函数的偏导为：</p>
+<div>
+$$
+\begin{split}
+\dfrac{\partial}{\partial \Theta_{i,j}^{(l)}}J(\Theta) 
+=& \dfrac{\partial J(\Theta)}{\partial a_i^{(l)}} \dfrac{\partial a_i^{(l)}}{\partial z_i^{(l)}} \dfrac{\partial z_i^{(l)}}{\partial \Theta_{i,j}^{(l)}} \newline  
+=& \delta^{(l)}_i \dfrac{\partial z_i^{(l)}}{\partial \Theta_{i,j}^{(l)}} \newline  
+=& \delta^{(l)}_i a_j^{(l-1)} 
+\end{split}
+$$
+</div>
+<p>我们发现，引入误差<code>$\delta^{(l)}_i$</code>后，这个公式可以通用于<strong>情况1</strong>和<strong>情况2</strong>。</p>
+<p>可以看出，当前层的代价函数偏导，需要依赖于后一层的计算结果。这也是为什么这个算法的名称叫做“反向传播算法”。</p>
+<h4 id="总结算法公式">总结算法公式</h4>
+<ul>
+<li>输出层误差</li>
+</ul>
+<div>
+$$
+\delta^{(L)}_i = a_i^{(L)} - y_i
+$$
+</div>
+<ul>
+<li>隐层误差（反向传播计算）</li>
+</ul>
+<div>
+$$
+\delta^{(l)}_i = \sum_{k=1}^{s_{l+1}} \Big[\delta^{(l+1)}_k \Theta_{k,i}^{(l+1)} \Big] a_i^{(l)} (1 - a_i^{(l)})
+$$
+</div>
+<ul>
+<li>代价函数偏导计算（通用）</li>
+</ul>
+<div>
+$$
+\dfrac{\partial}{\partial \Theta_{i,j}^{(l)}}J(\Theta) = \delta^{(l)}_i a_j^{(l-1)} 
+$$
+</div>
+<h3 id="算法过程">算法过程</h3>
+<p><img src="/images/neural-networks/bp.svg" alt="bp"></p>
+<p>有了上述推导，我们描述一下算法具体的操作流程：</p>
+<ol>
+<li>输入：输入样本数据，初始化权值参数（建议随机生成较小的数）。</li>
+<li>前馈：计算各层（<code>$l=2, 3, ..., L$</code>）各节点的计算值（<code>$z^{(l)}=\Theta^{(l-1)}a^{(l-1)}$</code>）和激活值（<code>$a^{(l)}=g(z^{(l)})$</code>）。</li>
+<li>输出层误差：计算输出层误差<code>$\delta^{(L)}$</code>（公式见前文）。</li>
+<li>反向传播误差：计算各层（<code>$l=L-1, L-2, ..., 2$</code>）的误差<code>$\delta^{(l)}$</code>（公式见前文）。</li>
+<li>输出：得到代价函数的梯度<code>$\nabla J(\Theta)$</code>（参考前文偏导计算公式）。</li>
+</ol>
+<p>反向传播算法帮助我们得到了代价函数的梯度，我们就可以借助梯度下降法训练神经网络了。</p>
+<div>
+$$
+\Theta := \Theta - \eta \nabla J(\Theta)
+$$
+</div>
+<blockquote>
+<p><code>$\eta$</code>为学习速率。</p>
+</blockquote>
+<h3 id="octavematlab代码">Octave/MATLAB代码</h3>
+<p>以3层神经网络（输入层、隐层、输出层各一）为例。</p>
+<ul>
+<li>X为大小为<code>$样本数 * 特征数$</code>的样本特征矩阵</li>
+<li>Y为大小为<code>$样本数 * 输出节点数$</code>的样本类别（结果）矩阵</li>
+<li>Theta1为<code>$输入层\rightarrow隐层$</code>的权值矩阵</li>
+<li>Theta2为<code>$隐层\rightarrow输出层$</code>的权值矩阵</li>
+<li>m为样本数</li>
+<li>K为输出层节点数</li>
+<li>H为隐层节点数</li>
+<li>sigmoid函数即逻辑函数（S型函数，Sigmoid函数）</li>
+<li>sigmoidGradient函数即Sigmoid函数的导函数</li>
+</ul>
+<p>代码实现中，考虑了正规化，避免出现过拟合问题。</p>
+<h4 id="前馈阶段">前馈阶段</h4>
+<p>逐层计算各节点值和激活值。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-m" data-lang="m">a1 = X;
+z2 = [ones(m, <span style="color:#ae81ff">1</span>), a1] <span style="color:#f92672">*</span> Theta1<span style="color:#f92672">&#39;</span>;
+a2 = sigmoid(z2);
+z3 = [ones(m, <span style="color:#ae81ff">1</span>), a2] <span style="color:#f92672">*</span> Theta2<span style="color:#f92672">&#39;</span>;
+a3 = sigmoid(z3);
+</code></pre></div><h4 id="代价函数-1">代价函数</h4>
+<p>正规化部分需注意代价函数不惩罚偏移参数，即<code>$\Theta_{i,0}$</code>（代码表示为<code>Theta(:,1)</code>）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-m" data-lang="m">J = <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span> sum((<span style="color:#f92672">-</span>log(a3) <span style="color:#f92672">.*</span> Y <span style="color:#f92672">-</span> log(<span style="color:#ae81ff">1</span> .<span style="color:#f92672">-</span> a3) <span style="color:#f92672">.*</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> Y))(:)) <span style="color:#f92672">+</span> <span style="color:#75715e">... # 代价部分</span>
+ lambda <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span> (sum((Theta1(:, <span style="color:#ae81ff">2</span>:<span style="color:#66d9ef">end</span>) <span style="color:#f92672">.^</span> <span style="color:#ae81ff">2</span>)(:)) <span style="color:#f92672">+</span> sum((Theta2(:, <span style="color:#ae81ff">2</span>:<span style="color:#66d9ef">end</span>) <span style="color:#f92672">.^</span> <span style="color:#ae81ff">2</span>)(:))); 
+ # 正规化部分，lambda为正规参数，需除去偏移参数Theta<span style="color:#f92672">*</span>(:,<span style="color:#ae81ff">1</span>)
+</code></pre></div><h4 id="反向传播">反向传播</h4>
+<p>输出层误差和<code>$\Theta^{(2)}$</code>梯度计算，反向传播计算隐层误差和<code>$\Theta^{(1)}$</code>梯度。</p>
+<p>仍需注意正规化时排除偏移参数，另外注意为激活值补一个偏移量<code>$1$</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-m" data-lang="m">
+<span style="color:#66d9ef">function</span> g = <span style="color:#a6e22e">sigmoid</span>(z)
+    g = <span style="color:#ae81ff">1.0</span> <span style="color:#f92672">./</span> (<span style="color:#ae81ff">1.0</span> <span style="color:#f92672">+</span> exp(<span style="color:#f92672">-</span>z));
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">function</span> g = <span style="color:#a6e22e">sigmoidGradient</span>(z)
+    g = sigmoid(z) <span style="color:#f92672">.*</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> sigmoid(z));
+<span style="color:#66d9ef">end</span>
+
+delta3 = a3 <span style="color:#f92672">-</span> Y;
+
+Theta2_grad = <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span> delta3<span style="color:#f92672">&#39;</span> <span style="color:#f92672">*</span> [ones(m, <span style="color:#ae81ff">1</span>), a2] <span style="color:#f92672">+</span> <span style="color:#75715e">...</span>
+  lambda <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span> [zeros(K, <span style="color:#ae81ff">1</span>), Theta2(:, <span style="color:#ae81ff">2</span>:<span style="color:#66d9ef">end</span>)]; # 正规化部分
+
+delta2 = (delta3 <span style="color:#f92672">*</span> Theta2 <span style="color:#f92672">.*</span> sigmoidGradient([ones(m, <span style="color:#ae81ff">1</span>), z2]));
+delta2 = delta2(:, <span style="color:#ae81ff">2</span>:<span style="color:#66d9ef">end</span>); # 反向计算多一个偏移参数误差，除去
+
+Theta1_grad = <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span>  delta2<span style="color:#f92672">&#39;</span> <span style="color:#f92672">*</span> [ones(m, <span style="color:#ae81ff">1</span>), a1] <span style="color:#f92672">+</span> <span style="color:#75715e">...</span>
+  lambda <span style="color:#f92672">/</span> m <span style="color:#f92672">*</span> [zeros(H, <span style="color:#ae81ff">1</span>), Theta1(:, <span style="color:#ae81ff">2</span>:<span style="color:#66d9ef">end</span>)]; # 正规化部分
+</code></pre></div>
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/">机器学习（九）人工神经网络表示</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/">机器学习（八）多类分类问题和正规化</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/">机器学习（七）逻辑回归与梯度下降</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AD%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0/">机器学习（六）分类问题和逻辑函数</a></li>
+        
+            <li><a href="/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/">机器学习（五）正规方程、多项式回归</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "7248a878ed3ae99083b0faa278e32907",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

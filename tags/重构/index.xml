@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>重构 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E9%87%8D%E6%9E%84/</link>
+    <description>Recent content in 重构 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Wed, 27 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E9%87%8D%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>读《修改软件的艺术》</title>
+      <link>https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/</link>
+      <pubDate>Wed, 27 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/</guid>
+      <description>最近工作中又面临特别令人纠结痛苦的事儿——明明是自己新设计的程序架构，好多优势都吹出去了，现在又觉得有很多设计失误，想要大幅度重构，以至于像</description>
+    </item>
+    
+    <item>
+      <title>读《重构——改善既有代码的设计》（第二版）</title>
+      <link>https://xuhongxu.com/2019/12/%E8%AF%BB%E9%87%8D%E6%9E%84%E6%94%B9%E5%96%84%E6%97%A2%E6%9C%89%E4%BB%A3%E7%A0%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E7%AC%AC%E4%BA%8C%E7%89%88/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2019/12/%E8%AF%BB%E9%87%8D%E6%9E%84%E6%94%B9%E5%96%84%E6%97%A2%E6%9C%89%E4%BB%A3%E7%A0%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E7%AC%AC%E4%BA%8C%E7%89%88/</guid>
+      <description>这本书很有名，早就听说过，但一直没有读过。原因也很简单，总觉得自己遇到的重构需求，靠自己现有的本事都能够完成。 正巧在图书馆看到了这本书的第二</description>
+    </item>
+    
+  </channel>
+</rss>

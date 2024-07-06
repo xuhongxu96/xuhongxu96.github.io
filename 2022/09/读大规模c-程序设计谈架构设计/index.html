@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="读《大规模C&#43;&#43;程序设计》，谈架构设计" />
+<meta property="og:description" content="这是2021-1-23写的笔记，但当时尚未完成，一直搁置至今。近期维护博客和公众号才想起，尽量补全内容，重新发布。 背景 最近工作稍微忙了些，好" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" />
+<meta property="article:published_time" content="2022-09-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-04T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="读《大规模C&#43;&#43;程序设计》，谈架构设计"/>
+<meta name="twitter:description" content="这是2021-1-23写的笔记，但当时尚未完成，一直搁置至今。近期维护博客和公众号才想起，尽量补全内容，重新发布。 背景 最近工作稍微忙了些，好"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">
+
+  <title>
+    
+    读《大规模C&#43;&#43;程序设计》，谈架构设计 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Sep 4, 2022
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <blockquote>
+<p>这是2021-1-23写的笔记，但当时尚未完成，一直搁置至今。近期维护博客和公众号才想起，尽量补全内容，重新发布。</p>
+</blockquote>
+<h2 id="背景">背景</h2>
+<p>最近工作稍微忙了些，好久没发文章了。三个月前开始参与了一个Windows App组的新项目，但原先项目的事情常常也需要推进一些，大脑每天在几个项目之间来回切换，回到家就只想放空自己，当然不会想着读书写文章了。另外，业余时间也有积累其它的写作，只是都是些半成品，不便公开。没想到，就这样，一晃半年过去了。临近春节了，很多事情都在做总结，也可以逐渐慢下来了。不妨再记录一点吧，毕竟又遇到了一本有趣的书。</p>
+<p>一直以来，我都想找到一本讲解架构设计的书籍。毕竟，小型程序我写的也算不少了，积累了不少开发技巧方面的经验，算是能够游刃有余的实现各式各样简单的需求。然而，放眼各个行业，真正创造巨大价值的软件，绝不是一个个的小程序，而往往是一些凝聚了技术人员数十年心血的程序。</p>
+<p>我不是否定小型程序。很多时候，基于一个极具创意的点子，开发一个小型程序，能够满足特定人群的需求，就能开辟可观的市场，创造不菲的价值。可是这些点子，常常可复制性很强，实效性可能也很强。最关键的是，这样的点子也越来越不容易想到了，或者说太多人都可以想得到了。因此，我只是觉得这里的竞争太过激烈，变化也太过频繁。这些小型程序创造的价值似乎都是压榨出来的，尽管不可否定，却又有点小打小闹。不过，说到底这也是我的偏见。简而言之，如果你问我，一个用户交互优化到极致的笔记App与Office这个臃肿的庞然大物相比，谁更有价值，我会毫不犹豫地回答后者。我相信，尽管前者能让生活变得更美好，后者却可以让社会整体运转的效率得到巨大提升。</p>
+<p>大型程序不仅仅拥有积累了长期的技术，还整合了行业内的各类需求。另外，能够不断发展进化数十年的程序，也是被时间检验过的，必然拥有灵活稳健的架构，以不断适应各类新需求，实践各类新技术。这一点是最难的。很多软件在发展过程中，为了满足各式各样的需求，很可能会不断地腐化。新旧技术杂糅在一起，各类需求的程序逻辑交织在一起，难舍难分。那么怎么解决这种问题呢？</p>
+<p>我先是打算在实践中寻求答案。在单位，我参与一个从零开始的项目开发。由于人手不多，我有幸能够做一些架构设计。项目倒也不算大型，但相当底层。底层项目往往需要支撑上层更加丰富多样的模块，因此尽管代码量不比一些业务逻辑丰富的程序，却也决不能算作小型程序。项目架构自然是重中之重。然而，在架构设计过程中，我时常感到力不从心。</p>
+<p>痛苦的直接来源，就是不知道如何界定不同模块的边界。而导致这一问题的关键原因之一，是对需求的理解不够深刻。不过这个问题在经过与同事和用户的不断沟通后，可以逐渐被解决。只是如果还有下次，我一定会吸取教训，在最开始的时候就对需求进行深入地讨论。然而，解决这一问题之后，仍不足以让我清晰地确定模块边界。比如，两个组件有很多相似的行为，但处理的输入数据不尽相同，输出格式也不同。那么，这两个组件要不要实现一个共同的接口？输入的处理逻辑是否要拆分成单独的模块？输出呢？</p>
+<p>如果输入和输出与组件本身的逻辑耦合在一起，可能我们就很难让两个组件实现共同的接口；但好处是，输入的数据可以直接拿来处理，然后再直接被输出。反之，如果将这几部分解耦，分成不同模块，我们也许就需要设计输入和输出数据的中间表示，这样才能统一它们的接口；输入和输出模块则需要将数据在不同格式与中间表示之间进行转换，这样不仅逻辑会复杂很多，还很容易带来一些性能上的损失。因此，这里需要权衡，需要妥协。痛苦的根源就是妥协，因为把握不好这个度。</p>
+<p>后来，我想在书中寻找答案。略读了不少《软件工程》书籍中架构设计相关的内容，但大多都相当高屋建瓴，不容易落实到实践中；网上检索一些所谓架构设计的资料，又几乎都是现在流行的网络后端架构的文章。我一度非常郁闷，直到在图书馆看到了《大规模C++程序设计》这本书。这本书给我最大的启发，就是架构上的一些设计是可以被量化的，而这些量化指标能够作为我们权衡利弊的最佳参考依据。</p>
+<p>我不多作介绍，直接上一些（仅前五章）书摘吧（算是总结，不总是摘抄）：</p>
+<h2 id="第0章概述">第0章：概述</h2>
+<h3 id="大规模程序的常见问题">大规模程序的常见问题</h3>
+<h4 id="循环依赖">循环依赖</h4>
+<p>例如实现一个由点和边构成的图，我们常常会在表示点的类里记录与它相连的所有边，同时在表示边的类里记录它所连接的点。另外，每一个点和边可能还会记录它们所属的图，而图可能又存储了全部的点和边……</p>
+<p>这里的依赖关系显然是循环的，但这种设计非常普遍。循环依赖会导致紧密耦合，无法拆分。对这样的程序进行模块化测试是不可能的，维护起来是一场噩梦。</p>
+<p>没有循环依赖的层次化设计会更有助于理解、测试和增量复用。</p>
+<h4 id="过度的链接时依赖">过度的链接时依赖</h4>
+<p>类会随着功能需求的增加而不断膨胀，这会使得程序体积增大，链接时间增加。</p>
+<h4 id="过度的编译时依赖">过度的编译时依赖</h4>
+<p>改一个头文件可能引起很多编译单元重新编译。</p>
+<h4 id="全局符号名称">全局符号名称</h4>
+<p>全局符号可能造成名字冲突。另外，定位一个全局符号的声明或定义也是很困难的。</p>
+<p>全局符号通常都是通过<code>typedef</code>、<code>enum</code>引入的。</p>
+<h4 id="逻辑设计和物理设计">逻辑设计和物理设计</h4>
+<p>我们常常只关心逻辑设计而忽略了物理设计。物理设计指与系统物理实体（文件、目录、库等）密切联系的问题，以及物理实体之间的编译时依赖或链接时依赖的问题。例如，某个头文件应不应该在另一个头文件引用，或者应不应该在源程序中引用，这种问题就属于物理设计的范畴。</p>
+<p>小型项目可以很容易地放入一个目录，因此很少关注物理设计；大型项目更加需要合理的物理设计。</p>
+<h3 id="复用">复用</h3>
+<p>复用意味着耦合，而复用中的耦合是我们不愿意看到的。</p>
+<p>如果很多程序员使用同样的标准组件而不需要改变它的功能，复用很可能是正确合理的。但如果很多用户在使用公共组件时，总是寻求功能的增强或改进，这时复用就会导致分歧：满足某些用户需求的功能，很可能对其他用户来说是一种冗余的干扰；这个组件最后可能成为一个臃肿的庞然大物。</p>
+<p>为了成功复用，组件或子系统一定不要与一大段不必要的代码绑定在一起（不必链接系统的其他部分）。</p>
+<p>大型项目得益于它们的实现者知道什么时候复用代码，什么时候让代码可复用。</p>
+<h2 id="第1章预备知识">第1章：预备知识</h2>
+<h3 id="类成员布局">类成员布局</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Car</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#75715e">// Creators
+</span><span style="color:#75715e"></span>    Car(<span style="color:#66d9ef">int</span> cost <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>);
+    Car(<span style="color:#66d9ef">const</span> Car<span style="color:#f92672">&amp;</span> car);
+    <span style="color:#f92672">~</span>Car();
+
+    <span style="color:#75715e">// Manipulators
+</span><span style="color:#75715e"></span>    Car<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Car<span style="color:#f92672">&amp;</span> car);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">addFuel</span>(<span style="color:#66d9ef">double</span> numberOfGallons);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">drive</span>(<span style="color:#66d9ef">double</span> deltaGasPedal);
+
+    <span style="color:#75715e">// Accessors
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">getFuel</span>() <span style="color:#66d9ef">const</span>;
+    <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">getSpeed</span>() <span style="color:#66d9ef">const</span>;
+};
+</code></pre></div><ul>
+<li>Creator用于构造或析构对象</li>
+<li>Manipulator用于修改对象，即非const成员函数</li>
+<li>Accessor用于访问对象，即const成员函数</li>
+</ul>
+<blockquote>
+<p>没必要教条地用getter/setter成双对去暴露数据成员，应该根据修改和访问的需要去设计接口。</p>
+</blockquote>
+<h3 id="逻辑设计表示法">逻辑设计表示法</h3>
+<h4 id="is-a">Is-A</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Car</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Vehicle {};
+</code></pre></div><p><code>Car</code> <strong>is a</strong> <code>Vehicle</code>.</p>
+<h4 id="uses-in-the-interface">Uses-In-The-Interface</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Car</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> addFuel(Gas <span style="color:#f92672">*</span>);
+};
+</code></pre></div><p><code>Car</code> <strong>uses</strong> <code>Gas</code> <strong>in the interface</strong>.</p>
+<h4 id="uses-in-name-only">Uses-In-Name-Only</h4>
+<p>这是一种特殊的Uses in the interface。
+下例中的<code>Vehicle</code>无需知道<code>Gas</code>的内存布局。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Gas</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Vehicle</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> addFueld(Gas <span style="color:#f92672">*</span>) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+};
+</code></pre></div><p><code>Vehicle</code> <strong>uses</strong> <code>Gas</code> <strong>in name only</strong>.</p>
+<p>这种情况下，不引入物理依赖（<code>Vehicle.h</code>不需要include <code>Gas.h</code>）。</p>
+<h4 id="uses-in-the-implementation">Uses-In-The-Implementation</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Car</span> {
+    Engine d_engine;
+};
+</code></pre></div><p><code>Car</code> <strong>uses</strong> <code>Engine</code> <strong>in the implementation</strong>.</p>
+<h2 id="第2章基本规则">第2章：基本规则</h2>
+<h3 id="包含卫哨include-guard">包含卫哨（Include Guard）</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// a.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef A_H
+</span><span style="color:#75715e">#define A_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// A_H
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// b.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef B_H
+</span><span style="color:#75715e">#define B_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// B_H
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// c.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef C_H
+</span><span style="color:#75715e">#define C_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// C_H
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// main.c
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;c.h&#34;</span><span style="color:#75715e">
+</span></code></pre></div><p>编译main.c时，三个头文件通过包含卫哨保证其内容只被引用一次，但每一个头文件读入的次数却仍然很多：a.h需要被读入3次，b.h需要被读入2次。
+尽管后面几次读入只是看到宏定义就可以结束了，这反复的读入却仍然是不可避免的。如果头文件数量很多，引用关系也很随意，那么编译时间就会受到严重影响。</p>
+<h4 id="冗余卫哨">冗余卫哨</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// a.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef A_H
+</span><span style="color:#75715e">#define A_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// A_H
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// b.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef B_H
+</span><span style="color:#75715e">#define B_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#ifndef A_H
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#endif </span><span style="color:#75715e">// A_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// B_H
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// c.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#ifndef C_H
+</span><span style="color:#75715e">#define C_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#ifndef A_H
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#endif </span><span style="color:#75715e">// A_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#ifndef B_H
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#endif </span><span style="color:#75715e">// B_H
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#endif </span><span style="color:#75715e">// C_H
+</span></code></pre></div><p>这样写能够避免编译复杂度达到O(N^2)。</p>
+<p>在源程序中无需使用冗余卫哨，因为最坏情况下复杂度也只是线性的。</p>
+<h2 id="第3章组件">第3章：组件</h2>
+<p>组件（而不是类）是设计基本单位。</p>
+<ol>
+<li>组件组合了跨越许多逻辑实体的内聚功能</li>
+<li>组件不一定是单一实体，也可能不包含类</li>
+<li>组件可以作为单一的单位从系统中剥离开，不必重写代码即可在另一个系统中复用。</li>
+</ol>
+<p>组件的逻辑接口是以编程方式可访问或可被用户检测到的。
+组件的物理接口是它头文件中的所有信息。</p>
+<h3 id="关于逻辑视图和物理视图的例子">关于逻辑视图和物理视图的例子</h3>
+<p>Stack的逻辑视图包含Stack和StackIter两个逻辑实体，Stack会在接口中用到StackIter。
+Stack的物理视图包含stack.h和stack.c两个物理实体，stack.c会包含stack.h。</p>
+<h3 id="依赖关系">依赖关系</h3>
+<p>如果编译或链接组件y，需要组件x，则组件y依赖于组件x。</p>
+<h3 id="友元关系">友元关系</h3>
+<p>组件内的友元关系是组件的实现细节。</p>
+<p>不要把距离太远的另一组件的逻辑实体作为友元，容易破坏封装。</p>
+<p>但其实封装非常好破坏，只需要把下面这行代码放到一切头文件引用之前：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#define private public
+</span></code></pre></div><h2 id="第4章物理层">第4章：物理层</h2>
+<h3 id="累积组件依赖ccd-cumulative-component-dependency">累积组件依赖（CCD, Cumulative Component Dependency）</h3>
+<p>累积组件依赖是对一个子系统内所有组件进行增量测试时，测试每个组件$ C_i $时所需要的组件数量的总和。</p>
+<p>对于循环依赖图来说，每个组件都直接或间接地依赖全部其他组件，此时：</p>
+<p>设N为系统中组件的数量，</p>
+<div>
+$$ CCD_{循环依赖图}(N) = N \cdot N = N^2 $$
+</div>
+<p>平衡二叉树型地物理依赖系统的CCD如下：</p>
+<div>
+$$ CCD_{平衡二叉树}(N) = (N+1) \cdot (log_2(N+1)-1)+1 = O(N \cdot log(N)) $$
+</div>
+<h3 id="平均组件依赖acd-average-component-dependency">平均组件依赖（ACD, Average Component Dependency）</h3>
+<p>ACD指一个子系统的CCD与系统中的组件数量N的比值：</p>
+<div>
+$$ ACD_{子系统} = \frac{CCD_{子系统}}{N_{子系统}} $$
+</div>
+<h3 id="标准累积组件依赖nccd">标准累积组件依赖（NCCD）</h3>
+<p>标准累积组件依赖指包含N个组件的子系统CCD值与相同大小的平衡二叉树型系统CCD值的比值：</p>
+<div>
+$$ NCCD_{子系统} = \frac{CCD_{子系统}}{CCD_{平衡二叉树}(N)} $$
+</div>
+<p>如果NCCD小于1，则认为子系统较为水平化、松耦合，缺少复用；如果NCCD大于1，则子系统较为垂直、紧密耦合，复用较多。
+如果NCCD远远大于1，则系统中可能有明显的循环物理依赖。</p>
+<h3 id="目标">目标</h3>
+<p>最小化一个给定组件集合的CCD是一个设计目标，但也要合理追求这个目标。</p>
+<p>CCD度量方法帮助我们最小化依赖，NCCD则帮助我们将物理依赖分成水平的、树形的、垂直的和循环依赖的。</p>
+<h2 id="第5章层次化">第5章：层次化</h2>
+<h3 id="循环物理依赖的来源">循环物理依赖的来源</h3>
+<p>这里介绍三种来源：增强、遍历方法和内在的相互依赖。</p>
+<h4 id="增强">增强</h4>
+<p>随着客户需求变化，我们可能会对系统功能进行增强，此时的考虑不周可能引起不必要的循环依赖。</p>
+<p>两个组件通过#include相互引用，会引入循环物理依赖。例如，我们可能某天希望类A和B能够通过另一个类来构造自己（相互转换）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// a.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span> {
+    A(<span style="color:#66d9ef">const</span> B<span style="color:#f92672">&amp;</span> b);
+};
+
+<span style="color:#75715e">// b.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span> {
+    B(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a);
+}
+</code></pre></div><p>虽然我们可以将对对方的引用挪到源程序中，但这并不能消除二者的物理耦合，它们仍然相互依赖：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// a.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span> {
+    A(<span style="color:#66d9ef">const</span> B<span style="color:#f92672">&amp;</span> b);
+};
+
+<span style="color:#75715e">// b.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">B</span> {
+    B(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a);
+}
+</code></pre></div><h4 id="便利方法">便利方法</h4>
+<p>还有的时候，大家图省事，就会导致不良设计。</p>
+<p>例如，有一个<code>Shape</code>抽象类，它有三个子类<code>Triangle</code>、<code>Circle</code>、<code>Square</code>。我们突然接到一个需求，希望能通过形状的名称字符串来创建新的<code>Shape</code>。此时，我们很可能为了方便就在<code>Shape</code>类中增加了一个静态方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Shape</span> {
+    Shape <span style="color:#f92672">*</span><span style="color:#a6e22e">Create</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s);
+};
+
+Shape <span style="color:#f92672">*</span>Shape<span style="color:#f92672">::</span>Create(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s) {
+    <span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">==</span> strcmp(s, <span style="color:#e6db74">&#34;Circle&#34;</span>)) {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Circle</span>();
+    } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">==</span> strcmp(s, <span style="color:#e6db74">&#34;Triangle&#34;</span>)) {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Triangle();
+    } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">==</span> strcmp(s, <span style="color:#e6db74">&#34;Square&#34;</span>)) {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Square();
+    } <span style="color:#66d9ef">else</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+    }
+}
+</code></pre></div><p>这种实现使得<code>Shape</code>与他所有的子类形成了相互依赖关系。</p>
+<h4 id="内在的相互依赖">内在的相互依赖</h4>
+<p>这是一种天然的循环依赖。</p>
+<p>例如实现图的节点和边数据结构时，可能希望节点提供一个方法获取到与之相连的所有边，同时又希望边提供一个方法获取到与之相连的所有节点。这种设计中，节点和边一定是相互依赖的。</p>
+<h3 id="升级">升级</h3>
+<p>有时我们需要<code>Rectangle</code>和<code>Window</code>两个类可以互相转换（也就是构造函数中产生了相互引用）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rectangle.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rectangle</span> {
+    Rectangle(<span style="color:#66d9ef">const</span> Window<span style="color:#f92672">&amp;</span> w);
+};
+
+<span style="color:#75715e">// window.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rectangle</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span> {
+    Window(<span style="color:#66d9ef">const</span> Rectangle<span style="color:#f92672">&amp;</span> r);
+};
+</code></pre></div><p>为了避免这种情况，我们通常会将依赖转换为单向依赖。例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rectangle.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rectangle</span> { };
+
+<span style="color:#75715e">// window.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rectangle</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span> {
+    Window(<span style="color:#66d9ef">const</span> Rectangle<span style="color:#f92672">&amp;</span> r);
+};
+</code></pre></div><p>但到底谁依赖谁呢？可能<code>Rectangle</code>看起来是一个更基础的类型，那么让<code>Window</code>依赖<code>Rectangle</code>似乎比较合理。</p>
+<p>不过，如果有时候这种依赖关系并不明显，我们可以将这个问题升级给上层：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// rectangle.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rectangle</span> { };
+
+<span style="color:#75715e">// window.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span>{ };
+
+<span style="color:#75715e">// utils.h
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;rectangle.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;window.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Util</span> {
+    <span style="color:#66d9ef">static</span> Window <span style="color:#a6e22e">toWindow</span>(<span style="color:#66d9ef">const</span> Rectangle<span style="color:#f92672">&amp;</span> r);
+    <span style="color:#66d9ef">static</span> Rectangle <span style="color:#a6e22e">toRectangle</span>(<span style="color:#66d9ef">const</span> Window<span style="color:#f92672">&amp;</span> w);
+};
+</code></pre></div><h3 id="降级">降级</h3>
+<p>两个Util类之间可能互相借助对方的功能完成了自身的一些功能，因此产生了循环引用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// geomutil.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Point</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Line</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Polygon</span>;
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GeomUtil</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">isInside</span>(<span style="color:#66d9ef">const</span> Polygon<span style="color:#f92672">&amp;</span> polygon, <span style="color:#66d9ef">const</span> Point<span style="color:#f92672">&amp;</span> point); <span style="color:#75715e">// 依赖 GeomUtil2::doesIntersect
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">areColinear</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">areParallel</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+};
+
+<span style="color:#75715e">// geomutil2.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Line</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Polygon</span>;
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GeomUtil2</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">crossesSelf</span>(<span style="color:#66d9ef">const</span> Polygon<span style="color:#f92672">&amp;</span> polygon); <span style="color:#75715e">// 依赖 GeomUtil::areColinear
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">doesIntersect</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+};
+</code></pre></div><p>此时我们可以将出现互相引用的功能抽出来，降级为二者的依赖，例如创建一个<code>UtilCore</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// geomutilcore.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Point</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Line</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Polygon</span>;
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GeomUtilCore</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">doesIntersect</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">areColinear</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+};
+
+<span style="color:#75715e">// geomutil.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GeomUtil</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">isInside</span>(<span style="color:#66d9ef">const</span> Polygon<span style="color:#f92672">&amp;</span> polygon, <span style="color:#66d9ef">const</span> Point<span style="color:#f92672">&amp;</span> point); <span style="color:#75715e">// 依赖 GeomUtilCore::doesIntersect
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">areParallel</span>(<span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line1, <span style="color:#66d9ef">const</span> Line<span style="color:#f92672">&amp;</span> line2);
+};
+
+<span style="color:#75715e">// geomutil2.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GeomUtil2</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">crossesSelf</span>(<span style="color:#66d9ef">const</span> Polygon<span style="color:#f92672">&amp;</span> polygon); <span style="color:#75715e">// 依赖 GeomUtilCore::areColinear
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p>对于一些不存在循环引用的系统，降级也是很好用的。有时组件A只是依赖组件B的非常小的子集，那么可以将这部分子集
+降级，让A和B都依赖它。这样可以降低CCD指标，减少复杂度，提高代码复用。</p>
+<h3 id="不透明指针">不透明指针</h3>
+<p>不透明指针，即指向一个未知内存布局的类型的指针。使用不透明指针相当于Uses in name only。</p>
+<p>有时候，一个容器中的每一个元素可能都包含一个指向容器的父指针，这样就会出现循环引用。</p>
+<p>为了解决这个问题，我们可以将元素中的指针改为不透明指针，然后提供一个公开接口以获取该指针。
+任何在元素的类型中需要父指针来实现具体功能的方法，应当移到容器中。如下例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// screen.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+    Widget <span style="color:#f92672">*</span>widgets;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> addWidget(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> w);
+    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">numWidgets</span>() <span style="color:#66d9ef">const</span>;
+};
+
+<span style="color:#75715e">// widget.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span> {
+    Screen <span style="color:#f92672">*</span>parent;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Widget(Screen <span style="color:#f92672">*</span>screen);
+    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">numWidgetsInParentScreen</span>() <span style="color:#66d9ef">const</span>;
+};
+
+<span style="color:#75715e">// widget.cpp
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;widget.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;screen.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> Widget<span style="color:#f92672">::</span>numWidgetsInParentScreen() <span style="color:#66d9ef">const</span> {
+    <span style="color:#66d9ef">return</span> parent<span style="color:#f92672">-&gt;</span>numWidgets(); <span style="color:#75715e">// 依赖Screen
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>重构后：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// screen.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+    Widget <span style="color:#f92672">*</span>widgets;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> addWidget(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> w);
+    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">numWidgets</span>() <span style="color:#66d9ef">const</span>;
+};
+
+<span style="color:#75715e">// widget.h
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span> {
+    Screen <span style="color:#f92672">*</span>parent; <span style="color:#75715e">// 现在这是一个不透明指针
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Widget(Screen <span style="color:#f92672">*</span>screen);
+    Screen<span style="color:#f92672">*</span> <span style="color:#a6e22e">parentScreen</span>() <span style="color:#66d9ef">const</span>;
+};
+
+<span style="color:#75715e">// widget.cpp
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;widget.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">// #include &#34;screen.h&#34; 不再需要了
+</span><span style="color:#75715e"></span>
+Screen<span style="color:#f92672">*</span> Widget<span style="color:#f92672">::</span>parentScreen() <span style="color:#66d9ef">const</span> {
+    <span style="color:#66d9ef">return</span> parent;
+}
+</code></pre></div><p>调用<code>widget.parentScreen()-&gt;numWidgets()</code>即可实现原先<code>Widget::numWidgetsInParentScreen()</code>的功能。</p>
+<h3 id="哑数据dumb-data">哑数据（Dumb Data）</h3>
+<p>其实我觉得翻译成哑数据谁都看不懂了……我理解它就是一个ID。当然更广义一点，就是一个作为代号的数据。</p>
+<p>书中说它是对不透明指针的泛化（广义化）。不透明指针还需要uses in name only，哑数据那可能就是一个int。</p>
+<h3 id="冗余">冗余</h3>
+<p>复用代码会带来耦合，因此有时候冗余的重复代码可能带来比复用更大的价值。</p>
+<h3 id="回调">回调</h3>
+<p>回调往往是不好的架构的征兆……尽管它能用于解耦。因此，回调应是最后才考虑的方法。</p>
+<h3 id="管理器类">管理器类</h3>
+<p>假设我们要实现一个图，<code>Edge</code>和<code>Node</code>两个类的关系是比较复杂的。</p>
+<p>一个简单的设计，可能是认为<code>Edge</code>级别更高，所有与<code>Edge</code>相关的事情<code>Node</code>是无法完成的。
+<code>Node</code>可以拥有与之相连的所有<code>Edge</code>的集合，但是Uses in name only。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span> {
+    <span style="color:#66d9ef">friend</span> Edge; <span style="color:#75715e">// 跨文件的友元
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">addEdge</span>(Edge <span style="color:#f92672">*</span>edge); <span style="color:#75715e">// 私有成员，仅被Edge调用
+</span><span style="color:#75715e"></span>    Node(<span style="color:#66d9ef">const</span> Node<span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
+    Node<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Node<span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Node(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> name); <span style="color:#75715e">// 谁来构造和析构Node，谁拥有Node？
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">~</span>Node();
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">name</span>() <span style="color:#66d9ef">const</span>;
+    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">numEdges</span>() <span style="color:#66d9ef">const</span>;
+    Edge<span style="color:#f92672">&amp;</span> edge(<span style="color:#66d9ef">int</span> index) <span style="color:#66d9ef">const</span>;
+</code></pre></div><p>这样是很不好的设计。举个例子，析构一个Node会发生什么？</p>
+<p>因为<code>Node</code>不会做任何与<code>Edge</code>相关的事情，因此析构<code>Node</code>就仅仅是析构了<code>Node</code>。
+此时通过<code>Edge</code>去访问其端点<code>Node</code>时就可能访问到了一个已经被析构的<code>Node</code>。</p>
+<p>我们需要一个管理器类，对于图来说，我们可以创建一个<code>Graph</code>类。</p>
+<p><code>Node</code>和<code>Edge</code>可以位于同一级别，<code>Graph</code>位于更高级别。<code>Graph</code>拥有所有的<code>Node</code>和<code>Edge</code>，
+<code>Node</code>和<code>Edge</code>之间仅Uses in name only。</p>
+<p>删除<code>Node</code>的方法显然应该由管理器类<code>Graph</code>提供，它会处理好所有相关<code>Node</code>和<code>Edge</code>的析构。</p>
+<h3 id="内聚分解factoring">内聚分解（Factoring）</h3>
+<p>提取内聚的部分作为低级别组件：</p>
+<p><img src="/images/large-scale-cpp/factoring.png" alt="factoring"></p>
+<h3 id="升级封装">升级封装</h3>
+<p>我们知道封装很重要，可以用于隐藏实现细节。但何谓实现细节？</p>
+<p>如果每一个类都只是提供公开接口，拥有一大堆实现细节，那是很笨重的，也不利于复用。</p>
+<p>是否是实现细节是和当前抽象层级相关的。我们完全可以公开一些复杂逻辑的类，在上层
+在创建一个包装类（Wrapper）引用这些实现复杂逻辑的类并将其隐藏封装。</p>
+<p>所谓封装一个类型，是隐藏他的使用，而非隐藏这个类型本身。</p>
+<p><img src="/images/large-scale-cpp/encapsulation.png" alt="encapsulation"></p>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2020/06/%E8%AF%BBoptimized-c-/">读《Optimized-C&#43;&#43;》</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "5c34c2c788c8493ed49bb8c423d31c48",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="读《软件测试》" />
+<meta property="og:description" content="前面也说过我最近在做C&#43;&#43;相关的重构，这是一个相对新的项目，因此软件工程中的各个方面都需要完善。软件测试是我能想到最直接的一个方面。 因为当前" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2020/06/%E8%AF%BB%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/" />
+<meta property="article:published_time" content="2020-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-06-27T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="读《软件测试》"/>
+<meta name="twitter:description" content="前面也说过我最近在做C&#43;&#43;相关的重构，这是一个相对新的项目，因此软件工程中的各个方面都需要完善。软件测试是我能想到最直接的一个方面。 因为当前"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2020/06/%E8%AF%BB%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/">
+
+  <title>
+    
+    读《软件测试》 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2020/06/%E8%AF%BB%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/">读《软件测试》</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Jun 27, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <p>前面也说过我最近在做C++相关的重构，这是一个相对新的项目，因此软件工程中的各个方面都需要完善。软件测试是我能想到最直接的一个方面。</p>
+<p>因为当前这个项目对程序的健壮性有较高的要求，软件测试想必是对这个要求的最佳保障，为了能够在构建测试以及规划测试时考虑得更周到，特意借来了这本经典书籍，Ron Patton著作的《软件测试》。我同时还借了一本《软件工程》，也是希望能补充了解一下测试之外的领域，不过才刚刚开始看，暂且不表。</p>
+<hr>
+<p>这本书由浅入深，层层递进。从说服读者测试是必要的开始，到测试的定义，然后介绍各种类型的测试，再是一些延伸话题，最后还有相关职业发展的内容，结构十分清晰，确实是一本入门的好书。也许是国外作者都更倾向于把问题上升到哲学层面，这本书具体技巧较少，概念和相关的故事较多。其实这也有好处，就像方法和方法论的区别。这本书教你方法论，让你能考虑到很多问题，遇到现实中具体问题的复杂组合，可自行根据书中原则思考探索具体方法，并不必要书中主动提出；如若书中只提出一堆方法，反而令人眼花缭乱，容易混淆，不知道什么情况下该用什么了。而且，方法可能有局限性，可能会过时，不总能适用；方法论则往往通用。授人以鱼不如授人以渔，授人以渔不如授人以学渔之道，以免换一条河就钓不上来鱼了。</p>
+<p>关于软件测试的重要性，其实怎么强调都不为过，但怎么强调都会有人不以为然。恐怕只能指望这些人亲身在拥有良好测试的项目中体验过后，才能心甘情愿地说，测试“真香”！所以，也就不必多说了，懂的自然懂，不懂的保持敬畏之心，勇于尝试就好了。</p>
+<hr>
+<p>本书提出测试的目的，就是发现Bug，尽早发现Bug，尽可能让Bug被修复。</p>
+<p>Bug发现得越早，修复的成本越低。这个很好理解。比如产品开发之前，测试人员对需求、功能定义中存在的问题进行纠正，可以避免开发过程中频繁变更功能设计；如果开发已经如火如荼地进行起来，再发现功能设计有致命的缺陷，痛苦的返工就是不可避免的了。还有，产品发布前，用户尚未接触到产品，开发人员修复Bug要轻松很多；产品发布以后，我们就不得不考虑如何为庞大的用户群体分发修复补丁了，而且Bug造成的影响也可能已经扩大了。</p>
+<p>测试也不仅仅是发现Bug，还要让Bug尽可能被修复。这就要求测试人员对Bug进行记录和追踪，同时进行团队间的沟通协作。毕竟，测试人员只发现Bug而不去做后续工作的话，大概没有几个开发者会主动修复Bug。</p>
+<hr>
+<p>本书令人耳目一新的是对测试的分类总结。本书对测试从两个维度进行分类：静态与动态、黑盒与白盒。</p>
+<p>静态与动态区分是否真正把产品运行起来，黑盒与白盒则区分产品的实现是否对测试人员可见。</p>
+<ul>
+<li>静态黑盒测试，即检查产品的规格说明书。有很多错误源自对需求、功能的定义不清淅，甚至有误，因此不可小觑这一测试的作用。</li>
+<li>动态黑盒测试，即通过使用最终的产品来进行测试。这是最能模拟用户使用产品的测试方式。</li>
+<li>静态白盒测试，即代码审查。关于代码审查，除了我们熟知的由作者之外的几个人进行Code Review这种方式之外，作者还介绍了几种方式：代码作者汇报解释他自己的代码，或者由其他人阅读他的代码来做汇报等。</li>
+<li>动态白盒测试，即对程序代码的测试，基本上就是类似单元测试、集成测试的过程。</li>
+</ul>
+<hr>
+<p>看完这本书，印象最深的一个词，就是Equivalence Partition（等价划分）。可以说，每每遇到需要具体分析的问题，涉及具体方法的问题，作者都会说，没有标准答案，请使用等价划分的方法论！</p>
+<p>可以说这个概念是测试领域的“万金油”。这里并无贬义，毕竟现实就是复杂多变的，谁也没有办法做到测试完全。通过等价划分，尽可能让测试涵盖不同的场景，不同的分支情况等，从而实现更好的测试效果。书中有提到一些关于如何进行等价划分的建议。当然这是测试的核心问题，网上也可以搜到很多相关方法。</p>
+<hr>
+<p>最后，书中还有一个说法令我印象深刻。不要指望仅仅通过引入测试来减少Bug。减少Bug并不是测试的功能或目的。测试仅仅相当于一种对Bug的“观测”，真正修复Bug的是开发人员。作者有个形象的比喻，没有医生会通过使用更多的体温计来帮助发烧的患者退烧降温。</p>
+<p>作者在这里想表达的是，当发现Bug很多时，应当反思优化开发流程，而不是一味地投入测试。</p>
+<p>如果开发流程是随心所欲的，比如测试永远只在产品开发结束后介入，没有人对产品需求和功能定义把关，甚至压根就没有这类具体的定义，那么无论再怎么投入测试也仅仅是不断地发现Bug而已，甚至就算修复了，又会源源不断地引入无数新的Bug。</p>
+<p>作者提到了ISO9000系列标准，这是一系列质量管理体系标准。换句话说，它是对团队流程的评估。它通过对质量保证相关流程的观测，来反映团队产品可能达到的质量。毕竟，一个产品的质量是难以客观地进行评估的，但一个团队开发产品的流程是可以被严谨客观地观测的。</p>
+<p>这不禁让我想到，当前开源项目质量良莠不齐，当我们在做一些产品想要采纳一类开源项目时，往往要考量很多方面做出选择。开源项目的健壮性是很重要的一点，但这一点又很难去判断，往往只能通过查看其活跃度、测试覆盖率、持续集成、文档丰富性、社区互动等情况来做出判断。每一个项目都去做一系列调研其实是很花功夫的。</p>
+<p>如果将来有一个开源项目质量管理体系标准，开源项目都能去做一下认证，或者由诸如GitHub这种开源社区来做自动化的认证，是否可以大大提升开源社区的透明度，让优秀的开源项目获得更高的曝光度，也避免不成熟的开源项目被误用呢？</p>
+<p>不知道这是不是一个幼稚的畅想，我倒觉得还挺有意义，尤其是如果真的可以自动化地做出一些指标统计的话。</p>
+<hr>
+<p>总而言之，这本书很全面，不管是通常大家理解的程序上的测试，还是一些不常见的测试（例如对国际化、残障人士辅助功能、硬件兼容性、产品文档等的测试），都有涉及。当然，这本书比较老了，像当下较为流行的自动化测试，书中介绍的篇幅就比较少，也比较过时。但这不影响方法论的通用性。就算测试工程师不是你的职业梦想，长长见识也是值得的。</p>
+<p>最后，我真的感觉，相比很多工程领域（像盖房子造大桥了……），软件工程真的很宽容，以至于市面上的软件产品质量参差不齐。</p>
+<p>另外，我还真是挺纳闷，为啥现在好多公司都不要独立的测试岗位了呢？似乎说是把用户当测试就够了……</p>
+<p>我倒是怀疑这是一个阴谋，也许大老板是想让公司各个团队的小领导自行决定是否要加强测试——那些不愿测试的团队大概迟早会失败，真是替公司领导做裁员的选择省去了麻烦呢！</p>
+
+
+    
+
+    
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "936dedec85a9250d9a10bde0a55d6cd2",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

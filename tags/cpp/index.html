@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="cpp" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://xuhongxu.com/tags/cpp/" />
+<meta property="og:updated_time" content="2020-05-09T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="cpp"/>
+<meta name="twitter:description" content=""/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/tags/cpp/">
+
+  <title>
+    
+    cpp | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+  <link href="https://xuhongxu.com/tags/cpp/index.xml" rel="alternate" type="application/rss+xml" title="旭旭" />
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+
+
+
+    
+        <article class="blog-post">
+    <header>
+        <h2 class="blog-post-title">
+            <a class="text-dark" href="/2020/05/%E5%88%A4%E6%96%AD%E7%B1%BB/%E7%BB%93%E6%9E%84%E4%BD%93%E6%88%90%E5%91%98%E7%9A%84type-traits/">判断类/结构体成员的Type Traits</a>
+        </h2>
+        
+
+
+<div class="blog-post-date text-secondary">
+    
+        May 9, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+        
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+    
+        <a class="badge badge-primary" href="/tags/type">type</a>
+    
+        <a class="badge badge-primary" href="/tags/traits">traits</a>
+    
+        <a class="badge badge-primary" href="/tags/type-traits">type traits</a>
+    
+        <a class="badge badge-primary" href="/tags/concept">concept</a>
+    
+</div>
+
+        
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+    
+</div>
+
+    </header>
+    问题 假设我们有三个结构体： struct A { int a; }; struct B { float a; }; struct C { int b; }; 如何能够拥有一个函数f，对A类型输出int a成员的值，对B类型输出float a
+    <p></p>
+    <a href="/2020/05/%E5%88%A4%E6%96%AD%E7%B1%BB/%E7%BB%93%E6%9E%84%E4%BD%93%E6%88%90%E5%91%98%E7%9A%84type-traits/">阅读更多 →</a>
+</article>
+    
+
+
+
+    
+        <article class="blog-post">
+    <header>
+        <h2 class="blog-post-title">
+            <a class="text-dark" href="/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">右值引用、构造函数和完美转发</a>
+        </h2>
+        
+
+
+<div class="blog-post-date text-secondary">
+    
+        Jun 28, 2019
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+        
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+    
+        <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+    
+</div>
+
+        
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+    
+</div>
+
+    </header>
+    背景 最近同学想到一个问题，有关C++的右值引用。我本以为自己读了两遍C++ Primer，总该得心应手，却发现越解释，越迷糊。 这篇文章不会介绍
+    <p></p>
+    <a href="/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">阅读更多 →</a>
+</article>
+    
+
+
+
+
+
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

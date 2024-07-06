@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>机器学习 on 旭旭</title>
+    <link>https://xuhongxu.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content in 机器学习 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sat, 04 Nov 2017 05:37:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>贝叶斯推理与机器学习（四）概率图模型</title>
+      <link>https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Sat, 04 Nov 2017 05:37:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B/</guid>
+      <description>$$ \newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} \newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}} $$ 概率图模型（Graphical Model） 两个重要应用领域中的典型模型 建模 信念网络、马尔可夫网络、链图和影响图。 推理 因子图和联</description>
+    </item>
+    
+    <item>
+      <title>贝叶斯推理与机器学习（三）信念网络</title>
+      <link>https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%89%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Wed, 01 Nov 2017 03:17:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%89%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C/</guid>
+      <description>$$ \newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} \newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}} $$ 特殊证据 不确定证据（软证据） 决定了证据有多确定。 比如老奶奶对他看到的远处草坪上有一只猫只有50%的把握。 $$ \begin{align*} y =&amp; 有一只猫 \\ \tilde{y} =&amp;</description>
+    </item>
+    
+    <item>
+      <title>贝叶斯推理与机器学习（二）图论基础</title>
+      <link>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Tue, 31 Oct 2017 16:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80/</guid>
+      <description>$$ \newcommand\negrightarrow{\mathrel{\rlap{\;\,/}\rightarrow}} $$ 图 包含点和边。 边的类型 有向边 边有方向，用箭头表示。有向边构成的图为有向图。 无向边 无向边构成的图为无向图。 路径 $$ A \rightarrow B $$ $$ A_0, A_1, ..., A_{n-1}, A_n, \quad A_0</description>
+    </item>
+    
+    <item>
+      <title>贝叶斯推理与机器学习（一）概率推理基础</title>
+      <link>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%80%E6%A6%82%E7%8E%87%E6%8E%A8%E7%90%86%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Tue, 31 Oct 2017 15:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%80%E6%A6%82%E7%8E%87%E6%8E%A8%E7%90%86%E5%9F%BA%E7%A1%80/</guid>
+      <description>$$ \newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} \newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}} $$ 归一化条件 $$ \sum_{x \in dom(x)} {p(\chi=x)=1} $$ 两个变量可以互相交互 $$ p(x\ or\ y) = p(x) + p(y) - p(x, y) $$ 集合符号表示 $$ p(x\ or\ y) \equiv p(x \cup y) $$ $$ p(x, y) \equiv p(x \cap y) $$ 边缘分布 $$ p(x) =</description>
+    </item>
+    
+    <item>
+      <title>机器学习（十）神经网络反向传播算法</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 21 Nov 2016 08:53:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</guid>
+      <description>简述 前面介绍了人工神经网络的表示，了解了如何利用神经网络预测结果。但我们还不知道如何训练神经网络，确定轴突的权值。 即将介绍的反向传播（bac</description>
+    </item>
+    
+    <item>
+      <title>机器学习（九）人工神经网络表示</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/</link>
+      <pubDate>Sun, 20 Nov 2016 18:40:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/</guid>
+      <description>非线性预测 对一个拥有很多特征的复杂数据集进行线性回归是代价很高的。比如我们对50 * 50像素的黑白图分类，我们就拥有了2500个特征。如果我们</description>
+    </item>
+    
+    <item>
+      <title>机器学习（八）多类分类问题和正规化</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/</link>
+      <pubDate>Tue, 15 Nov 2016 20:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/</guid>
+      <description>多类分类问题 前面我们都是说的二元分类问题，如果数据具有多个类别该怎么办呢？比如天气情况：晴天、多云、小雨、中雨…… 我们可以想到，直接做出一个</description>
+    </item>
+    
+    <item>
+      <title>机器学习（七）逻辑回归与梯度下降</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</link>
+      <pubDate>Tue, 15 Nov 2016 19:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</guid>
+      <description>简化的代价函数 还记得上次的代价函数的Octave/MATLAB代码嘛： function [J, grad] = costFunction(theta, X, y) m = length(y); % number of training examples h = sigmoid(X * theta); J = 1 / m * (-y&amp;#39; * log(h) - (1 - y)&amp;#39; * log(1</description>
+    </item>
+    
+    <item>
+      <title>机器学习（六）分类问题和逻辑函数</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AD%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0/</link>
+      <pubDate>Sun, 06 Nov 2016 17:03:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AD%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0/</guid>
+      <description>简述 前面几节都是在介绍回归问题，用于实现连续数据的机器学习。现在，进入分类问题，来处理离散的数据。 二元分类 回归问题中，我们的输出向量y可能是</description>
+    </item>
+    
+    <item>
+      <title>机器学习（五）正规方程、多项式回归</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/</link>
+      <pubDate>Thu, 27 Oct 2016 18:46:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/</guid>
+      <description>正规方程 我们已经知道了如何利用梯度下降法求解线性回归方程的最佳参数，现在我们介绍一种更直接的方法——正规方程法。 正规方程 $$ \theta = (X^{T}X)^{-1}X^{T}\vec{y} $$ 推导与解释</description>
+    </item>
+    
+    <item>
+      <title>机器学习（四）特征归一化</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96/</link>
+      <pubDate>Sun, 23 Oct 2016 13:10:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96/</guid>
+      <description>简述 前面谈到了梯度下降算法，下降速度则与整个数据跨度有关。因此当存在多个特征时，如果特征数据范围不一致，可能会导致梯度下降的路径摇摆不定，效</description>
+    </item>
+    
+    <item>
+      <title>机器学习（三）梯度下降算法</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%89%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Sat, 22 Oct 2016 00:33:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%89%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95/</guid>
+      <description>简述 前面说到了线性回归，我们需要找到代价函数最小的相应参数。这里介绍一种寻找的方法，梯度下降法。 按字面意思理解，就是顺着斜坡一路向下，最终找</description>
+    </item>
+    
+    <item>
+      <title>机器学习（二）线性回归</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</link>
+      <pubDate>Sun, 16 Oct 2016 14:13:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</guid>
+      <description>简述 线性回归，顾名思义，是用一条直线来拟合数据的分布情况。当然啦，前面说过回归方法用于解决连续性的问题，直线所拟合的也必然是一个连续函数。 下</description>
+    </item>
+    
+    <item>
+      <title>机器学习（一）监督学习和非监督学习</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%80%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0%E5%92%8C%E9%9D%9E%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sun, 16 Oct 2016 13:13:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%80%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0%E5%92%8C%E9%9D%9E%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/</guid>
+      <description>起因 最近萌生了一个项目的想法，也从网上找到了相关项目的代码，但涉及机器学习的知识。因此，我决定开始了解并深入学习相关知识。 该系列文章即Cou</description>
+    </item>
+    
+  </channel>
+</rss>

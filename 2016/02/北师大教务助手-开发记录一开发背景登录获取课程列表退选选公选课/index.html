@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="北师大教务助手 开发记录（一）开发背景、登录、获取课程列表、退选、选公选课" />
+<meta property="og:description" content="背景 回想高中的时候，我们有兴趣课程（官方叫校本课程），选课期间也会非常火爆，抢课成为了每学期的一大热门，尽管教务一再崩溃，也无法阻挡我们为了" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2016/02/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E5%BC%80%E5%8F%91%E8%83%8C%E6%99%AF%E7%99%BB%E5%BD%95%E8%8E%B7%E5%8F%96%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8%E9%80%80%E9%80%89%E9%80%89%E5%85%AC%E9%80%89%E8%AF%BE/" />
+<meta property="article:published_time" content="2016-02-24T10:00:00+00:00" />
+<meta property="article:modified_time" content="2016-02-24T10:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="北师大教务助手 开发记录（一）开发背景、登录、获取课程列表、退选、选公选课"/>
+<meta name="twitter:description" content="背景 回想高中的时候，我们有兴趣课程（官方叫校本课程），选课期间也会非常火爆，抢课成为了每学期的一大热门，尽管教务一再崩溃，也无法阻挡我们为了"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2016/02/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E5%BC%80%E5%8F%91%E8%83%8C%E6%99%AF%E7%99%BB%E5%BD%95%E8%8E%B7%E5%8F%96%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8%E9%80%80%E9%80%89%E9%80%89%E5%85%AC%E9%80%89%E8%AF%BE/">
+
+  <title>
+    
+    北师大教务助手 开发记录（一）开发背景、登录、获取课程列表、退选、选公选课 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2016/02/%E5%8C%97%E5%B8%88%E5%A4%A7%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95%E4%B8%80%E5%BC%80%E5%8F%91%E8%83%8C%E6%99%AF%E7%99%BB%E5%BD%95%E8%8E%B7%E5%8F%96%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8%E9%80%80%E9%80%89%E9%80%89%E5%85%AC%E9%80%89%E8%AF%BE/">北师大教务助手 开发记录（一）开发背景、登录、获取课程列表、退选、选公选课</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Feb 24, 2016
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/python">Python</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="背景">背景</h2>
+<p>回想高中的时候，我们有兴趣课程（官方叫校本课程），选课期间也会非常火爆，抢课成为了每学期的一大热门，尽管教务一再崩溃，也无法阻挡我们为了心中向往的课而不断刷新的脚步。</p>
+<p>于是我为这个写过抢课系统，甚至发现了教务系统可以提前选课的漏洞。就在选课开始的前一夜，我们已经有很多同学因此受益选上了课程，不过老师好像发现了这一点也在不断删除。但晚上估计老师也下班了，仍然有很多同学胜利提前选课。</p>
+<p>这是我一直引以为傲的历史，但是抢课软件已经被我封存，不适用于其他年级的同学，我已经毕业，也无法更新。</p>
+<p>如今，北师大抢课的盛况，让我感到十分亲切。已经抢过快两个年头，实在不忍心像大部分同学一样课也罢了去挤破头皮选课；而且选课系统还不兼容现代浏览器，非逼我开Windows虚拟机用IE：干脆写一个助手。</p>
+<p>之前已经多次探索过教务系统的网页构造，后端应该是Java Struts架构，前端写的也很复杂。毕竟是老的业务系统了。在之前，我成功的实现教务网“逾期评教”，也是迈出了深入教务网的第一步。</p>
+<p>寒假，学校信息网络中心把教务系统也纳入统一身份认证，这登录也就无需验证码了，更方便写助手。</p>
+<h2 id="起步">起步</h2>
+<h3 id="一登录统一身份认证">一、登录统一身份认证。</h3>
+<p>URL是：http://cas.bnu.edu.cn/cas/login?service=跳转目标链接 （这里跳转目标以教务系统为例）</p>
+<p>表单乍一看就用户名和密码两个字段，十分简单，想当然HTTP POST一下就万事大吉了。不过，我看学校这么成熟的老业务架构，估计没这么简单。于是打开F12，监控一下网络。</p>
+<p><img src="/images/BNUJW/1-Form.png" alt="Form Data"></p>
+<p>code应该是验证码，因为当我多次提交的时候，验证码就会出现。因此在初次提交，code=code即可。</p>
+<p>重点就是lt和execution这两个参数了，我尝试过POST时任意填写这两个参数或者复制固定的内容作为参数，均不能登陆成功。</p>
+<p>看来这两个参数应该与当前session挂钩，之所以这么说，是因为我每次打开隐身浏览模式（无初始cookie）的时候，第一次进入登录页面，execution一定为&rsquo;e1s1&rsquo;，而code一直是随机变化。</p>
+<p>想必我必须先GET登录页面，提取出来这两个参数，再在POST的时候附加上才能成功登陆；同时也必须记录cookie。</p>
+<p>事实证明是这样。为了方便记录cookie，我使用requests库进行HTTP操作。</p>
+<h2 id="二获取课程列表">二、获取课程列表</h2>
+<p>我先从“按开课计划选课”中入手。现在做教务助手最大的困难就是，目前不是选课时间。也就是说，我进入教务系统，他不会显示出来列表的。这样我也就无从下手进行调试。</p>
+<p>好在，调试中，发现它会先AJAX请求服务器是否在选课时间。服务器返回JSON数据，包含message和status。客户端JavaScript会对返回数据中status进行判断，如果是200则是选课时间，继续向服务器请求课程列表。</p>
+<p>我设置断点，修改status=200，结果成功的获取了课程列表。</p>
+<p>能在浏览器中获得课程列表，我也就可以在F12中看到它AJAX请求的目标。顺理成章地也就实现了。不过服务器好像有时候会检查HTTP请求的headers中的Referer属性，所以一开始直接将其设置为http://zyfw.bnu.edu.cn即可。</p>
+<p>另外POST获取课程列表时，需要提供几个参数xq、xn等，这些需要通过POST另一个目标获得。均可以从客户端JavaScript以及F12网络监视中获得目标。</p>
+<p>公选课的课程列表也同理可以获得。</p>
+<h2 id="三退选课程">三、退选课程</h2>
+<p>首先，获取退选列表，与获取课程列表是异曲同工的。关键在于如何退选。</p>
+<p>还是之前的套路，先想法子在浏览器这里实现，然后通过监视它的HTTP的请求来获得实现方法。</p>
+<p>然而，获取的退选列表最后一列是“操作”，即“退选”。但目前不在退选时间，“退选”理论上应该是超链接的，此时均为普通文本。</p>
+<p>这下就不知道调用的接口了。不过JavaScript不多，调试过之前那些页面的JavaScript，对它的套路也算摸得差不多。再加上他的JavaScript命名比较清晰，很快找到了退课的function。</p>
+<p>仔细阅读了这个函数的代码，手动为“退选”加上了<a>超链接，并挂接onclick事件，成功调用了退选function。然后看到F12的监视结果，得到了退选的POST目标和参数。</p>
+<p>可是，POST的参数经过了加密处理，JavaScript端加密虽然可见，但若翻译成Python，也是不小的工程。它加密函数取名有des的，本以为是标准的des加密，经过痛苦的代码阅读，我利用pyDes算是实现了一遍教务系统JavaScript的加密过程。最终却因为JavaScript中的enc函数并非标准的des加密（也许是我不懂，反正没能调出相同结果），失败了。</p>
+<p>翻译所有的加密代码好像成为了唯一的解决方案。可是我查到pyexecjs库，可以实现Python调用执行JavaScript函数。我把JavaScript代码复制下来，直接用Python调用它实现加密。最终证明可行。</p>
+<p>不过，显而易见，退选是不成功的，因为不在退选时间。POST返回的数据也是JSON格式，告知不在退选时间。</p>
+<p>但是我想到加密代码和POST的参数中出现了timestamp，即当前时间，如果我将其人为设定为退选期间，是否可以成功呢？</p>
+<p>经过实验，返回的信息是“操作成功”，课真给退了？！吓得我赶紧刷新看了看，结果没有。看来还是不成功，可是提示信息的判断确实骗了过去。我不知道服务端是有一种怎样奇葩的判断存在。</p>
+<h2 id="四选公选课">四、选公选课</h2>
+<p>有了之前的工作，这个功能显得特别简单。因为也涉及参数加密，之前的解决方案仍然可以使用。</p>
+<p>我再次尝试修改timestamp，结果返回的信息是“选课人数已满”，尽管那个课还有20多个空名额。我觉得这就更加奇葩了，真想看看服务端是怎么写的。</p>
+<h2 id="readme">README</h2>
+<ul>
+<li>使用Python 3。</li>
+<li>需要第三方库requests和pyexecjs。</li>
+</ul>
+<h3 id="特性-features">特性 Features</h3>
+<ul>
+<li>登录统一身份认证系统</li>
+<li>按开课计划查询课程</li>
+<li>查询公选课</li>
+<li>退选课程</li>
+<li>选公选课</li>
+</ul>
+<h3 id="todo">TODO</h3>
+<ul>
+<li>选开课计划课程</li>
+<li>查询选课结果</li>
+<li>查询考试安排</li>
+<li>查询考试成绩</li>
+<li>评教</li>
+<li>设计和实现选课策略</li>
+</ul>
+
+
+    
+
+    
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "d33281092706aab164dc957ef46ab4ff",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

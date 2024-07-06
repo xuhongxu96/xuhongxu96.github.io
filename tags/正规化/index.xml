@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>正规化 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E6%AD%A3%E8%A7%84%E5%8C%96/</link>
+    <description>Recent content in 正规化 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Tue, 15 Nov 2016 20:35:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E6%AD%A3%E8%A7%84%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（八）多类分类问题和正规化</title>
+      <link>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/</link>
+      <pubDate>Tue, 15 Nov 2016 20:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/</guid>
+      <description>多类分类问题 前面我们都是说的二元分类问题，如果数据具有多个类别该怎么办呢？比如天气情况：晴天、多云、小雨、中雨…… 我们可以想到，直接做出一个</description>
+    </item>
+    
+  </channel>
+</rss>

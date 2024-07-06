@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rvalue on 旭旭</title>
+    <link>https://xuhongxu.com/tags/rvalue/</link>
+    <description>Recent content in rvalue on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 28 Jun 2019 21:56:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/rvalue/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>右值引用、构造函数和完美转发</title>
+      <link>https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Fri, 28 Jun 2019 21:56:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/</guid>
+      <description>背景 最近同学想到一个问题，有关C++的右值引用。我本以为自己读了两遍C++ Primer，总该得心应手，却发现越解释，越迷糊。 这篇文章不会介绍</description>
+    </item>
+    
+  </channel>
+</rss>

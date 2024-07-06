@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算机图形学 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/</link>
+    <description>Recent content in 计算机图形学 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Thu, 17 Mar 2016 10:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>计算机图形学实验一：配置Mac OS X的OpenGL开发环境</title>
+      <link>https://xuhongxu.com/2016/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%AE%9E%E9%AA%8C%E4%B8%80%E9%85%8D%E7%BD%AEmac-os-x%E7%9A%84opengl%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Thu, 17 Mar 2016 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%AE%9E%E9%AA%8C%E4%B8%80%E9%85%8D%E7%BD%AEmac-os-x%E7%9A%84opengl%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</guid>
+      <description>依赖环境 Mac OS X Yosemite (10.10.5) CMake GLFW3 后续需要环境： GLEW GLM 助教介绍的GLUT库很久没有维护了，在Mac OS X 10.9中已经强烈警告GLUT已被废弃。因此，推荐使</description>
+    </item>
+    
+  </channel>
+</rss>

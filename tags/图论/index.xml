@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>图论 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E5%9B%BE%E8%AE%BA/</link>
+    <description>Recent content in 图论 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Tue, 31 Oct 2017 16:35:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E5%9B%BE%E8%AE%BA/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>贝叶斯推理与机器学习（二）图论基础</title>
+      <link>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Tue, 31 Oct 2017 16:35:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80/</guid>
+      <description>$$ \newcommand\negrightarrow{\mathrel{\rlap{\;\,/}\rightarrow}} $$ 图 包含点和边。 边的类型 有向边 边有方向，用箭头表示。有向边构成的图为有向图。 无向边 无向边构成的图为无向图。 路径 $$ A \rightarrow B $$ $$ A_0, A_1, ..., A_{n-1}, A_n, \quad A_0</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="动态链接库的符号重名问题" />
+<meta property="og:description" content="背景 工作时，同事遇到一个编译和链接相关的问题，我跟着一起研究了一下。很有意思的问题，我也做了一些实验，在此记录。 问题描述 问题源自CNTK相关" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/" />
+<meta property="article:published_time" content="2018-09-16T20:27:20+08:00" />
+<meta property="article:modified_time" content="2018-09-16T20:27:20+08:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="动态链接库的符号重名问题"/>
+<meta name="twitter:description" content="背景 工作时，同事遇到一个编译和链接相关的问题，我跟着一起研究了一下。很有意思的问题，我也做了一些实验，在此记录。 问题描述 问题源自CNTK相关"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/">
+
+  <title>
+    
+    动态链接库的符号重名问题 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/">动态链接库的符号重名问题</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Sep 16, 2018
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+    
+        <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+    
+        <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="背景">背景</h2>
+<p>工作时，同事遇到一个编译和链接相关的问题，我跟着一起研究了一下。很有意思的问题，我也做了一些实验，在此记录。</p>
+<h3 id="问题描述">问题描述</h3>
+<p>问题源自CNTK相关的程序，但在这里，我把问题抽象出来进行描述。</p>
+<p>假设，现在有：</p>
+<ol>
+<li>一个静态链接库<code>liba.a</code>，定义了函数<code>int GetInt()</code>，返回<code>3</code>；</li>
+<li>一个动态链接库<code>libb.so</code>，定义了函数<code>int GetDoubleInt()</code>，调用静态链接库<code>liba.a</code>，返回<code>GetInt() * 2</code>；</li>
+<li>一个静态链接库<code>liba2.a</code>，同样定义了函数<code>int GetInt()</code>，但返回<code>9999</code>。</li>
+<li>主程序，调用动态链接库<code>libb.so</code>和静态链接库<code>liba2.a</code>，分别输出<code>GetInt()</code>和<code>GetDoubleInt()</code>的返回值。</li>
+</ol>
+<blockquote>
+<p>可以理解成，在实际生产环境中，<code>liba2.a</code>是为静态链接库<code>liba.a</code>开发的新版本，保持了接口，修改了实现。</p>
+<p>主程序调用了一个用旧版库（<code>liba.a</code>）写成的库（<code>libb.so</code>），同时自己又调用了新版库（<code>liba2.a</code>）。</p>
+</blockquote>
+<h2 id="实验">实验</h2>
+<h3 id="依赖关系">依赖关系</h3>
+<p>首先，整理一下文件、目标文件和库之间的依赖关系。</p>
+<table>
+<thead>
+<tr>
+<th>目标文件</th>
+<th>依赖项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a.o</td>
+<td>a.cpp</td>
+</tr>
+<tr>
+<td>a2.o</td>
+<td>a2.cpp</td>
+</tr>
+<tr>
+<td>b.o</td>
+<td>b.cpp</td>
+</tr>
+<tr>
+<td>main.o</td>
+<td>main.cpp</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>目标库</th>
+<th>依赖项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>liba.a</td>
+<td>a.o</td>
+</tr>
+<tr>
+<td>liba2.a</td>
+<td>a2.o</td>
+</tr>
+<tr>
+<td>libb.so</td>
+<td>b.o liba.a</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>目标可执行文件</th>
+<th>依赖项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>main</td>
+<td>main.o liba2.a libb.so</td>
+</tr>
+</tbody>
+</table>
+<h3 id="源程序">源程序</h3>
+<h4 id="libaa-和-liba2a-的公共接口-ah"><code>liba.a</code> 和 <code>liba2.a</code> 的公共接口 (<code>a.h</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">GetInt</span>();
+</code></pre></div><h4 id="libaa-的源程序-acpp"><code>liba.a</code> 的源程序 (<code>a.cpp</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">GetInt</span>()
+{
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">3</span>;
+}
+</code></pre></div><h4 id="liba2a-的源程序-a2cpp"><code>liba2.a</code> 的源程序 (<code>a2.cpp</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">GetInt</span>()
+{
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">9999</span>;
+}
+</code></pre></div><h4 id="libbso-的接口-bh"><code>libb.so</code> 的接口 (<code>b.h</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">GetDoubleInt</span>();
+</code></pre></div><h4 id="libbso-的源程序-bcpp"><code>libb.so</code> 的源程序 (<code>b.cpp</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">GetDoubleInt</span>()
+{
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> GetInt();
+}
+</code></pre></div><h4 id="主程序-main-的源程序-maincpp">主程序 <code>main</code> 的源程序 (<code>main.cpp</code>)</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;a.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;b.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+        cout <span style="color:#f92672">&lt;&lt;</span> GetInt() <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> GetDoubleInt() <span style="color:#f92672">&lt;&lt;</span> endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><h3 id="编译和链接">编译和链接</h3>
+<h4 id="编译">编译</h4>
+<p>我们直接来看一下我写好的Makefile中，编译（从源文件到目标文件的过程）相关的部分。</p>
+<p>注意编译动态链接库的代码时，需要加上<code>-fPIC</code>这个选项。<code>PIC</code>即Position Independent Code，位置无关代码。</p>
+<p>这个选项可以让生成的代码中涉及的各种引用地址均使用相对地址，例如跳转的目标地址等。只有使用位置无关代码，才能生成动态链接库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">a.o</span><span style="color:#f92672">:</span> a.cpp
+        g++ a.cpp -c -o a.o
+<span style="color:#a6e22e">a2.o</span><span style="color:#f92672">:</span> a2.cpp
+        g++ a2.cpp -c -o a2.o
+<span style="color:#a6e22e">b.o</span><span style="color:#f92672">:</span> b.cpp
+        g++ b.cpp -fPIC -c -o b.o
+<span style="color:#a6e22e">main.o</span><span style="color:#f92672">:</span> main.cpp
+        g++ main.cpp -c -o main.o
+</code></pre></div><blockquote>
+<p>注：<code>-c</code>表示生成目标文件，<code>-o xxx.o</code>指定目标文件名称为<code>xxx.o</code>。</p>
+</blockquote>
+<h4 id="打包生成静态链接库">打包生成静态链接库</h4>
+<p>调用ar这个Linux中的Archive工具来打包静态链接库所包含的目标文件，其实静态链接库就是一个带符号索引的目标文件包。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">liba.a</span><span style="color:#f92672">:</span> a.o
+        ar rcs liba.a a.o
+<span style="color:#a6e22e">liba2.a</span><span style="color:#f92672">:</span> a2.o
+        ar rcs liba2.a a2.o
+</code></pre></div><h4 id="链接生成动态链接库">链接生成动态链接库</h4>
+<p>链接<code>liba</code>库到生成的动态链接库<code>libb.so</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">libb.so</span><span style="color:#f92672">:</span> b.o liba.a
+        g++ -shared b.o -L. -la -o libb.so
+</code></pre></div><blockquote>
+<p>注：<code>-shared</code>表示生成动态链接库，<code>-L.</code>表示设置链接库查找目录为当前目录<code>.</code>，<code>-la</code>表示链接名为<code>a</code>或<code>liba</code>的库。</p>
+</blockquote>
+<h4 id="链接生成主程序">链接生成主程序</h4>
+<p>这里，主程序分别链接了<code>liba2</code>和<code>libb</code>两个库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">main</span><span style="color:#f92672">:</span> main.o liba2.a libb.so
+        g++ main.o -L. -Wl,-R. -la2 -lb -o main
+</code></pre></div><blockquote>
+<p>注：<code>-Wl,-R.</code>设置程序运行时查找引用库的目录为当前目录<code>.</code>，其中<code>-Wl</code>表示后面的选项为传入链接器的选项。</p>
+</blockquote>
+<h4 id="生成全部">生成全部</h4>
+<p>最后，在Makefile中加入<code>all</code>这个生成目标：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">all</span><span style="color:#f92672">:</span> main
+</code></pre></div><h3 id="执行">执行</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@3b172fa2403e:/home/code# make
+g++ main.cpp -c -o main.o
+g++ a2.cpp -c -o a2.o
+ar rcs liba2.a a2.o
+g++ b.cpp -fPIC -c -o b.o
+g++ a.cpp -c -o a.o
+ar rcs liba.a a.o
+g++ -shared b.o -L. -la -o libb.so
+g++ main.o -L. -Wl,-R. -la2 -lb -o main
+
+root@3b172fa2403e:/home/code# ./main
+<span style="color:#ae81ff">9999</span>
+<span style="color:#ae81ff">19998</span>
+</code></pre></div><p>诶？结果为什么调用的都是<code>liba2</code>库里定义的<code>GetInt()</code>？</p>
+<p>如果说，按我们的设定，主程序使用新版的<code>liba2</code>，而主程序调用的<code>libb</code>应该去使用旧版的<code>liba</code>才对，也就是说，我们期待的输出结果应该是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ae81ff">9999</span>
+<span style="color:#ae81ff">6</span>
+</code></pre></div><h4 id="换换顺序再试一下">换换顺序？再试一下。</h4>
+<p>现在，把链接生成主程序的链接库顺序颠倒一下（先链接<code>libb</code>，再链接<code>liba2</code>）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">main</span><span style="color:#f92672">:</span> main.o liba2.a libb.so
+        g++ main.o -L. -Wl,-R. -lb -la2 -o main
+</code></pre></div><p>执行结果：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ae81ff">3</span>
+<span style="color:#ae81ff">6</span>
+</code></pre></div><p>是不是很神奇？结果又都变成调用<code>liba</code>了。</p>
+<h4 id="不链接liba2可以吗">不链接<code>liba2</code>可以吗？</h4>
+<p>之所以会出现这种情况，多半是因为主程序使用的<code>liba2</code>，和<code>libb</code>使用的<code>liba</code>发生了冲突。</p>
+<p>因为<code>liba</code>和<code>liba2</code>是静态链接库，所以在编译动态链接库<code>libb</code>的时候，<code>liba</code>的代码实际上是也被链接进了<code>libb</code>中。</p>
+<p>那么，我们直接让主程序链接<code>libb</code>会怎么样呢？是不是也可以成功链接，并且直接调用<code>liba</code>？</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">main</span><span style="color:#f92672">:</span> main.o liba2.a libb.so
+        g++ main.o -L. -Wl,-R. -lb -o main
+</code></pre></div><p>执行结果：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ae81ff">3</span>
+<span style="color:#ae81ff">6</span>
+</code></pre></div><p>果然不出所料。</p>
+<h3 id="解释">解释</h3>
+<p>事实上，因为<code>libb</code>链接了静态链接库<code>liba</code>，默认地，也就导出了所有<code>liba</code>导出的符号。</p>
+<p>我们可以借助<code>nm</code>工具，查看库导出的符号都有什么：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@3b172fa2403e:/home/code# nm liba.a
+
+a.o:
+<span style="color:#ae81ff">0000000000000000</span> T _Z6GetIntv
+
+root@3b172fa2403e:/home/code# nm liba2.a
+
+a2.o:
+<span style="color:#ae81ff">0000000000000000</span> T _Z6GetIntv
+
+root@3b172fa2403e:/home/code# nm -D libb.so
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+00000000000005c5 T _Z12GetDoubleIntv
+00000000000005d2 T _Z6GetIntv
+<span style="color:#ae81ff">0000000000201028</span> B __bss_start
+                 w __cxa_finalize
+                 w __gmon_start__
+<span style="color:#ae81ff">0000000000201028</span> D _edata
+<span style="color:#ae81ff">0000000000201030</span> B _end
+00000000000005e0 T _fini
+00000000000004c8 T _init
+</code></pre></div><p>可以看到，动态链接库<code>libb.so</code>是包括了<code>GetInt</code>和<code>GetDoubleInt</code>两个符号的。</p>
+<p>当我们将<code>liba2</code>和<code>libb</code>同时链接到主程序中时，自然出现了重名的冲突。</p>
+<p>而根据前面的实验结果，可以看到，最终被链接的程序，来自首先被链接的库。</p>
+<p>那么，重名符号冲突，到底有哪些情况呢？</p>
+<h4 id="重名符号优先级">重名符号优先级</h4>
+<p>符号的定义域，一般有三种：</p>
+<ol>
+<li>目标文件或静态链接库</li>
+<li>动态链接库导出符号</li>
+<li>动态链接库本地符号（static function，文件作用域函数）</li>
+</ol>
+<p>其中，对于优先级最高的第1类符号，重名符号冲突会直接导致报错，不被允许。</p>
+<p>跨优先级的重名情况，高优先级一般总会覆盖低优先级的符号。</p>
+<p>而同优先级的动态链接库导出符号重名，则根据链接顺序有所不同。</p>
+<p>不过，两个不同动态链接库的本地符号重名，是毫无干扰的，因为它们的作用域仅限于所在文件。</p>
+<h5 id="一个疑惑">一个疑惑</h5>
+<p>可是，本文前面的例子，明明就是一个静态链接库和一个动态链接库，并不是静态链接库优先级高就覆盖了动态链接库的导出符号，而是与链接顺序有关啊！</p>
+<p>其实并非如此。</p>
+<p>本文的例子，按理来说，确实应该优先使用静态链接库的程序。但是由于我们只调用了<code>GetDoubleInt()</code>和<code>GetInt()</code>，而这两个名称在动态链接库中均能够解析并链接到，静态链接库就被链接器认为没有存在的必要了。</p>
+<p>如果此时，我们在静态链接库<code>liba2</code>中再定义一个独一无二的函数，并在<code>main</code>中调用，会发现无论如何修改链接库的链接顺序，最终的结果都是调用<code>liba2</code>的程序。</p>
+<p>在这里，具体原因我没有找到明确的参考依据，我的推断大概是：</p>
+<blockquote>
+<p>链接器根据链接顺序解决符号链接，如果已经解决了全部符号，那么后续链接库就不予考虑；而静态链接库一旦有链接的必要，那么全部符号的优先级就会高于动态链接库的导出符号。</p>
+</blockquote>
+<p>我查阅资料了解到<code>--no-as-needed</code>和<code>--as-needed</code>这一对链接选项（使用<code>gcc/g++</code>设置时应在前面加上<code>-Wl,</code>）可以控制链接器是否按需链接库，不过应该只是对动态链接库进行按需链接。</p>
+<p>所以，这个行为的具体原因我仍然没有确定，但大概情况应该差不多是我描述的这样。</p>
+<h3 id="解决方案隐藏符号">解决方案：隐藏符号</h3>
+<p>那么，有什么办法可以实现我们的预期结果，就是如何让动态链接库的<code>GetDoubleInt</code>继续调用它原本调用的旧版<code>liba</code>，而主程序调用的<code>GetInt</code>则调用新版的<code>liba2</code>呢？</p>
+<p>其实，只要把动态链接库导出的<code>GetInt()</code>符号隐藏，就不存在符号重名冲突的问题了。</p>
+<p>方法有两种。</p>
+<h4 id="方法一链接选项--exclude-libs">方法一：链接选项<code>--exclude-libs</code></h4>
+<p>在链接生成动态链接库的时候，加入<code>-Wl,--exclude-libs liba.a</code>即可避免导出静态链接库<code>liba</code>的符号，也就不会导出<code>GetInt()</code>这个函数。</p>
+<p>这样，<code>libb</code>动态链接库中的<code>GetInt()</code>就相当于本地符号。
+主程序调用动态链接库<code>libb</code>的<code>GetDoubleInt()</code>时，动态链接库内部还是会调用<code>liba</code>的<code>GetInt()</code>；而主程序调用<code>GetInt()</code>，因为无法在动态链接库中找到这个符号，自然就会调用<code>liba2</code>的了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#a6e22e">libb.so</span><span style="color:#f92672">:</span> b.o liba.a
+        g++ -shared b.o -L. -Wl,--exclude-libs liba.a -la -o libb.so
+</code></pre></div><p>执行结果：</p>
+<pre><code>9999
+6
+</code></pre><p>是我们想要的！</p>
+<h4 id="方法二version-script">方法二：Version Script</h4>
+<p>可以使用链接器支持的Version Script控制导出的符号名称，即提供一个文件来指定具体导出哪些符号。</p>
+<p>具体可以参考：
+<a href="https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html">GNU ld 文档 - Version Scripts</a></p>
+<h2 id="参考文献">参考文献</h2>
+<p><a href="https://www.safaribooksonline.com/library/view/advanced-c-and/9781430266679/9781430266679_Ch09.xhtml">https://www.safaribooksonline.com/library/view/advanced-c-and/9781430266679/9781430266679_Ch09.xhtml</a></p>
+
+
+    
+
+    
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "03ca898e8a36702db3f66557787dee0c",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

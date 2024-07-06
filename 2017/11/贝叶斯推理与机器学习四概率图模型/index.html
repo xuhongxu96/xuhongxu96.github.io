@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="贝叶斯推理与机器学习（四）概率图模型" />
+<meta property="og:description" content="$$ \newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} \newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}} $$ 概率图模型（Graphical Model） 两个重要应用领域中的典型模型 建模 信念网络、马尔可夫网络、链图和影响图。 推理 因子图和联" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B/" />
+<meta property="article:published_time" content="2017-11-04T05:37:00+00:00" />
+<meta property="article:modified_time" content="2017-11-04T05:37:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="贝叶斯推理与机器学习（四）概率图模型"/>
+<meta name="twitter:description" content="$$ \newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} \newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}} $$ 概率图模型（Graphical Model） 两个重要应用领域中的典型模型 建模 信念网络、马尔可夫网络、链图和影响图。 推理 因子图和联"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B/">
+
+  <title>
+    
+    贝叶斯推理与机器学习（四）概率图模型 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B/">贝叶斯推理与机器学习（四）概率图模型</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Nov 4, 2017
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+    
+        <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <div>
+$$
+\newcommand\indep{\mathrel{\rlap{\perp}\mkern2mu{\perp}}} 
+\newcommand\dep{\mathrel{\style{display: inline-block; transform: rotate(180deg)}{\indep}}}
+$$
+</div>
+<h2 id="概率图模型graphical-model">概率图模型（Graphical Model）</h2>
+<h3 id="两个重要应用领域中的典型模型">两个重要应用领域中的典型模型</h3>
+<h4 id="建模">建模</h4>
+<p>信念网络、马尔可夫网络、链图和影响图。</p>
+<h4 id="推理">推理</h4>
+<p>因子图和联结树。</p>
+<h2 id="马尔可夫网络markov-network">马尔可夫网络（Markov Network）</h2>
+<h3 id="与信念网络的对比">与信念网络的对比</h3>
+<table>
+<thead>
+<tr>
+<th>图模型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>信念网络</td>
+<td>联合概率分布的因子化（几个概率分布相乘）</td>
+</tr>
+<tr>
+<td>马尔可夫网络</td>
+<td><code>$ p(a, b, c) = \frac{1}{Z} \phi(a, b) \phi(b, c) \\ \phi(a, b)\ 和\ \phi(b, c)\ 是\ 组势 \\ Z 是保证归一化的常量 $</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="组势potential">组势（Potential）</h3>
+<div>
+$$ \phi(x) \ge 0 $$
+</div>
+<p><strong>概率分布</strong>是一个特殊的满足<strong>归一化</strong>的组势。</p>
+<h3 id="马尔可夫网络">马尔可夫网络</h3>
+<p>假设我们有</p>
+<div>
+$$
+X = \{x_1, ..., x_n\} \\
+X_c \subseteq X 
+$$
+</div>
+<p>马尔可夫网络定义为 <code>$ X_c $</code> 上的组势的乘积：</p>
+<div>
+$$
+p(x_1, ..., x_n) = \frac{1}{Z} \prod_{c=1}^{C} \phi_c(X_c)
+$$
+</div>
+<p>无向图 <code>$ G $</code> 中每个 <code>$ X_c, c=1, ..., C $</code> 是 <code>$ G $</code> 的最大团。</p>
+<p><img src="/images/braml/4_1_markov_network.png" alt="4_1_markov_network"></p>
+<h4 id="吉布斯分布gibbs-distribution">吉布斯分布（Gibbs Distribution）</h4>
+<p>团组势严格为正：</p>
+<div>
+$$ \phi (X_c) > 0 $$
+</div>
+<h3 id="成对pairwise马尔可夫网络">成对（Pairwise）马尔可夫网络</h3>
+<p>图只包含大小为2的团（未必是最大团），即组势只定义在两个变量上。</p>
+<p><img src="/images/braml/4_2_pairwise_mn.png" alt="4_2_pairwise_mn"></p>
+<p>如上图，<strong>标准马尔可夫网络</strong>表示为：</p>
+<div>
+$$
+p(x_1, x_2, x_3, x_4) = \frac{\phi(x_1, x_2, x_3) \phi(x_2, x_3, x_4)}{Z}
+$$
+</div>
+<p><strong>成对马尔可夫网络</strong>表示为：</p>
+<div>
+$$
+p(x_1, x_2, x_3, x_4) = \frac{\phi(x_1, x_2) \phi(x_1, x_3) \phi(x_2, x_3) \phi(x_2, x_4) \phi (x_3, x_4)}{Z}
+$$
+</div>
+<h3 id="性质">性质</h3>
+<h4 id="马尔可夫网络的基本性质">马尔可夫网络的基本性质</h4>
+<p><img src="/images/braml/4_3_mn_property.png" alt="4_3_mn_property"></p>
+<div>
+$$
+p(A, B, C) = \phi_{AC}(A, C) \phi_{BC}(B, C) / Z 
+$$
+</div>
+<h5 id="边缘化c使a和b图形相关">边缘化C，使A和B（图形）相关</h5>
+<p><img src="/images/braml/4_4_margin_on_c.png" alt="4_4_margin_on_c"></p>
+<p>一般来说，<code>$ p(A, B) \neq p(A)p(B) $</code>。</p>
+<h5 id="以c为条件使a和b相互独立">以C为条件，使A和B相互独立</h5>
+<p><img src="/images/braml/4_5_condition_on_c.png" alt="4_5_condition_on_c"></p>
+<div>
+$$ p(A, B|C) = p(A|C) p(B|C) $$
+</div>
+<h4 id="全局马尔可夫性质">全局马尔可夫性质</h4>
+<h5 id="分离">分离</h5>
+<p>现有<code>$ X $</code>的子集 <code>$ S, A, B $</code></p>
+<p><code>$ S $</code> 使 <code>$ A $</code> 与 <code>$ B $</code> 分离，当每条从 <code>$ \forall a \in A $</code> 到 <code>$ \forall b \in B $</code> 的路径经过 <code>$ S $</code>中的点。</p>
+<p>如果 <code>$ S = \emptyset $</code>，则<code>$ a $</code> 到 <code>$ b $</code> 之间不存在一条路径。</p>
+<p>如果 <code>$ a $</code> 到 <code>$ b $</code> 之间不存在一条路径，则 <code>$ A $</code> 与 <code>$ B $</code> 分离。</p>
+<p>如果 <code>$ (A, B, S) $</code> 中 <code>$ S $</code> 使 <code>$ A $</code> 与 <code>$ B $</code> 分离，则：</p>
+<div>
+$$ A \indep B | S $$
+</div>
+<p>例如：</p>
+<p><img src="/images/braml/4_6_global_markov_property_1.png" alt="4_6_global_markov_property_1"></p>
+<p><img src="/images/braml/4_7_global_markov_property_2.png" alt="4_7_global_markov_property_2"></p>
+<p>每一条从 <code>$ 1 $</code> 到 <code>$ 7 $</code> 的路径经过 <code>$ 4 $</code>，所以：</p>
+<div>
+$$ 1 \indep 7 | 4 $$
+</div>
+<div>
+$$
+\begin{align*}
+p(1, 7 | 4) \propto & \sum_{2,3,5,6} p(1,2,3,4,5,6,7) \\
+= & \sum_{2,3,5,6} \phi(1, 2, 3) \phi(2, 3, 4) \phi(4, 5, 6) \phi(5, 6, 7) \\
+= & \left\{ \sum_{2,3} \phi(1, 2, 3) \phi(2, 3, 4) \right\}\left\{ \sum_{5, 6} \phi(4, 5, 6) \phi(5, 6, 7) \right\}
+\end{align*}
+$$
+</div>
+<h4 id="吉布斯分布正组势的属性">吉布斯分布（正组势）的属性</h4>
+<h5 id="局部马尔可夫性质">局部马尔可夫性质</h5>
+<div>
+$$ 
+p(x|X \backslash x) = p(x|ne(x)) \\
+ne(x) \quad x的邻居
+$$
+</div>
+<h5 id="成对马尔可夫性质">成对马尔可夫性质</h5>
+<div>
+$$
+x \indep y | X \backslash \{x, y\}
+$$
+</div>
+<h3 id="马尔可夫随机场markov-random-field">马尔可夫随机场（Markov Random Field）</h3>
+<p>如果</p>
+<div>
+$$ 
+p(x_i | x_{\backslash i}) = p(x_i|ne(x_i))  \\
+\left(x_{\backslash i} = X \backslash x_i\right)
+$$
+</div>
+<p>即一个变量仅与其相邻（相连接）的变量相关；</p>
+<p>则这个分布是一个马尔科夫随机场。</p>
+<h3 id="hammersley-clifford-定理">Hammersley-Clifford 定理</h3>
+<p><img src="/images/braml/4_8_hc_theorem.png" alt="4_8_hc_theorem"></p>
+<p>由局部马尔可夫性质，可知：</p>
+<div>
+$$ x_1 \indep x_4, x_5, x_6, x_7 | x_2, x_3 $$
+</div>
+<p>所以，</p>
+<div>
+$$ p(x_1, ..., x_7) = p(x_1 | x_2, x_3) p (x_2, x_3, x_4, x_5, x_6, x_7) $$
+</div>
+<p>继续分解，最终得到：</p>
+<div>
+$$ p(x_1, ..., x_7) = p(x_1 | x_2, x_3) p(x_2, x_3 | x_4) p(x_4 | x_5, x_6) p(x_5, x_6 | x_7) p(x_7) $$
+</div>
+<p>Hammersley-Clifford 定理说明了这个分解性质对于所有组势为正的无向图成立。</p>
+<h3 id="信念网络和马尔可夫网络上的条件独立性">信念网络和马尔可夫网络上的条件独立性</h3>
+<p>这里提供一个方法，来找到针对信念网络和马尔可夫网络上的，关于 <code>$ X, Y, Z $</code> 的独立性描述。</p>
+<blockquote>
+<p>对于马尔可夫网络，只需要应用最后一步（第三步）。</p>
+</blockquote>
+<h4 id="第一步继承图">第一步：继承图</h4>
+<p>保留节点 <code>$ X \cup Y \cup Z $</code> 和他们的祖先 <code>$ A $</code>。</p>
+<p>移除所有其他节点，移除其他节点的入边和出边。</p>
+<h4 id="第二步moralization">第二步：Moralization</h4>
+<p>连接任意两个拥有共同孩子的节点。</p>
+<p>移除边上的箭头（变为无向图）。</p>
+<h4 id="第三步分离">第三步：分离</h4>
+<p>移除与 <code>$ Z $</code>中节点 直接相连的边。</p>
+<p>寻找一个条将 <code>$ X $</code> 中任意节点 与 <code>$ Y $</code> 中任意节点连接的路径。</p>
+<p>如果没有找到这样的路径，则</p>
+<div>
+$$ X \indep Y | Z $$
+</div>
+<h3 id="格栅模型lattice-model">格栅模型（Lattice Model）</h3>
+<p><img src="/images/braml/4_9_lattice_model.png" alt="4_9_lattice_model"></p>
+<div>
+$$
+p(x_1, ..., x_9) = \frac{1}{Z} \prod_{i \sim j} \phi_{ij}(x_i, x_j) \\
+i \sim j 表示在无向图中相邻的i和j的索引集合
+$$
+</div>
+<h2 id="链图模型cgchain-graphical-model">链图模型（CG：Chain Graphical Model）</h2>
+<p>同时包含有向边和无向边。</p>
+<p><img src="/images/braml/4_10_cg.png" alt="4_10_cg"></p>
+<div>
+$$
+p(a, b, c, d) = p(a) p(b) p(c, d|a, b) $$
+</div>
+<div>
+$$
+p(c, d|a, b) = \phi(c, d) p(c|a) p(d|b) \phi(a, b) \\
+其中，
+\phi(a, b) = \left( \sum_{c, d} \phi(c, d)p(c|a)p(d|b) \right)^{-1} \\
+\phi(a, b) 保证归一化
+$$
+</div>
+<h3 id="链部件chain-component">链部件（Chain Component）</h3>
+<h4 id="方法">方法</h4>
+<ol>
+<li>移除有向边</li>
+<li>每一个连接的部分组成一个链部件</li>
+</ol>
+<h4 id="意义">意义</h4>
+<p>每一个链部件表示部件内变量以父部件为条件的一个条件概率分布。</p>
+<p><img src="/images/braml/4_10_chain_component_1.png" alt="4_10_chain_component_1"></p>
+<p><img src="/images/braml/4_11_chain_component_2.png" alt="4_11_chain_component_2.png"></p>
+<h3 id="链图的概率分布">链图的概率分布</h3>
+<p>链部件集合： <code>$ \tau $</code></p>
+<p>它们对应的变量集合： <code>$ X_t, \quad t \in \tau $</code></p>
+<p>则链图的概率分布为：</p>
+<div>
+$$
+p(x) = \prod_{t \in \tau} p(X_t|pa(X_t))
+$$
+</div>
+<p>其中，</p>
+<div>
+$$
+p(X_t|pa(X_t)) \propto \prod_{x \in X_t} p(x|pa(x)) \prod_{c \in C_t} \phi(X_c) \\
+C_t 是链部件t中所有的团的集合
+$$
+</div>
+<p>即父子链部件的条件概率，正比于有向边对应的父子变量的条件概率和无向边对应的一些团的组势的乘积。</p>
+<h4 id="特殊的链图">特殊的链图</h4>
+<blockquote>
+<p>信念网络是链部件都是单体（只包含一个变量）的链图。</p>
+<p>马尔可夫网络是链部件为自身的链图（若不是连通图，存在孤岛，则为每一个连接部分）</p>
+</blockquote>
+<h3 id="链图表达能力更强">链图表达能力更强</h3>
+<p><img src="/images/braml/4_12_cg_exp.png" alt="4_12_cg_exp.png"></p>
+<p>如图，</p>
+<div>
+$$ (a) 表达了 a \indep b | \emptyset 和 d \indep e | (c, f) $$
+</div>
+<h4 id="没有有向图能同时表达这些条件">没有有向图能同时表达这些条件</h4>
+<p>边缘分布 <code>$ p(c, d, e, f) $</code> 是一个长为4的环构成的无向图，如图 <code>$ (b) $</code>。</p>
+<p>将一个长为4的环，转换为有向边构成DAG（有向无环图），则一定存在一个冲突子，如图 <code>$ (c) $</code>。</p>
+<h4 id="没有一个连通的马尔可夫网络能够表达无条件独立">没有一个连通的马尔可夫网络能够表达无条件独立</h4>
+<p>连通的马尔可夫网络无法表达：</p>
+<div>
+$$ a \indep b | \emptyset $$
+</div>
+<h2 id="因子图factor-graph">因子图（Factor Graph）</h2>
+<p>主要用于推理。</p>
+<div>
+$$ f(x_1, ..., x_n) = \prod_i \psi_i(X_i) $$
+</div>
+<p>当表示一个概率分布时：</p>
+<div>
+$$
+p(x_1, ..., x_n) = \frac{1}{Z}\prod_i \psi_i(X_i) $$
+</div>
+<p>归一化常数 <code>$ Z = \sum_X \prod_i \psi_i(X_i) $</code></p>
+<h3 id="图">图</h3>
+<p>方形节点表示 <code>$ \psi_i $</code></p>
+<p>圆形节点表示 <code>$ x_j $</code></p>
+<p>无向边连接因子 <code>$ \psi_i $</code> 和 变量 <code>$ x_j $</code></p>
+<p>对于一个条件概率</p>
+<div>
+$$ p(x_i | pa(x_i) $$
+</div>
+<p>的因子 <code>$ \psi(X_i) $</code>，我们使用由家长 <code>$ pa(x_i) $</code> 指向因子节点 <code>$ \psi(X_i) $</code>的有向边，和由因子节点指向孩子 <code>$ x_i $</code>的有向边表示。</p>
+<h3 id="保存更多信息">保存更多信息</h3>
+<p><img src="/images/braml/4_13_fg_more_info.png" alt="4_13_fg_more_info.png"></p>
+<p>这个马尔可夫网络有<strong>两种</strong>表示方式：</p>
+<div>
+$$ p(a, b, c) = \phi(a, b) \phi(a, c) \phi(b, c) = \phi(a, b, c) $$
+</div>
+<p>可见马尔可夫网络会丢掉团中因式的结构信息。</p>
+<p>但是因子图可以保留这些信息：</p>
+<p><img src="/images/braml/4_14_fg_more_info_2.png" alt="4_14_fg_more_info_2.png"></p>
+<div>
+$$
+图(a): p(a, b, c) = \phi (a, b, c) \\
+图(b): p(a, b, c) = \phi(a, b) \phi(a, c) \phi(b, c) 
+$$
+</div>
+<h3 id="有向因子图表示信念网络">有向因子图表示信念网络</h3>
+<p><img src="/images/braml/4_15_fg_bn.png" alt="4_15_fg_bn.png"></p>
+<h3 id="条件独立性">条件独立性</h3>
+<p>如果所有连接两个变量的路径被阻塞，则它们条件独立。</p>
+<p>一条路径被阻塞，当满足下列<strong>任一</strong>条件：</p>
+<ul>
+<li>路径上的一个变量在条件集合中；</li>
+<li>路径上的一个变量或因子，有两个入边是路径的一部分（冲突子），且变量、因子和变量及因子的后代都不在条件集合中。</li>
+</ul>
+<h2 id="概率图模型的表达能力">概率图模型的表达能力</h2>
+<h3 id="有向分布可以被表示成无向分布">有向分布可以被表示成无向分布</h3>
+<p>比如：</p>
+<div>
+$$ p(a|b)p(b|c)p(c) $$
+</div>
+<p>可以被因式化为：</p>
+<div>
+$$ \phi(a, b) \phi(b, c) $$
+</div>
+<div>
+$$ \phi(a, b) = p(a|b), \quad \phi(b, c) = p(b|c)p(c) $$
+</div>
+<h4 id="任意信念网络可以转化为马尔可夫网络">任意信念网络可以转化为马尔可夫网络</h4>
+<p>但会丢失独立性信息，还会包含额外的连接。</p>
+<p>例如，</p>
+<div>
+$$ p(c|a, b)p(a)p(b) $$
+</div>
+<p>的马尔可夫网络是一个团：</p>
+<div>
+$$ \phi(a, b, c) $$
+</div>
+<p>通过这个团，我们不能得出信念网络中可以表达出的独立关系： <code>$ a \indep b $</code>。</p>
+<h3 id="独立性映射i-mapindependence-map">独立性映射（I-Map：Independence Map）</h3>
+<p>一个图 <code>$ G $</code> 是一个给定概率分布 <code>$ P $</code> 的独立性映射，当：</p>
+<p>对于所有的不交集 <code>$ X, Y, Z $</code>，有</p>
+<div>
+$$ X \indep Y | Z_G \Rightarrow X \indep Y | Z_P $$
+</div>
+<h3 id="相关性映射d-mapdependence-map">相关性映射（D-Map：Dependence Map）</h3>
+<p>一个图 <code>$ G $</code> 是一个给定概率分布 <code>$ P $</code> 的相关性映射，当：</p>
+<p>对于所有的不交集 <code>$ X, Y, Z $</code>，有</p>
+<div>
+$$ X \dep Y | Z_G \Rightarrow X \dep Y | Z_P $$
+</div>
+<p>或</p>
+<div>
+$$ X \indep Y | Z_G \Leftarrow X \indep Y | Z_P $$
+</div>
+<h3 id="完美映射">完美映射</h3>
+<div>
+$$ X \indep Y | Z_G \Leftrightarrow X \indep Y | Z_P $$</div>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2017/11/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%89%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C/">贝叶斯推理与机器学习（三）信念网络</a></li>
+        
+            <li><a href="/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80/">贝叶斯推理与机器学习（二）图论基础</a></li>
+        
+            <li><a href="/2017/10/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E7%90%86%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%80%E6%A6%82%E7%8E%87%E6%8E%A8%E7%90%86%E5%9F%BA%E7%A1%80/">贝叶斯推理与机器学习（一）概率推理基础</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8D%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/">机器学习（十）神经网络反向传播算法</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/">机器学习（九）人工神经网络表示</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "2dc452eb83fa218251b51a342e36cf04",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

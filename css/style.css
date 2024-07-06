@@ -1,0 +1,124 @@
+.blog-header, .blog-post, .blog-pagination {
+  margin-bottom: 2rem;
+}
+
+/* Make sure the image size is reasonable. */
+.blog-post img {
+  max-width: 100%;
+}
+
+code.has-jax {
+  font: inherit;
+  font-size: 100%;
+  background: inherit;
+  border: inherit;
+  color: #515151;
+}
+
+th {
+  background: #eee;
+}
+
+td, th {
+  padding: 4px 6px;
+  border: solid 1px #ddd;
+}
+
+blockquote {
+  font-size: 1.2em;
+  font-style: italic;
+  padding: 8px 32px;
+  border-left: solid 6px #ddd;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+}
+
+h1 {
+  margin: 32px 0;
+}
+
+h2 {
+  margin: 24px 0;
+}
+
+h3 {
+  margin: 16px 0;
+}
+
+h4, h5, h6 {
+  margin: 8px 0;
+}
+
+/** initialize css counter */
+.blog-post {
+    counter-reset: h2
+}
+
+h2 {
+    counter-reset: h3
+}
+
+h3 {
+    counter-reset: h4
+}
+
+h4 {
+    counter-reset: h5
+}
+
+h5 {
+    counter-reset: h6
+}
+
+/** put counter result into headings */
+.blog-post > h2:before {
+    counter-increment: h2;
+    content: counter(h2) ". "
+}
+
+.blog-post > h3:before {
+    counter-increment: h3;
+    content: counter(h2) "." counter(h3) ". "
+}
+
+.blog-post > h4:before {
+    counter-increment: h4;
+    content: counter(h2) "." counter(h3) "." counter(h4) ". "
+}
+
+.blog-post > h5:before {
+    counter-increment: h5;
+    content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+}
+
+.blog-post > h6:before {
+    counter-increment: h6;
+    content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "
+}
+
+/** override the default style for focused headings */
+.blog-post>h3:before,
+.blog-post>h4:before,
+.blog-post>h5:before,
+.blog-post>h6:before {
+    color: inherit;
+    border: inherit;
+    border-radius: inherit;
+    position: inherit;
+    left:initial;
+    float: none;
+    top:initial;
+    font-size: inherit;
+    padding-left: inherit;
+    padding-right: inherit;
+    vertical-align: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+.blog-post > h4.related-header:before {
+    content: none;
+    counter-increment: none;
+}

@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="机器学习（九）人工神经网络表示" />
+<meta property="og:description" content="非线性预测 对一个拥有很多特征的复杂数据集进行线性回归是代价很高的。比如我们对50 * 50像素的黑白图分类，我们就拥有了2500个特征。如果我们" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/" />
+<meta property="article:published_time" content="2016-11-20T18:40:00+00:00" />
+<meta property="article:modified_time" content="2016-11-20T18:40:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习（九）人工神经网络表示"/>
+<meta name="twitter:description" content="非线性预测 对一个拥有很多特征的复杂数据集进行线性回归是代价很高的。比如我们对50 * 50像素的黑白图分类，我们就拥有了2500个特征。如果我们"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/">
+
+  <title>
+    
+    机器学习（九）人工神经网络表示 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B9%9D%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%A1%A8%E7%A4%BA/">机器学习（九）人工神经网络表示</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Nov 20, 2016
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+        <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="非线性预测">非线性预测</h2>
+<p>对一个拥有很多特征的复杂数据集进行线性回归是代价很高的。比如我们对50 * 50像素的黑白图分类，我们就拥有了2500个特征。如果我们还要包含所有二次特征，复杂度为<code>$ \mathcal{O}(n^2/2) $</code>，也就是说一共要有<code>$ 2500^2 / 2 = 3125000 $</code>个特征。这样计算的代价是高昂的。</p>
+<p>人工神经网络是对具有很多特征的复杂问题进行机器学习的一种方法。</p>
+<h2 id="生物神经元">生物神经元</h2>
+<p>人工神经网络是对生物神经网络的一种简化的模拟。那么，我们先从生物中的神经元入手，进而了解神经网络的工作方式。</p>
+<p><img src="/images/neural-networks/neuron.svg" alt="neuron"></p>
+<ol>
+<li>突触前（神经元）细胞的树突或细胞体接受刺激，产生兴奋或抑制。</li>
+<li>动作电位传到神经末梢，导致神经递质释放。</li>
+<li>使突触后（神经元）细胞的树突或细胞体接受刺激。</li>
+</ol>
+<h2 id="人工神经网络">人工神经网络</h2>
+<h3 id="结构">结构</h3>
+<p>兴奋和抑制可以分别对应1和0，用节点表示每一个神经元，神经元之间由带权轴突连接，每个节点的输入相当于树突或细胞体接受外部刺激，输出相当于轴突末梢传递信息。</p>
+<p><img src="/images/neural-networks/ann.png" alt="ann"></p>
+<p>人工神经网络中的神经元为分层构造：其中第一层为输入层，最后一层为输出层，其余中间各层为隐层。</p>
+<p>那么，人工神经网络是如何计算的呢？</p>
+<p>总的来说，输入层接受样本特征数据，隐层之间进行计算，输出层输出最终预测结果。</p>
+<p>而隐层之间的计算，也是一定程度上模仿了生物中的神经元。</p>
+<h3 id="计算描述">计算描述</h3>
+<p>我们现在要计算当前神经元的值，在当前神经元所在层的前一层，有很多个突触前神经元（当前神经元也是相对于他们的突触后神经元）。</p>
+<p><img src="/images/neural-networks/ann2.png" alt="ann2"></p>
+<p>对于前一层的每一个突触前神经元，都有一个输出值，作为当前神经元的输入值，经过轴突传递到当前神经元。当然，如果是第一层神经元，则直接从输入样本数据中接受刺激（对应图中的<code>$x_i$</code>）。</p>
+<p>轴突具有权值（对应图中的权值weights列：<code>$w_{ij}$</code>），对每一个输出值加权求和，得到该神经元的输入值。这个加权求和对应图中的transfer function（转移函数），但这个函数的名称并不明确，有人把它称作激活函数（activation function），不同的人可能有不同的叫法，这里仅供参考。</p>
+<p>得到了该神经元的值，就要判定该神经元是否激活兴奋。这对应于图中的activation function（激活函数），但也有人将这个函数叫做输出函数（output function），而把前面说的那一部分叫做激活函数（activation function），并把这两部分合称为转移函数（transfer function）。</p>
+<p>有几种函数可以作为激活函数：</p>
+<ul>
+<li>阶跃函数。这是最简单直接的形式，也是人工神经网络定义时一般采用的。</li>
+<li>逻辑函数。就是S型函数（Sigmoid函数），具有可无限微分的优势。</li>
+<li>斜坡函数</li>
+<li>高斯函数</li>
+<li>&hellip;</li>
+</ul>
+<p>可以注意到图中的threshold（阈值），<code>$\theta_j$</code>，即激活阈值。也就是说，仅当神经元的值大于这个阈值时，该神经元激活兴奋，输出1；否则无法激活，输出0。</p>
+<h3 id="数学表述">数学表述</h3>
+<p>简单一点，用符号语言描绘人工神经网络，大概就是这样：</p>
+<div>
+$$
+\begin{bmatrix}x_0 \newline x_1 \newline x_2 \newline \end{bmatrix}\rightarrow\begin{bmatrix}\ \ \ \newline \end{bmatrix}\rightarrow h_\theta(x)
+$$
+</div>
+<p>另外，我们约定几个符号标记并回忆一下逻辑函数（S型函数，Sigmoid函数）：</p>
+<div>
+$$
+\begin{align*}& a_i^{(j)} = \text{第$j$层的第$i$个节点（神经元）的“激活值”} \newline& \Theta^{(j)} = \text{映射第$j$层到第$j+1$层的权值矩阵}\end{align*}
+$$
+</div>
+<div>
+$$ g(z) = \frac{1}{1 + e^{-z}} $$
+</div>
+<h4 id="计算过程演示">计算过程演示</h4>
+<p>下面我们演示一下如何获得所有节点的激活值和最终的预测值。</p>
+<p>首先假设我们的神经网络总共由3层构成，也就是：</p>
+<div>
+$$
+\begin{bmatrix}x_0 \newline x_1 \newline x_2 \newline x_3\end{bmatrix}\rightarrow\begin{bmatrix}a_1^{(2)} \newline a_2^{(2)} \newline a_3^{(2)} \newline \end{bmatrix}\rightarrow h_\theta(x)
+$$
+</div>
+<p>其中，<code>$ x_0 $</code>为1，作为偏移值。</p>
+<p>然后，利用上面约定的符号，我们就可以写出所有的激活值和最终的预测值的表达式：</p>
+<div>
+$$
+\begin{align*}
+a_1^{(2)} = g(\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 + \Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3) \newline
+a_2^{(2)} = g(\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 + \Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3) \newline
+a_3^{(2)} = g(\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 + \Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3) \newline
+h_\Theta(x) = a_1^{(3)} = g(\Theta_{10}^{(2)}a_0^{(2)} + \Theta_{11}^{(2)}a_1^{(2)} + \Theta_{12}^{(2)}a_2^{(2)} + \Theta_{13}^{(2)}a_3^{(2)}) \newline
+\end{align*}
+$$
+</div>
+<p>可见，每一层都有权值矩阵：<code>$ \Theta^{(j)} $</code>。其维度可以按如下规则确定：</p>
+<div>
+$$
+如果神经网络在第j层有s_j个节点，在第j+1层有s_{j+1}个节点，那么\Theta^{(j)}的维度是s_{j+1} * (s_j + 1)。
+$$
+</div>
+<blockquote>
+<p>注意，之所以是<code>$ s_j + 1 $</code>，是因为输入中有一个偏移节点，这里即<code>$ x_0 $</code>。输出的节点中则没有。</p>
+</blockquote>
+<h3 id="向量化表示">向量化表示</h3>
+<p>为了便于向量化表示，首先引入<code>$ z_k^{(j)} $</code>：</p>
+<div>
+$$
+z_k^{(2)} = \Theta_{k,0}^{(1)}x_0 + \Theta_{k,1}^{(1)}x_1 + \cdots + \Theta_{k,n}^{(1)}x_n
+$$
+</div>
+<div>
+$$
+\begin{align*}a_1^{(2)} = g(z_1^{(2)}) \newline a_2^{(2)} = g(z_2^{(2)}) \newline a_3^{(2)} = g(z_3^{(2)}) \newline \end{align*}
+$$
+</div>
+<p>这样，可以向量化表示<code>$x$</code>和<code>$z^{j}$</code>：</p>
+<div>
+$$
+\begin{align*}x = \begin{bmatrix}x_0 \newline x_1 \newline\cdots \newline x_n\end{bmatrix} &z^{(j)} = \begin{bmatrix}z_1^{(j)} \newline z_2^{(j)} \newline\cdots \newline z_n^{(j)}\end{bmatrix}\end{align*}
+$$
+</div>
+<p>令<code>$a^{(1)}=x$</code>，则：</p>
+<div>
+$$
+z^{(j)} = \Theta^{(j-1)}a^{(j-1)}
+$$
+</div>
+<h4 id="向量化计算过程">向量化计算过程</h4>
+<p>从第一层开始：</p>
+<div>
+$$
+z^{(j)} = \Theta^{(j-1)}a^{(j-1)}
+$$
+</div>
+<p>其中<code>$\Theta^{(j-1)}$</code>维度为<code>$s_j * (n + 1)$</code>（<code>$s_j$</code>为第<code>$j$</code>层节点数），<code>$a^{(j-1)}$</code>是高为<code>$(n+1)$</code>的列向量。他们相乘得到一个高为<code>$s_j$</code>的列向量，即<code>$z^{(j)}$</code>。</p>
+<p>然后，我们可以通过激活函数（这里用S型函数）得到激活值：</p>
+<div>
+$$
+a^{(j)} = g(z^{(j)})
+$$
+</div>
+<blockquote>
+<p>注意，激活函数将对向量<code>$z^{(j)}$</code>中每一个元素进行计算。即：
+<code>$ a_i^{(j)} = g(z_i^{(j)}) $</code></p>
+</blockquote>
+<p>为了计算下一层节点的激活值，为当前层增加一个偏移量<code>$a_0^{(j)}=1$</code>。</p>
+<p>重复上述过程，直到计算最后的输出层。</p>
+<p>计算输出层前，还是一样地计算输出层前一层的输出值：</p>
+<div>
+$$
+z^{(j+1)} = \Theta^{(j)}a^{(j)}
+$$
+</div>
+<p>然后计算输出层节点的激活值，也就是最终的预测值：</p>
+<div>
+$$
+h_\Theta(x) = a^{(j+1)} = g(z^{(j+1)})
+$$
+</div>
+<p>计算过程就是这样的，可以通用于多于3层的神经网络。</p>
+<h3 id="示例">示例</h3>
+<h4 id="逻辑运算函数">逻辑运算函数</h4>
+<p>人工神经网络可以用于表达一些逻辑中的常见函数：</p>
+<div>
+$$
+\begin{align*}AND:\newline\Theta^{(1)} &=\begin{bmatrix}-30 & 20 & 20\end{bmatrix} \newline NOR:\newline\Theta^{(1)} &= \begin{bmatrix}10 & -20 & -20\end{bmatrix} \newline OR:\newline\Theta^{(1)} &= \begin{bmatrix}-10 & 20 & 20\end{bmatrix} \newline\end{align*}
+$$
+</div>
+<p>其中<code>$\Theta^{(1)}$</code>为对应的权值矩阵。读者可以自行按照神经网络计算方法绘制逻辑真值表，看一看是不是对应的逻辑运算。</p>
+<h4 id="多类分类问题">多类分类问题</h4>
+<p>上面举的例子中，输出层都只有一个节点，也就是最终的预测值<code>$ h_{\theta} $</code>。如果要对多类分类，可以让预测值用向量表示。此时神经网络就是这个样子的：</p>
+<div>
+$$
+\begin{align*}\begin{bmatrix}x_0 \newline x_1 \newline x_2 \newline\cdots \newline x_n\end{bmatrix} \rightarrow\begin{bmatrix}a_0^{(2)} \newline a_1^{(2)} \newline a_2^{(2)} \newline\cdots\end{bmatrix} \rightarrow\begin{bmatrix}a_0^{(3)} \newline a_1^{(3)} \newline a_2^{(3)} \newline\cdots\end{bmatrix} \rightarrow \cdots \rightarrow\begin{bmatrix}h_\Theta(x)_1 \newline h_\Theta(x)_2 \newline h_\Theta(x)_3 \newline h_\Theta(x)_4 \newline\end{bmatrix} \rightarrow\end{align*}
+$$
+</div>
+<p>最终的预测结果的形式为：</p>
+<div>
+$$
+h_\Theta(x) =\begin{bmatrix}0 \newline 0 \newline 1 \newline 0 \newline\end{bmatrix}
+$$
+</div>
+<p>我们可以对不同的向量表示不同的类别，从而做出多类分类预测。</p>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AB%E5%A4%9A%E7%B1%BB%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E6%AD%A3%E8%A7%84%E5%8C%96/">机器学习（八）多类分类问题和正规化</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%83%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/">机器学习（七）逻辑回归与梯度下降</a></li>
+        
+            <li><a href="/2016/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%AD%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0/">机器学习（六）分类问题和逻辑函数</a></li>
+        
+            <li><a href="/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/">机器学习（五）正规方程、多项式回归</a></li>
+        
+            <li><a href="/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96/">机器学习（四）特征归一化</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "689e0ee7f877ebe83caef07830f3122a",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>学习笔记 on 旭旭</title>
+    <link>https://xuhongxu.com/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+    <description>Recent content in 学习笔记 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sun, 16 Sep 2018 20:27:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>动态链接库的符号重名问题</title>
+      <link>https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 16 Sep 2018 20:27:20 +0800</pubDate>
+      
+      <guid>https://xuhongxu.com/2018/09/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%90%8D%E9%97%AE%E9%A2%98/</guid>
+      <description>背景 工作时，同事遇到一个编译和链接相关的问题，我跟着一起研究了一下。很有意思的问题，我也做了一些实验，在此记录。 问题描述 问题源自CNTK相关</description>
+    </item>
+    
+    <item>
+      <title>计算机图形学实验一：配置Mac OS X的OpenGL开发环境</title>
+      <link>https://xuhongxu.com/2016/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%AE%9E%E9%AA%8C%E4%B8%80%E9%85%8D%E7%BD%AEmac-os-x%E7%9A%84opengl%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Thu, 17 Mar 2016 10:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%AE%9E%E9%AA%8C%E4%B8%80%E9%85%8D%E7%BD%AEmac-os-x%E7%9A%84opengl%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</guid>
+      <description>依赖环境 Mac OS X Yosemite (10.10.5) CMake GLFW3 后续需要环境： GLEW GLM 助教介绍的GLUT库很久没有维护了，在Mac OS X 10.9中已经强烈警告GLUT已被废弃。因此，推荐使</description>
+    </item>
+    
+  </channel>
+</rss>

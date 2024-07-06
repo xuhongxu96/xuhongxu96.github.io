@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="RValue-Reference, Move Constructor and Perfect Forwarding" />
+<meta property="og:description" content="Background I&rsquo;ve thought I was good at C&#43;&#43;, however, after my friend asking me about rvalue, I realized that I knew nothing about the strength of C&#43;&#43;.
+In this article, I won&rsquo;t introduce either rvalue or move constructor. Instead, I will describe and dig into his question and try to explain what benefits the move constructor provides.
+Question For std::map&lt;Key, T, Compare, Allocator&gt;::insert, there are two overloadings:
+  since C&#43;&#43;11" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/" />
+<meta property="article:published_time" content="2019-06-28T21:56:00+00:00" />
+<meta property="article:modified_time" content="2019-06-28T21:56:00+00:00" /><meta property="og:site_name" content="Xu Xu" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="RValue-Reference, Move Constructor and Perfect Forwarding"/>
+<meta name="twitter:description" content="Background I&rsquo;ve thought I was good at C&#43;&#43;, however, after my friend asking me about rvalue, I realized that I knew nothing about the strength of C&#43;&#43;.
+In this article, I won&rsquo;t introduce either rvalue or move constructor. Instead, I will describe and dig into his question and try to explain what benefits the move constructor provides.
+Question For std::map&lt;Key, T, Compare, Allocator&gt;::insert, there are two overloadings:
+  since C&#43;&#43;11"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/">
+
+  <title>
+    
+    RValue-Reference, Move Constructor and Perfect Forwarding | Xu Xu
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/en">
+            Xu Xu
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/en">Home</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/en/about/">About</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Language
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/">RValue-Reference, Move Constructor and Perfect Forwarding</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Jun 28, 2019
+    
+    
+        by <span rel="author">Hongxu Xu</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>Tags:</strong>
+    
+        <a class="badge badge-primary" href="/en/tags/cpp">cpp</a>
+    
+        <a class="badge badge-primary" href="/en/tags/rvalue">rvalue</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>Categories:</strong>
+    
+        <a class="badge badge-primary" href="/en/categories/cpp">cpp</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="background">Background</h2>
+<p>I&rsquo;ve thought I was good at C++, however, after my friend asking me about rvalue, I realized that I knew nothing about the strength of C++.</p>
+<p>In this article, I won&rsquo;t introduce either rvalue or move constructor. Instead, I will describe and dig into his question and try to explain what benefits the move constructor provides.</p>
+<h2 id="question">Question</h2>
+<p>For <a href="https://en.cppreference.com/w/cpp/container/map/insert">std::map&lt;Key, T, Compare, Allocator&gt;::insert</a>, there are two overloadings:</p>
+<ol>
+<li>
+<p>since C++11</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">P</span><span style="color:#f92672">&gt;</span>
+std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(P<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+<li>
+<p>since C++17</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(value_type<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+</ol>
+<p>So, what&rsquo;s the difference? Why to add the second overloading into C++17?</p>
+<h2 id="you-should-know">You Should Know</h2>
+<ol>
+<li>
+<p><code>std::move</code> is just a type cast to rvalue and does nothing else.</p>
+</li>
+<li>
+<p>rvalue reference to rvalue reference collapses to rvalue reference, all other combinations form lvalue reference:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;</span>  lref;
+<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> rref;
+<span style="color:#66d9ef">int</span> n;
+lref<span style="color:#f92672">&amp;</span>  r1 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r1 is int&amp;
+</span><span style="color:#75715e"></span>lref<span style="color:#f92672">&amp;&amp;</span> r2 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r2 is int&amp;
+</span><span style="color:#75715e"></span>rref<span style="color:#f92672">&amp;</span>  r3 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r3 is int&amp;
+</span><span style="color:#75715e"></span>rref<span style="color:#f92672">&amp;&amp;</span> r4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// type of r4 is int&amp;&amp;
+</span></code></pre></div></li>
+<li>
+<p>rvalue reference variables are lvalues when used in expressions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+f(x);            <span style="color:#75715e">// calls f(int&amp; x)
+</span><span style="color:#75715e"></span>f(std<span style="color:#f92672">::</span>move(x)); <span style="color:#75715e">// calls f(int&amp;&amp; x)
+</span></code></pre></div></li>
+<li>
+<p>Forwarding references are a special kind of references that preserve the value category of a function argument.<br>
+<strong>E.g.</strong> Function parameter of a function template declared as rvalue reference to cv-unqualified type template parameter of that same function template:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span><span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">int</span> f(T<span style="color:#f92672">&amp;&amp;</span> x) {                    <span style="color:#75715e">// x is a forwarding reference
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">g</span>(std<span style="color:#f92672">::</span>forward<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(x)); <span style="color:#75715e">// and so can be forwarded
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">int</span> i;
+    f(i); <span style="color:#75715e">// argument is lvalue, calls f&lt;int&amp;&gt;(int&amp;), std::forward&lt;int&amp;&gt;(x) is lvalue
+</span><span style="color:#75715e"></span>    f(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// argument is rvalue, calls f&lt;int&gt;(int&amp;&amp;), std::forward&lt;int&gt;(x) is rvalue
+</span><span style="color:#75715e"></span>}
+</code></pre></div></li>
+</ol>
+<h2 id="experiment-1">Experiment 1</h2>
+<p>The best way to expain the purpose of the above two methods is using them.</p>
+<p>Because the <code>map::insert</code> is a little more complicated, let me write a simple program first:</p>
+<blockquote>
+<p>You can just skim thru the source code now.<br>
+I will explain it in detail later.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;list&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">A</span>
+{
+    string str;
+
+    A(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a) <span style="color:#f92672">:</span> str(a.str)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;copy A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(A<span style="color:#f92672">&amp;&amp;</span> a) <span style="color:#66d9ef">noexcept</span> <span style="color:#f92672">:</span> str(move(a.str))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;move A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(<span style="color:#66d9ef">const</span> string<span style="color:#f92672">&amp;</span> str) <span style="color:#f92672">:</span> str(str)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (const string&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(string<span style="color:#f92672">&amp;&amp;</span> str) <span style="color:#f92672">:</span> str(move(str))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (string&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(<span style="color:#66d9ef">int</span> n) <span style="color:#f92672">:</span> str(to_string(n))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (int)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> rhs)
+    {
+        str <span style="color:#f92672">=</span> rhs.str;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;copy assign A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+    }
+
+    A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(A<span style="color:#f92672">&amp;&amp;</span> rhs) <span style="color:#66d9ef">noexcept</span>
+    {
+        str <span style="color:#f92672">=</span> move(rhs.str);
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;move assign A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+    }
+};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Container</span>
+{
+    list<span style="color:#f92672">&lt;</span>A<span style="color:#f92672">&gt;</span> aList;
+
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(A&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.push_back(move(a));
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(const A&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.push_back(a);
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+    <span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(U&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+};
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+    Container c;
+
+    <span style="color:#75715e">// pass in `A`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// pass in `A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   constructed from `string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     constructed from `const char *`
+</span><span style="color:#75715e"></span>        c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+
+        <span style="color:#75715e">// pass in `A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   constructed from `string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     constructed from `const char *`
+</span><span style="color:#75715e"></span>        c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+
+        <span style="color:#75715e">// pass in `A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   constructed from `string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     constructed from `const char *`
+</span><span style="color:#75715e"></span>        c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+
+        <span style="color:#75715e">// pass in `A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   constructed from `string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;4&#34;</span>);
+            c.Add(A(x));
+        }
+
+        <span style="color:#75715e">// pass in `A` lvalue
+</span><span style="color:#75715e"></span>        {
+            A a(<span style="color:#e6db74">&#34;5&#34;</span>);
+            c.Add(a);
+        }
+    }
+
+    <span style="color:#75715e">// pass in `string`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// pass in `string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   constructed from `const char *`
+</span><span style="color:#75715e"></span>        c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+
+        <span style="color:#75715e">// pass in `string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   moved from`string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;7&#34;</span>);
+            c.Add(move(x));
+        }
+
+        <span style="color:#75715e">// pass in `string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;8&#34;</span>);
+            c.Add(x);
+        }
+    }
+
+    <span style="color:#75715e">// pass in `int`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// pass in `int` rvalue
+</span><span style="color:#75715e"></span>        c.Add(<span style="color:#ae81ff">9</span>);
+
+        <span style="color:#75715e">// pass in `int` lvalue
+</span><span style="color:#75715e"></span>        {
+            <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+            c.Add(n);
+        }
+    }
+
+    <span style="color:#75715e">// pass in `const char *`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// This is only applicable to Add(T&amp;&amp;).
+</span><span style="color:#75715e"></span>        c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+    }
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><h3 id="explore-the-program">Explore the Program</h3>
+<p>The program is simple but long. Let&rsquo;s explore it together:</p>
+<h4 id="struct-a">Struct <code>A</code></h4>
+<p><code>A</code> has <code>copy constructor</code>, <code>move constructor</code>, <code>copy assignment operator</code>, <code>move assignment operator</code> and 3 <code>conversion constructor</code>s.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">A(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a);
+A(A<span style="color:#f92672">&amp;&amp;</span> a) <span style="color:#66d9ef">noexcept</span>;
+A(<span style="color:#66d9ef">const</span> string<span style="color:#f92672">&amp;</span> str);
+A(string<span style="color:#f92672">&amp;&amp;</span> str);
+A(<span style="color:#66d9ef">int</span> n);
+
+A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> rhs);
+A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(A<span style="color:#f92672">&amp;&amp;</span> rhs) <span style="color:#66d9ef">noexcept</span>;
+</code></pre></div><h4 id="struct-container-list-wrapper">Struct <code>Container</code> (<code>list</code> wrapper)</h4>
+<p>In <code>Container</code>, there is a <code>list&lt;A&gt;</code> member and 3 overloaded methods to add an <code>A</code> to that list.</p>
+<p>The following code is the simplified implementation of <code>Container</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">list<span style="color:#f92672">&lt;</span>A<span style="color:#f92672">&gt;</span> aList;
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+</code></pre></div><h4 id="main">Main</h4>
+<p>In <code>main</code> function, I call different <code>Add</code> methods with different <code>A</code>s constructed by different constructors.</p>
+<p>I will analyze and explain them one by one in the following section.</p>
+<h2 id="output">Output</h2>
+<p>Before the analysis, let me show you the results for reference:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+1
+---
+init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+2
+---
+init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+3
+---
+init A (const string&amp;)
+Add(A&amp;&amp;)
+move A
+4
+---
+init A (string&amp;&amp;)
+Add(U&amp;&amp;)
+copy A
+5
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+6
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+7
+---
+Add(U&amp;&amp;)
+init A (const string&amp;)
+8
+---
+Add(U&amp;&amp;)
+init A (int)
+9
+---
+Add(U&amp;&amp;)
+init A (int)
+10
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+11
+---
+</code></pre></div><h2 id="analysis">Analysis</h2>
+<h3 id="case-1">Case 1</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>Since <code>&quot;1&quot;</code> is an <code>string</code> rvalue, and <code>A(...)</code> is an rvalue too, we see that <code>A</code> was constructed by <code>string&amp;&amp;</code> and then <code>Add(A&amp;&amp;)</code> was called.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+</code></pre></div><p>In <code>Add(A&amp;&amp;)</code>, the <code>A</code> rvalue was moved to <code>aList</code>.</p>
+<h3 id="case-2">Case 2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>Actually, it&rsquo;s totally the same as Case 1 except list initialization is used here.</p>
+<p>The list initialization here produces an <strong>rvalue</strong>, so it will match the <strong>move</strong> constructor with a parameter accepting <code>const char *</code>. Because <code>string</code> could be converted from <code>const char *</code> implicitly, the <code>A(string&amp;&amp;)</code> constructor was called.</p>
+<p>What happened then (<code>move A</code>) are exactly the same as Case 1.</p>
+<h3 id="case-3">Case 3</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>This is really the same as Case 1 or 2.</p>
+<p>The inner list initialization constructed a <code>string</code> rvalue and the outer list initialization constructed an <code>A</code> rvalue.</p>
+<h3 id="case-4">Case 4</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;4&#34;</span>);
+c.Add(A(x));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (const string&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>The only difference between this and Case 1-3, is that a <code>string</code> lvalue was passed in the constructor of <code>A</code>.</p>
+<p>So, the constructor <code>A(const string&amp;)</code> was called instead. And the following calls remained the same.</p>
+<h3 id="case-5">Case 5</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` lvalue
+</span><span style="color:#75715e"></span>A <span style="color:#a6e22e">a</span>(<span style="color:#e6db74">&#34;5&#34;</span>);
+c.Add(a);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(U&amp;&amp;)
+copy A
+</code></pre></div><p>In this case, an <code>A</code> lvalue was passed in <code>Add</code>. So, it matched the <code>Add(U&amp;&amp;)</code> where <code>U = A&amp;</code>.</p>
+<p>You may wonder what the <code>Add(A&amp; &amp;&amp;)</code> is. Remember what is <code>forwarding references</code> in <a href="#you-should-know">You Should Know</a> (the 4th tips).</p>
+<p>Why didn&rsquo;t it match <code>Add(const A&amp;)</code>?</p>
+<p>Why should it? It requires another const conversion between <code>A&amp;</code> and <code>const A&amp;</code>. But the template one is the exact match when <code>U = A&amp;</code>.</p>
+<p>You can try to add <code>const</code> before <code>A a(&quot;5&quot;)</code> and see what happened.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = A&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p><code>emplace</code> will directly forward the arguments to construct the object on the memory location where it want it to be.</p>
+<p>As <code>v</code> is <code>A&amp;</code>, <code>emplace_back</code> will call the copy constructor of <code>A</code> to construct an A in place.</p>
+<h3 id="case-6">Case 6</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>Obviously, <code>U = string</code> here.</p>
+<p>So, before calling <code>Add</code>, the <code>A</code> doesn&rsquo;t need to be constructed.</p>
+<p>Inside <code>Add</code>, <code>list&lt;A&gt;::emplace_back</code> was called, which forwarded the arguments directly to the constructor of <code>A</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = string, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(string<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(move(v));
+}
+</code></pre></div><p>Now that <code>U = string</code>, <code>v</code> is a <code>string</code> rvalue and <code>A</code> was constructed by <code>v</code>, thus the constructor <code>A(string&amp;&amp;)</code> was called.</p>
+<p>As you can see, no <code>move</code> or <code>copy</code> after <code>A</code> was constructed. This is because <code>emplace</code> will directly forward the arguments to construct the object on the memory location where it want it to be. As it is in place, no additional <code>move</code> or <code>copy</code> needed.</p>
+<p>This is different with Case 5 because Case 5 has lvalue passed in.</p>
+<h3 id="case-7">Case 7</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `string` rvalue moved from`string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;7&#34;</span>);
+c.Add(move(x));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>This is exactly the same as Case 6 because we <code>move</code>d the <code>string</code> lvalue to rvalue.</p>
+<h3 id="case-8">Case 8</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;8&#34;</span>);
+c.Add(x);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (const string&amp;)
+</code></pre></div><p><code>U = string&amp;</code> here. So, <code>A</code> wasn&rsquo;t needed before calling <code>Add</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = string&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(string<span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p>Inside <code>Add</code>, an <code>A</code> will be constructed in place by <code>emplace_back</code> a <code>string</code> lvalue. So, <code>A(const string&amp;)</code> constructor was called.</p>
+<p>And no further operator either.</p>
+<h3 id="case-9">Case 9</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `int` rvalue
+</span><span style="color:#75715e"></span>c.Add(<span style="color:#ae81ff">9</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (int)
+</code></pre></div><p>In this case, <code>U = int</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = int, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(move(v));
+}
+</code></pre></div><p>Since <code>A</code> has only one constructor accepting <code>int&amp;&amp;</code>, <code>A(int)</code> would be called then.</p>
+<h3 id="case-10">Case 10</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `int` lvalue
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+c.Add(n);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (int)
+</code></pre></div><p>The only difference is that the passed in <code>int</code> is lvalue here.</p>
+<p>So, <code>U = int&amp;</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = int&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p>However, <code>A</code> has only one constructor accepting <code>int&amp;</code>, <code>A(int)</code> would be called.</p>
+<h3 id="case-11">Case 11</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `const char *`
+</span><span style="color:#75715e"></span>c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>In this case, <code>U = const char &amp;[3]</code> which is basically the same as <code>const char *&amp;</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = const char *&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p>The <code>const char *&amp; v</code> was implicityly converted to <code>string</code> rvalue while being forwarded by <code>emplace_back</code>. So, <code>A(string&amp;&amp;)</code> was called.</p>
+<h2 id="experiment-2">Experiment 2</h2>
+<p>The above experimentation and analysis explain how the different constructors and <code>Add</code> methods behave. But now we want to know why we need them.</p>
+<p>In this experiment, I will remove one <code>Add</code> method and see what will happen.</p>
+<h3 id="remove-addu">Remove <code>Add(U&amp;&amp;)</code></h3>
+<p>I commented the template <code>Add</code> method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#75715e">/*
+</span><span style="color:#75715e">template &lt;class U, class = enable_if_t&lt;is_constructible_v&lt;A, U&gt;&gt;&gt;
+</span><span style="color:#75715e">void Add(U&amp;&amp; v)
+</span><span style="color:#75715e">{
+</span><span style="color:#75715e">    aList.emplace_back(forward&lt;U&gt;(v));
+</span><span style="color:#75715e">}
+</span><span style="color:#75715e">*/</span>
+</code></pre></div><p>I found that I cannot even compile the program. Let&rsquo;s solve it first.</p>
+<p>The error comes from:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+</code></pre></div><p>Now, it couldn&rsquo;t find a proper overloading to call, because <code>A</code> couldn&rsquo;t be constructed directly from <code>const char *</code>.</p>
+<p>After removing this case, all other cases could be compiled successfully.</p>
+<p>Let&rsquo;s see what changed.</p>
+<h4 id="case-5-changes">Case 5 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-5.png" alt="change-1-case-5"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` lvalue
+</span><span style="color:#75715e"></span>A <span style="color:#a6e22e">a</span>(<span style="color:#e6db74">&#34;5&#34;</span>);
+c.Add(a);
+</code></pre></div><p>Because no template <code>Add</code> now, it called <code>Add(const A&amp;)</code> instead. No performance difference here.</p>
+<h4 id="case-6-changes">Case 6 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-6.png" alt="change-1-case-6"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+</code></pre></div><p>No <code>Add</code> accepts <code>string</code>, so, <code>Add(A&amp;&amp;)</code> was called. And before that, <code>string</code> rvalue should be converted to <code>A</code> rvalue.</p>
+<p>You see <code>A(string&amp;&amp;)</code> is the first call and <code>Add(A&amp;&amp;)</code> is the next. And at the end, <code>A</code> should be moved to <code>aList</code>, which has overhead.</p>
+<p>You may ask why not use <code>emplace_back</code> here to remove the overhead.</p>
+<p>You can use <code>emplace</code>, but the overhead is still there, because <code>emplace</code> would just call the move constructor of <code>A</code>. It&rsquo;s different from constructing <code>A</code> by a <code>string</code> rvalue. Here, we already have an <code>A</code>.</p>
+<h4 id="case-7-10-changes">Case 7-10 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-7-10.png" alt="change-1-case-7-10"></p>
+<p>In these cases, the construction of <code>A</code> was put in advance, just as Case 6. Though, they use different constructors to construct the <code>A</code> rvalue implicitly.</p>
+<p>After that, the <code>A</code> rvalue was passed into <code>Add(A&amp;&amp;)</code>, and all following things become same as Case 6.</p>
+<h4 id="summary-for-exp-2">Summary for Exp 2</h4>
+<p>As you can see, without the template <code>Add</code> method, we cannot make use of <code>emplace</code>, which could save some memory move or copy overhead for us.</p>
+<p>OK now, what&rsquo;s the use of <code>Add(A&amp;&amp;)</code>? Could it be replaced by template <code>Add</code>?</p>
+<p>Let&rsquo;s try again.</p>
+<h2 id="experiment-3">Experiment 3</h2>
+<h3 id="remove-adda">Remove <code>Add(A&amp;&amp;)</code></h3>
+<p>I commented the <code>Add(A&amp;&amp;)</code> method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">/*
+</span><span style="color:#75715e">void Add(A&amp;&amp; a)
+</span><span style="color:#75715e">{
+</span><span style="color:#75715e">    aList.push_back(move(a));
+</span><span style="color:#75715e">}
+</span><span style="color:#75715e">*/</span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+</code></pre></div><p>Let&rsquo;s see what changed.</p>
+<h4 id="case-14-changes">Case 1,4 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-2-case-1.png" alt="change-2-case-1"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+</code></pre></div><p><img src="/images/cpp/rvalue/change-2-case-4.png" alt="change-2-case-4"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;4&#34;</span>);
+c.Add(A(x));
+</code></pre></div><p>Because no direct <code>Add(A&amp;&amp;)</code> to match, it will match the template one, where <code>U = A</code>. Nothing else changed.</p>
+<h4 id="case-2-3-changes">Case 2-3 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-2-case-2-3.png" alt="change-2-case-2-3"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// pass in `A` rvalue constructed from `string` rvalue constructed from `const char *`
+</span><span style="color:#75715e"></span>c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+</code></pre></div><p>Because list initialization needs to know the certain type, which template <code>Add</code> cannot provide, the <code>Add(const A&amp;)</code> was called instead.</p>
+<p>Consequently, the previous <code>move</code> became <code>copy</code>, which added overhead.</p>
+<h4 id="summary-for-exp-3">Summary for Exp 3</h4>
+<p><code>Add(A&amp;&amp;)</code> is useful when you use list initialization without type hint. The compiler have to match the type to method parameter list. But the template method cannot provide a certain type.</p>
+<p>If you remove both <code>Add(A&amp;&amp;)</code> and <code>Add(const A&amp;)</code>, Case 2 and 3 won&rsquo;t be compiled.</p>
+<h2 id="back-to-the-question">Back to the Question</h2>
+<ol>
+<li>
+<p>since C++11</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">P</span><span style="color:#f92672">&gt;</span>
+std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(P<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+<li>
+<p>since C++17</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(value_type<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+</ol>
+<p>First, we should know that <code>value_type</code> in <code>map&lt;Key, T&gt;</code> is <code>pair&lt;const Key, T&gt;</code>. And there are many constructors for <code>pair</code>.</p>
+<p>So, providing both of these two methods will help to avoid overheads by enabling <code>emplace</code> and using <code>move</code> instead of <code>copy</code> as much as possible.</p>
+<h3 id="comparison-between-gcc-71-and-gcc-91">Comparison between gcc 7.1 and gcc 9.1</h3>
+<blockquote>
+<p>Please zoom in the web page or right-click the image to open it in new tab.</p>
+<p>Please ignore the compiler options <code>--std=c++14</code>. It seems no use to determine whether <code>map::insert(value_type&amp;&amp;)</code> exists or not.</p>
+</blockquote>
+<p><img src="/images/cpp/rvalue/map-gcc-7.png" alt="map-gcc-7">
+<img src="/images/cpp/rvalue/map-gcc-9.png" alt="map-gcc-9"></p>
+<h2 id="another-question">Another Question</h2>
+<p>I&rsquo;m confused about the meaningness of <code>Add(const A&amp;)</code> now.</p>
+<p>As you can see, in experiment 1, it wasn&rsquo;t used at all.</p>
+<p>The only way to call it is to pass in exactly <code>const A</code> lvalue. But what&rsquo;s the purpose to deal with const lvalue separately?</p>
+<p><code>map</code> also provides a method:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(<span style="color:#66d9ef">const</span> value_type<span style="color:#f92672">&amp;</span> value);
+</code></pre></div><p>Is this neccessary?</p>
+
+
+    
+      <h4>Translations</h4>
+      <ul>
+        
+        <li>
+          <a href="/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">zh-cn: 右值引用、构造函数和完美转发</a>
+        </li>
+        
+      </ul>
+    
+
+    
+
+    <h4 class="related-header">See also</h4>
+    <ul>
+        
+            <li><a href="/en/2019/05/c-virtual-table-explained-thru-assemblies/">C&#43;&#43; Virtual Table - Explained thru Assemblies</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/en/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/">RValue-Reference, Move Constructor and Perfect Forwarding</a>
+        </li>
+        
+        <li>
+            <a href="/en/2019/05/c-virtual-table-explained-thru-assemblies/">C++ Virtual Table - Explained thru Assemblies</a>
+        </li>
+        
+        <li>
+            <a href="/en/2018/07/my-new-life/">My New Life</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>Categories</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/en/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/en/categories/life">life</a>
+            
+        </p>
+        
+    
+        
+        <h4>Tags</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/en/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/en/tags/jottings">jottings</a>
+            
+            <a class="badge badge-primary" href="/en/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/en/tags/virtual-table">virtual-table</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">Back to top</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "41253ba6deeb302e44d9f9b398f2125d",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

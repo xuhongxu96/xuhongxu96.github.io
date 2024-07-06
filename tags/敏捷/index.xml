@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>敏捷 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E6%95%8F%E6%8D%B7/</link>
+    <description>Recent content in 敏捷 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Wed, 27 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E6%95%8F%E6%8D%B7/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>读《修改软件的艺术》</title>
+      <link>https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/</link>
+      <pubDate>Wed, 27 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/</guid>
+      <description>最近工作中又面临特别令人纠结痛苦的事儿——明明是自己新设计的程序架构，好多优势都吹出去了，现在又觉得有很多设计失误，想要大幅度重构，以至于像</description>
+    </item>
+    
+  </channel>
+</rss>

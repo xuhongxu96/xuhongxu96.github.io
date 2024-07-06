@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rvalue on Xu Xu</title>
+    <link>https://xuhongxu.com/en/tags/rvalue/</link>
+    <description>Recent content in rvalue on Xu Xu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 28 Jun 2019 21:56:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/en/tags/rvalue/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RValue-Reference, Move Constructor and Perfect Forwarding</title>
+      <link>https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/</link>
+      <pubDate>Fri, 28 Jun 2019 21:56:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/</guid>
+      <description>Background I&amp;rsquo;ve thought I was good at C++, however, after my friend asking me about rvalue, I realized that I knew nothing about the strength of C++.
+In this article, I won&amp;rsquo;t introduce either rvalue or move constructor. Instead, I will describe and dig into his question and try to explain what benefits the move constructor provides.
+Question For std::map&amp;lt;Key, T, Compare, Allocator&amp;gt;::insert, there are two overloadings:
+  since C++11</description>
+    </item>
+    
+  </channel>
+</rss>

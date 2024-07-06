@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>多项式回归 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/</link>
+    <description>Recent content in 多项式回归 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Thu, 27 Oct 2016 18:46:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（五）正规方程、多项式回归</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/</link>
+      <pubDate>Thu, 27 Oct 2016 18:46:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%94%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92/</guid>
+      <description>正规方程 我们已经知道了如何利用梯度下降法求解线性回归方程的最佳参数，现在我们介绍一种更直接的方法——正规方程法。 正规方程 $$ \theta = (X^{T}X)^{-1}X^{T}\vec{y} $$ 推导与解释</description>
+    </item>
+    
+  </channel>
+</rss>

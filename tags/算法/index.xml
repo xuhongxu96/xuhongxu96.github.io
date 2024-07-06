@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>算法 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E7%AE%97%E6%B3%95/</link>
+    <description>Recent content in 算法 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>读《编程原本》</title>
+      <link>https://xuhongxu.com/2020/05/%E8%AF%BB%E7%BC%96%E7%A8%8B%E5%8E%9F%E6%9C%AC/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2020/05/%E8%AF%BB%E7%BC%96%E7%A8%8B%E5%8E%9F%E6%9C%AC/</guid>
+      <description>这本书，我在北师大图书馆和它有过一面之缘。当时随意翻了几页就被吸引到了，然而毕竟是讲算法相关的东西，上学的时候耐心不足，没能下定决心借去读。</description>
+    </item>
+    
+  </channel>
+</rss>

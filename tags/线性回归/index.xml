@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>线性回归 on 旭旭</title>
+    <link>https://xuhongxu.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</link>
+    <description>Recent content in 线性回归 on 旭旭</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Hongxu Xu © 2020 苏ICP备2021014763号-1</copyright>
+    <lastBuildDate>Sun, 16 Oct 2016 14:13:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://xuhongxu.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习（二）线性回归</title>
+      <link>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</link>
+      <pubDate>Sun, 16 Oct 2016 14:13:00 +0000</pubDate>
+      
+      <guid>https://xuhongxu.com/2016/10/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</guid>
+      <description>简述 线性回归，顾名思义，是用一条直线来拟合数据的分布情况。当然啦，前面说过回归方法用于解决连续性的问题，直线所拟合的也必然是一个连续函数。 下</description>
+    </item>
+    
+  </channel>
+</rss>

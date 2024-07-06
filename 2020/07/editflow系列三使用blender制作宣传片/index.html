@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="editflow系列（三）：使用Blender制作宣传片" />
+<meta property="og:description" content="严格来说，这篇不是开发笔记。 最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/" />
+<meta property="article:published_time" content="2020-07-31T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-07-31T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="editflow系列（三）：使用Blender制作宣传片"/>
+<meta name="twitter:description" content="严格来说，这篇不是开发笔记。 最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">
+
+  <title>
+    
+    editflow系列（三）：使用Blender制作宣传片 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Jul 31, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/react">React</a>
+    
+        <a class="badge badge-primary" href="/tags/hooks">Hooks</a>
+    
+        <a class="badge badge-primary" href="/tags/typescript">TypeScript</a>
+    
+        <a class="badge badge-primary" href="/tags/dag">DAG</a>
+    
+        <a class="badge badge-primary" href="/tags/workflow">Workflow</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+    
+        <a class="badge badge-primary" href="/tags/blender">Blender</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <p>严格来说，这篇不是开发笔记。</p>
+<p>最近参加单位内部的Hackathon，最后要提交一个视频。虽然说明了不需要flashy的视频，但editflow这个项目（介绍参见之前的系列文章）实在没有太多可以叙事的——本就是个UI库——那倒不如在宣传片上下点功夫。</p>
+<p>之前也看过微软出品的一些UI设计的宣传片，十分惊艳，可以在下面这个B站系列中看到：
+<a href="https://www.bilibili.com/video/BV15f4y127an">https://www.bilibili.com/video/BV15f4y127an</a></p>
+<p>再加上我一直很想入门Blender，不妨借此机会，做一个炫酷的视频！当然了，由于能力极其有限，炫酷程度显然不及微软宣传片的万分之一。</p>
+<p>话不多说，先上视频。</p>
+<p><img src="/images/editflow/3/video.gif" alt="gif"></p>
+<p>视频中，灰色圆形薄片象征着光标（或理解成手指触摸区域）。</p>
+<h2 id="建模">建模</h2>
+<p>还好只是做个UI库的宣传片，基本上长方体、圆柱体就能解决问题，建模​相对容易。</p>
+<h3 id="节点和输入输出端点">节点和输入输出端点</h3>
+<p>在实际实现中，节点由一个矩形主体和多个圆形输入输出端点组成。转换到3D世界中，自然就是长方体和圆柱体了。</p>
+<p><img src="/images/editflow/3/node-0.png" alt="node-0"></p>
+<p>实际上，在Blender中没有所谓的“长方体”，只有“立方体（Cube）”。如果想获得长方体的外形，则需要设置不同方向的缩放比例。</p>
+<p><img src="/images/editflow/3/node-prop.png" alt="node-prop"></p>
+<p>比如这里，我就设置了2倍的X轴缩放和0.02倍的Z轴缩放，也就做到了宽宽、薄薄的效果。</p>
+<p>对于圆柱体也是类似，X轴和Y轴均设置了0.1倍缩放，Z轴设置了0.016倍缩放。另外，圆柱体的Z轴平移也有0.01m，因此会高出长方体一小截，创造一点层次感。</p>
+<p><img src="/images/editflow/3/port-0.png" alt="port-0"></p>
+<h3 id="缩放操作手柄">缩放操作手柄</h3>
+<p>可以看到视频开始，当光标按下节点主体后，节点四周出现了6个蓝灰色小方块，这就是缩放操作手柄。</p>
+<p><img src="/images/editflow/3/handle-0.png" alt="handle-0"></p>
+<p>这些手柄都是缩放后的立方体，当然也会通过一些位移创造层次感，实现方式和前面提到的圆柱体一致，这里不再赘述。</p>
+<h3 id="光标触摸区域指示">光标/触摸区域指示</h3>
+<p>就是一个和输入输出端点模型完全一样的圆柱体，仅仅是后面设置材质时有所区别。在这里也不多说了。</p>
+<p><img src="/images/editflow/3/cursor-0.png" alt="cursor-0"></p>
+<h3 id="连线">连线</h3>
+<p>这部分建模算是难度最大的了，毕竟是弯弯曲曲的玩意儿——当然了，这也是最后一个视频中出现的模型。</p>
+<h4 id="螺旋">螺旋</h4>
+<p>我在这里使用了Blender的螺旋修改器，它会把物体不断地旋转一定角度并平移一定距离，然后把整个轨迹连接起来形成一个新的物体。螺旋特别适合用于制作弹簧、绳索之类的物体。因此，我利用它制作了一个类似马桶下水管的连线模型。</p>
+<p>首先，我们要创建一个基础模型，即需要被不断旋转平移的物体。可以想象，连接一个圆形旋转平移的轨迹，就可以创造出一个类似弹簧的物体。如果想做出多股的效果，自然要多来几个圆形。</p>
+<p><img src="/images/editflow/3/line-0.gif" alt="line-0"></p>
+<p>修改Screw的长度和Angle旋转角度来调节效果：</p>
+<p><img src="/images/editflow/3/line-screw.gif" alt="line-screw"></p>
+<p>为了清晰地展示这两个参数的效果，我分别控制其中一个参数为0，改变另一个参数录制了两个变化动图：</p>
+<p><img src="/images/editflow/3/line-screw-screw.gif" alt="line-screw-screw">
+<img src="/images/editflow/3/line-screw-angle.gif" alt="line-screw-angle"></p>
+<h4 id="弯曲">弯曲</h4>
+<p>现在连线已经有了，但还没完。因为我们要让连线从一个节点的输出端点连接到另一个节点的输入端点，所以连线必须能够按照指定的路径弯曲。</p>
+<p>最简单的做法肯定是直接对原始图形旋转一定的角度，但这样连线永远是直线，不够美观。虽然我们实际的实现中确实是直线的连线，可宣传片毕竟还是要夸张地美观一些才好。</p>
+<p>这里就要添加一条贝塞尔曲线，然后利用曲线函数修改器使得我们的连线跟随贝塞尔曲线变形。</p>
+<p><img src="/images/editflow/3/line-curve-0.png" alt="line-curve-0"></p>
+<p><img src="/images/editflow/3/line-curve-modifier.png" alt="line-curve-modifier"></p>
+<h3 id="背景墙">背景墙</h3>
+<p>我们要打光源，为了显示出光影效果，肯定要安放背景墙。其实就是四面立上平面，底面也躺着一个平面。</p>
+<p><img src="/images/editflow/3/wall.png" alt="wall"></p>
+<h3 id="小技巧关联">小技巧：“关联”</h3>
+<p>宣传片里面涉及的模型确实不多，就这几种，但肯定需要复制粘贴一些。这里就又涉及一个“复制对象”和“复制关联&quot;的区别。</p>
+<p>Blender的“关联”是一个很实用的功能，当两个对象拥有某一类属性的关联时，你对任一对象相关属性的修改都会同步应用到另一个对象。换句话说，他们共享某一类属性。</p>
+<p>模型对象、材质、数据属性、动画都可被关联。</p>
+<p>当然，关联也可以通过<code>Make Single User</code>被取消（在<code>Object -&gt; Relations</code>菜单下）。</p>
+<p><img src="/images/editflow/3/make-single-user.png" alt="make-single-user0"></p>
+<p>一般来说，为了方便统一修改，我直接通过“复制关联”（<code>Duplicate Linked</code>）来复制几个相同的节点模型。而对于动画过程中可能需要单独变换（例如材质）的模型对象，我再应用<code>Make Single User</code>使其可以被独立修改。</p>
+<h3 id="小技巧统一修改属性">小技巧：统一修改属性</h3>
+<p>默认情况下，即使同时选择了多个对象，在右侧属性窗格修改属性也只会影响当前唯一一个活动对象。如果想使得修改应用到全部选中的对象，应按下<code>Alt+Enter</code>应用属性修改。</p>
+<h2 id="材质">材质</h2>
+<p>材质这部分我尚未认真学习。视频中所使用的材质，基本都只是设置一下颜色，金属质感等等。</p>
+<p><img src="/images/editflow/3/material-line.png" alt="material-line"></p>
+<p>毕竟不怎么懂，我也就不多说了。记得材质这里也要注意关联的问题就好。</p>
+<h2 id="动画">动画</h2>
+<p>Blender的动画系统相当易用。如果你曾经接触过Flash，一定也能很快习惯Blender的时间轴、关键帧的概念。</p>
+<p>简单说，对象的各类属性窗格里面的属性几乎都能插入关键帧，这包括对象、修改器、粒子系统、物理等等属性。另外，材质里面的属性也是可以插入关键帧的。</p>
+<h3 id="小技巧插帧集">小技巧：“插帧集”</h3>
+<p>之前说过<code>Alt+Enter</code>可以将属性修改应用到全部选中的对象，那么关键帧该如何同时为全部选中对象插入呢？</p>
+<p>使用“插帧集（Keying Set）”就可以。</p>
+<p>“插帧集”不仅可以为多个对象同时插入关键帧，还可以指定插入关键帧的属性集合，这也是它更重要的作用。Blender预置了一些插帧集，也支持自定义插帧集。利用好这个特性，可以在制作动画时事半功倍。</p>
+<p><img src="/images/editflow/3/keying-set.png" alt="keying-set"></p>
+<h3 id="为材质属性插入关键帧">为材质属性插入关键帧</h3>
+<p>当光标按下节点、缩放操作手柄、输入输出节点时，都会有颜色加深的动画渐变效果。这就需要我们为材质属性插入关键帧。</p>
+<p><img src="/images/editflow/3/key-for-material.png" alt="key-for-material"></p>
+<p><img src="/images/editflow/3/animate-material.gif" alt="animate-material"></p>
+<h3 id="波纹特效">波纹特效</h3>
+<p>视频开始，光标按下节点，光标下方出现了波纹特效。这里，用到了波纹修改器，非常简单，甚至连关键帧都不需要设置（因此把波纹特效放在动画这部分来讲似乎都不太严谨）。</p>
+<p>波纹既然是应用于物体的修改器，说明它必然要通过物体自身面片的位移来形成波纹。因此，我们首先要对节点进行面片的细分。</p>
+<p><img src="/images/editflow/3/node-subdivide.png" alt="node-subdivide"></p>
+<p><img src="/images/editflow/3/wave-modifier.png" alt="wave-modifier"></p>
+<p>为了让波纹在时间轴的某个区间生效，需要设置Time部分的<code>Offset</code>和<code>Life</code>属性，即从时间轴何时开始，持续多久。</p>
+<p>另外，波纹的位置也需要通过Position部分的属性来设置，或者结合<code>Start Position Object</code>来指定波纹位置的参照对象。这里我就指定其位置与光标模型位置相同。</p>
+<p><img src="/images/editflow/3/animate-wave.gif" alt="animate-wave"></p>
+<h3 id="连线动画">连线动画</h3>
+<p>前面建模的时候，我们知道连线的长度可以通过修改曲线函数修改器的<code>Iteration</code>属性来改变。因此，连线由短变长的动画很容易搞定。</p>
+<p><img src="/images/editflow/3/animate-line.gif" alt="animate-line"></p>
+<p>那么难点是什么呢？就是那个光标了！怎么才能让它也跟着贝塞尔曲线移动呢？</p>
+<p>首先，我们要为光标模型添加一个对象约束——“跟随路径约束”。</p>
+<p><img src="/images/editflow/3/follow-path-constraint.png" alt="follow-path-constraint"></p>
+<p>由于光标模型之前需要有一些关键帧动画，不可能一上来就施加“跟随路径”的约束，所以我在它需要跟随路径的前一帧，设置了Influence属性的关键帧，使其为0，也就是说该约束对其没有影响。后一帧则立刻使其成为1，光标模型也就吸附到了贝塞尔曲线的起始点。</p>
+<p><img src="/images/editflow/3/animate-influence.gif" alt="animate-influence"></p>
+<p>太棒了！现在光标已经吸附到了路径上，下面就要使其移动。这就要结合曲线的“路径动画（Path Animation）”属性来实现。</p>
+<p><img src="/images/editflow/3/path-animation.gif" alt="path-animation"></p>
+<p><code>Frames</code>属性相当于把整条曲线分成多少份，<code>Evaluation Time</code>则指定当前路径处在第几份。这样，“跟随路径约束”会自动使光标模型吸附到曲线这一份的位置上。</p>
+<p>因此，我们只需为<code>Evaluation Time</code>插入关键帧，就能实现光标沿着路径移动的动画效果了！</p>
+<h2 id="视频合成">视频合成</h2>
+<p>最后Microsoft字样其实并非3D模型，而是通过视频合成加上去的。这也是为了实践一下Blender的视频剪辑功能。</p>
+<p>Blender的视频剪辑可以添加编辑好的3D场景，甚至可以加入多个摄影机的不同画面用于剪辑。要注意一点的是，视频剪辑必须在3D场景之外的场景：</p>
+<p><img src="/images/editflow/3/scene.png" alt="scene"></p>
+<p>如上图所示，3D建模等都在Main场景中，而视频剪辑则在新建的Main.001场景中。</p>
+<p>插入场景，再插入文字，定位好时间，就可以渲染合成了！</p>
+<p><img src="/images/editflow/3/video-editing.png" alt="video-editing"></p>
+<p>对了，刚开始使用视频剪辑时，可能会发现视频剪辑预览窗口显示插入的3D场景是灰蒙蒙的模型，没有带上材质和光影。这是因为加上材质光影后，预览会变得非常卡顿。这个可以在预览窗口的侧边栏设置<code>Preview Shading</code>。</p>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/">editflow系列（二）：设计思路</a></li>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/">editflow系列（一）：科普React Hooks</a></li>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/">editflow系列（零）：简介</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/">简易问卷系统（四）演示</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/">简易问卷系统（三）代码编辑器和组件动态调用</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "2c43d3922159f9c58eaf353a11825175",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

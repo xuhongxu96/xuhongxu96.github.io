@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="editflow系列（二）：设计思路" />
+<meta property="og:description" content="几条设计原则 性能是首要考虑 性能是影响用户体验的重要因素，在极端情况下，性能更是能够使得产品具有排他性的首要因素。 所以我给自己定了一个小目标，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/" />
+<meta property="article:published_time" content="2020-05-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-05-20T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="editflow系列（二）：设计思路"/>
+<meta name="twitter:description" content="几条设计原则 性能是首要考虑 性能是影响用户体验的重要因素，在极端情况下，性能更是能够使得产品具有排他性的首要因素。 所以我给自己定了一个小目标，"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/">
+
+  <title>
+    
+    editflow系列（二）：设计思路 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2020/05/editflow%E7%B3%BB%E5%88%97%E4%BA%8C%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF/">editflow系列（二）：设计思路</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        May 20, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/react">React</a>
+    
+        <a class="badge badge-primary" href="/tags/hooks">Hooks</a>
+    
+        <a class="badge badge-primary" href="/tags/typescript">TypeScript</a>
+    
+        <a class="badge badge-primary" href="/tags/dag">DAG</a>
+    
+        <a class="badge badge-primary" href="/tags/workflow">Workflow</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="几条设计原则">几条设计原则</h2>
+<h3 id="性能是首要考虑">性能是首要考虑</h3>
+<p>性能是影响用户体验的重要因素，在极端情况下，性能更是能够使得产品具有排他性的首要因素。</p>
+<p>所以我给自己定了一个小目标，在没有连接边的情况下，较为流畅地支持100K节点。</p>
+<h3 id="充分利用hooks编写声明式代码">充分利用Hooks，编写声明式代码</h3>
+<p>这个原则也可以理解成，充分借鉴函数式思想，思考如何更好地管理状态。</p>
+<p>多用声明式的代码写法，减少过程式的命令堆叠。</p>
+<p>充分利用Hooks实现代码解耦和复用。</p>
+<h3 id="丰富的操作接口">丰富的操作接口</h3>
+<p>一个东西什么叫能用，什么叫好用？</p>
+<p>能用，就是想实现的功能，用户都能实现。好用，就是用户凭直觉，都能知道这个功能怎么实现。</p>
+<p>由于大家的直觉各不相同，操作接口自然要丰富一些。像各种快捷键、鼠标左中右键和滚轮全都不该闲着！</p>
+<h3 id="一切可定制">一切可定制</h3>
+<p>除了好用，就是好看。</p>
+<p>我没有艺术细胞，我相信我的配色拿出去谁都想改一改的。要是原封不动用到产品上去了，设计师或者产品经理恐怕就得一顿吐槽。</p>
+<p>所以，轻松的定制化体验是在设计之初就要充分考虑的。</p>
+<h2 id="一个选择">一个选择</h2>
+<h3 id="canvas还是svg">Canvas还是SVG？</h3>
+<p>在同类项目调研时，就发现会有这两个不同的选择，甚至还有SVG和<code>&lt;div&gt;</code>混搭的。</p>
+<p>这个选择困扰了我很久。可以说，我从调研，到开始写第一行代码，花了有一个月时间在纠结这个问题。</p>
+<p>SVG的好处不言而喻，利用原生的DOM控制各个视觉元素，享受原生事件处理的高效便捷，还可以利用CSS方便地调节样式、应用动效……</p>
+<p>Canvas的好处，就是灵活性极高，掌控程度强，更加便于性能调优。</p>
+<p>设计原则里，性能是排第一位的，这让我不得不首先考虑Canvas方案。不过，不要忘记我们还要用到React，我可不希望裸写JavaScript/TypeScript来实现整个画布。推崇声明式的写法也是原则之一。</p>
+<p>于是，我调研了一些把React和Canvas相结合的库——要么灵活性差，不容易绘制复杂图形；要么功能缺失，事件都不被支持；要么性能损失大，毕竟是把理应命令式绘制的Canvas抽象成了声明式的组件，这种复杂的抽象很难不引入额外代价。</p>
+<p>到这里，我也想通了。HTML/SVG这些声明式的写法，才和React更配嘛！如果真的用Canvas，就不如直接写JavaScript/TypeScript代码去绘制一切、控制一切了。于是，我逐渐倒向SVG。</p>
+<p>但上网一查，很多人都说当元素非常多的时候，SVG性能表现很差。想查查有没有具体评测，到底多少元素会显著降低性能——这种具体的数值肯定不容易查得到，毕竟和使用场景以及环境密切相关。不过还是有看到一些人提到一些应用的经验：100K级别的元素，大概是要卡顿了。</p>
+<p>于是，又摇摆了。我甚至想放弃React，真的直接写Canvas绘制了。</p>
+<p>不过这种冲动被我压制了下来。毕竟，性能虽然是一个首要考虑的原则，但如果选择了Canvas方案，意味着几乎要完全违背第二条原则，剩下几条原则的实现难度恐怕也会大大增高。另外，我实践函数式的初心也就要扔掉了。</p>
+<p>不甘心。于是最终还是选择了和React更配的SVG方案。</p>
+<h2 id="几个问题">几个问题</h2>
+<h3 id="性能问题">性能问题</h3>
+<p>由于我的不甘心，这个问题就成为了首要问题……</p>
+<p>不过，很快我也想到了解决方案。既然SVG元素过多时渲染效率会下降，那我就做视图裁剪好了。毕竟，用户能看到的、能操作的，都只限于当前屏幕放得下的部分元素。想必用户也不会把100K个节点在一个屏幕摆放完全——如果不想眼花，恐怕100个都难在一个屏幕中容纳。</p>
+<p>几百几千个元素自然是没有太大性能问题的了，可是如何做好裁剪视图就是一个件难事了。毕竟，裁剪视图如果性能做得差，下场就是用户平移画布时UI卡顿严重。</p>
+<p>工作流场景下，用户应该会频繁移动画布来查看、编辑节点和连线的，所以不应该假设平移画布是一个少量操作，那么这部分的性能也不可以被忽视。</p>
+<h3 id="不可变问题">不可变问题</h3>
+<p>React Hooks刚上手时，几乎开发者们都会遇到这个问题。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">setState</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">useState</span>({
+    <span style="color:#a6e22e">x</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">x</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span> }
+  });
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">className</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;App&#34;</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">x</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; {
+        <span style="color:#a6e22e">setState</span>(<span style="color:#a6e22e">s</span> =&gt; {
+          <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">x</span>.<span style="color:#a6e22e">x</span><span style="color:#f92672">++</span>;
+          <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>;
+        });
+      }}&gt;
+        <span style="color:#a6e22e">click</span>
+      &lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p>请问，单击按钮后会发生什么？</p>
+<p>什么都不会发生。</p>
+<p>因为<code>state</code>没有变呀！</p>
+<p>React Reconciler（协调器）在<code>dispatchAction</code>时，都采用的浅比较（Shallow Compare/Equal）：
+<a href="https://github.com/facebook/react/blob/fdb641629e82df6588c16e158978ac57d9aff9ba/packages/react-reconciler/src/ReactFiberHooks.new.js#L1696">https://github.com/facebook/react/blob/fdb641629e82df6588c16e158978ac57d9aff9ba/packages/react-reconciler/src/ReactFiberHooks.new.js#L1696</a></p>
+<p>因此，想解决这个问题，我们必须先做一次对象深拷贝，再做修改。更简单的做法，就是借助第三方库来搞定：ImmutableJS、ImmerJS等等。</p>
+<p>我个人选择了看起来侵入性较小的ImmerJS，性能损失也不大，用起来还是很顺手的。它可以在原生数据结构List/Map/Set等等的基础上实现不可变数据结构。</p>
+<p>ImmutableJS在使用上具有侵入性，也就是说会要求你用特定的写法来使用不可变数据结构，本身学习成本就要高一些。而且，这相当于一种垄断，将来如果有了更好的解决方案，切换的成本也提高了，因此我会倾向于避免引入这样的库。</p>
+<p>为了方便通过Hooks使用ImmerJS，可以同时安装use-immer库，这样我们就拥有了<code>useState</code>的替代品<code>useImmer</code>，以及<code>useReducer</code>的替代品<code>useImmerReducer</code>，其参数和原生Hooks的两个函数可以说是一模一样的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">initialState</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span> };
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">reducer</span>(<span style="color:#a6e22e">draft</span>, <span style="color:#a6e22e">action</span>) {
+  <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span>) {
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;reset&#34;</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">initialState</span>;
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;increment&#34;</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">draft</span>.<span style="color:#a6e22e">count</span><span style="color:#f92672">++</span>;
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;decrement&#34;</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">draft</span>.<span style="color:#a6e22e">count</span><span style="color:#f92672">--</span>;
+  }
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Counter</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useImmerReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#a6e22e">initialState</span>);
+  <span style="color:#66d9ef">return</span> (
+    <span style="color:#f92672">&lt;&gt;</span>
+      <span style="color:#a6e22e">Count</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span>}
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;reset&#34;</span> })}&gt;<span style="color:#a6e22e">Reset</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;increment&#34;</span> })}&gt;<span style="color:#f92672">+</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;decrement&#34;</span> })}&gt;<span style="color:#f92672">-</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/&gt;</span>
+  );
+}
+</code></pre></div><h2 id="一些思路">一些思路</h2>
+<h3 id="数据和状态">数据和状态</h3>
+<h4 id="原始数据模型">原始数据模型</h4>
+<p>用户传入的最原始的数据，即工作流的原始定义，应当是最简洁无冗余的形式。所谓无冗余，可以理解成各项信息互相正交，举个例子：</p>
+<p>我们可能希望节点拥有<code>id</code>属性，而且节点的表示最好类似Map，可以从<code>id</code>映射到节点的完整定义，就像这样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;node0&#34;</span>: {
+        <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;node0&#34;</span>,
+        <span style="color:#f92672">&#34;...&#34;</span>: <span style="color:#e6db74">&#34;...&#34;</span>,
+    },
+    <span style="color:#f92672">&#34;node1&#34;</span>: {
+        <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;node1&#34;</span>,
+        <span style="color:#f92672">&#34;...&#34;</span>: <span style="color:#e6db74">&#34;...&#34;</span>,
+    }
+}
+</code></pre></div><p>但这样的数据模型是存在冗余的：每一个节点对应的键，就是节点的<code>id</code>，但节点本身又存储了一个<code>id</code>属性。</p>
+<p>这样不仅对于用户来说写起来麻烦，容易出错；对于程序而言，在维护数据模型时也需要注意二者的同步。总而言之，用户端的数据模型，还是应该避免冗余。</p>
+<p>目前版本的数据模型如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Rect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;./BasicTypes&#34;</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Port</span> {
+    <span style="color:#a6e22e">name</span>: <span style="color:#66d9ef">string</span>;
+    <span style="color:#a6e22e">type</span>: <span style="color:#66d9ef">string</span>;
+}
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Node</span> {
+    <span style="color:#a6e22e">layout</span>: <span style="color:#66d9ef">Rect</span>;
+
+    <span style="color:#a6e22e">title</span>: <span style="color:#66d9ef">string</span>;
+
+    <span style="color:#a6e22e">input</span>: <span style="color:#66d9ef">Port</span>[];
+    <span style="color:#a6e22e">output</span>: <span style="color:#66d9ef">Port</span>[];
+}
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">NodePort</span> {
+    <span style="color:#a6e22e">nodeId</span>: <span style="color:#66d9ef">string</span>;
+    <span style="color:#a6e22e">portName</span>: <span style="color:#66d9ef">string</span>;
+}
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Edge</span> {
+    <span style="color:#a6e22e">start</span>: <span style="color:#66d9ef">NodePort</span>;
+    <span style="color:#a6e22e">end</span>: <span style="color:#66d9ef">NodePort</span>;
+}
+
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">NodeMap</span> <span style="color:#f92672">=</span> { [<span style="color:#a6e22e">nodeId</span>: <span style="color:#66d9ef">string</span>]<span style="color:#f92672">:</span> <span style="color:#a6e22e">Node</span> };
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">EdgeMap</span> <span style="color:#f92672">=</span> { [<span style="color:#a6e22e">edgeId</span>: <span style="color:#66d9ef">string</span>]<span style="color:#f92672">:</span> <span style="color:#a6e22e">Edge</span> };
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Flow</span> {
+    <span style="color:#a6e22e">nodes</span>: <span style="color:#66d9ef">NodeMap</span>;
+    <span style="color:#a6e22e">edges</span>: <span style="color:#66d9ef">EdgeMap</span>;
+}
+</code></pre></div><p>可以看到，<code>Node</code>接口本身没有<code>id</code>属性，<code>id</code>仅由<code>NodeMap</code>这个对象类型的键来维护。</p>
+<h4 id="状态">状态</h4>
+<p>原始数据模型确实简单，没有信息的冗余，但这也为程序开发带来了一些不便。</p>
+<p>比如<code>Node</code>的<code>input</code>/<code>output</code>是<code>Port[]</code>类型，也就是一个列表，而<code>Edge</code>的<code>start</code>/<code>end</code>是<code>NodePort</code>类型，存有<code>nodeId</code>和<code>portName</code>。</p>
+<p>我们如果想要正确绘制一条边（<code>Edge</code>），我们需要知道它起止端点的坐标，也就需要知道它起止端点分别是哪一个节点的第几个输入或输出端点。</p>
+<p>哪一个节点可以通过<code>nodeId</code>直接获得，但想知道相关联的是该节点的第几个端点，就不容易了。因为<code>NodePort</code>只有<code>portName</code>属性。我们如何通过<code>nodeId</code>和<code>portName</code>，反查到该<code>Port</code>的索引呢？</p>
+<p>朴素的遍历方法，在数据量不大时尚可接受；但当节点、边、输入输出端点的数量增多后，自然会影响整体效率。此时，仅靠原始数据模型肯定是不够的，我们需要为它建立状态。</p>
+<p>就上面的例子来说，我们需要两个Map：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#a6e22e">type</span> <span style="color:#a6e22e">NodeId</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">string</span>;
+<span style="color:#a6e22e">type</span> <span style="color:#a6e22e">PortName</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">string</span>;
+<span style="color:#a6e22e">type</span> <span style="color:#a6e22e">PortIndexMap</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">Map</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">PortName</span>, <span style="color:#66d9ef">number</span><span style="color:#f92672">&gt;</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">FlowState</span> {
+    <span style="color:#a6e22e">raw</span>: <span style="color:#66d9ef">Flow</span>;
+
+    <span style="color:#a6e22e">inputPortMap</span>: <span style="color:#66d9ef">Map</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">NodeId</span>, <span style="color:#a6e22e">PortIndexMap</span><span style="color:#f92672">&gt;</span>;
+    <span style="color:#a6e22e">outputPortMap</span>: <span style="color:#66d9ef">Map</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">NodeId</span>, <span style="color:#a6e22e">PortIndexMap</span><span style="color:#f92672">&gt;</span>;
+    ...
+}
+</code></pre></div><p>这样，我们只需要保证原始数据模型中节点、边、端点的状态更新时能够同步这些状态，就可以借助他们实现更高性能的渲染了！</p>
+<h3 id="移动和缩放节点">移动和缩放节点</h3>
+<p>这个说容易也容易，说难也难。主要是缺乏经验的时候，总要折腾。</p>
+<p>最开始的想法很简单，抽象出一个<code>useMoving</code>的Hooks：提供开始移动的函数，用于记录状态<code>startPos</code>并标记移动开始；提供鼠标移动的事件处理函数，它会根据当前鼠标位置和<code>startPos</code>状态计算出<code>deltaX</code>和<code>deltaY</code>，触发用户传入的回调函数；提供结束移动的函数，用于清空状态并标记移动结束。</p>
+<h4 id="移动">移动</h4>
+<p>然后画布会利用这个<code>useMoving</code>，传入一个根据<code>deltaX</code>和<code>deltaY</code>更新选中节点的坐标的回调函数；然后在节点鼠标按下事件中调用<code>useMoving</code>返回的开始移动函数，在画布鼠标移动事件中调用鼠标移动事件处理函数，在画布鼠标释放事件中调用结束移动函数。</p>
+<p>大概如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tsx" data-lang="tsx"><span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">MovingCallback</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">offset</span>: <span style="color:#66d9ef">Offset</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">StartMovingFunction</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">StopMovingFunction</span> <span style="color:#f92672">=</span> () <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">MovingEventListener</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">useMoving</span>(<span style="color:#a6e22e">callback</span>: <span style="color:#66d9ef">MovingCallback</span>)<span style="color:#f92672">:</span> [<span style="color:#a6e22e">StartMovingFunction</span>, <span style="color:#a6e22e">StopMovingFunction</span>, <span style="color:#a6e22e">MovingEventListener</span>] {
+    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">startPos</span>, <span style="color:#a6e22e">setStartPos</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Point</span><span style="color:#f92672">&gt;</span>();
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">startMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">StartMovingFunction</span><span style="color:#f92672">&gt;</span>((<span style="color:#a6e22e">e</span>) <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#a6e22e">setStartPos</span>({ <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">e.pageX</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">e.pageY</span> });
+    }, []);
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">stopMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">StopMovingFunction</span><span style="color:#f92672">&gt;</span>(() <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#a6e22e">setStartPos</span>(<span style="color:#66d9ef">undefined</span>);
+    }, [<span style="color:#a6e22e">callback</span>]);
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">MovingEventListener</span><span style="color:#f92672">&gt;</span>((<span style="color:#a6e22e">e</span>) <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">startPos</span>) {
+            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">offset</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">e.pageX</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">startPos</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">e.pageY</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">startPos</span>.<span style="color:#a6e22e">y</span> };
+            <span style="color:#a6e22e">setStartPos</span>({ <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">e.pageX</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">e.pageY</span> });
+            <span style="color:#a6e22e">callback</span>(<span style="color:#a6e22e">offset</span>);
+        }
+    }, [<span style="color:#a6e22e">startPos</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">callback</span>]);
+
+    <span style="color:#66d9ef">return</span> [<span style="color:#a6e22e">startMoving</span>, <span style="color:#a6e22e">stopMoving</span>, <span style="color:#a6e22e">onMoving</span>];
+}
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tsx" data-lang="tsx"><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">startMovingNode</span>, <span style="color:#a6e22e">stopMovingNode</span>, <span style="color:#a6e22e">onMovingNode</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMoving</span>(<span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">offset</span>: <span style="color:#66d9ef">Offset</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;moveSelectedNodes&#39;</span>, <span style="color:#a6e22e">offset</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">offset.x</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">offset.y</span> } });
+}, [<span style="color:#a6e22e">dispatch</span>]));
+
+<span style="color:#a6e22e">useEventListener</span>(<span style="color:#e6db74">&#39;mouseup&#39;</span>, <span style="color:#a6e22e">useCallback</span>(() <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">stopMovingNode</span>();
+}, [<span style="color:#a6e22e">stopMovingNode</span>]));
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onNodeMouseDown</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>, <span style="color:#a6e22e">id</span>: <span style="color:#66d9ef">string</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">startMovingNode</span>(<span style="color:#a6e22e">e</span>);
+    <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stopPropagation</span>();
+}, [<span style="color:#a6e22e">startMovingNode</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onCanvasMouseMove</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">onMovingNode</span>(<span style="color:#a6e22e">e</span>);
+}, [<span style="color:#a6e22e">onMovingNode</span>]);
+</code></pre></div><p>如果多个节点被选中，也可以同时根据每次移动的delta对各个选中的节点平移坐标，可以在上面的代码看到，这一过程是在reducer中完成的，因为我们调用了<code>dispatch({ type: 'moveSelectedNodes', ... })</code>。</p>
+<p>是的，我似乎没有提到，<code>FlowState</code>（即上一节提到的，包含状态的数据模型）是通过<code>useImmerReducer</code>创建的一个状态，会由<code>FlowReducer</code>负责管理。</p>
+<p>可以想到，<code>FlowReducer</code>对<code>moveSelectedNodes</code>这个<code>type</code>的<code>dispatch</code>的处理，就是将所有选中的节点的坐标按照<code>offset</code>平移。</p>
+<h4 id="缩放">缩放</h4>
+<p>那么缩放呢，也是类似的，只不过要区分不同方向的手柄：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">HandleDirection</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left-top&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;left-middle&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;left-bottom&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;right-top&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;right-middle&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;right-bottom&#39;</span>;
+</code></pre></div><p>依然利用<code>useMoving</code>：当手柄被按下时，开始移动；移动的回调函数，会根据delta以及手柄的方向，更新选中节点的坐标和大小；鼠标释放时，停止移动。</p>
+<p>似乎没什么问题。直到做好，运行把玩一下，发现我可以轻而易举地，让节点的大小变为负数。</p>
+<p>嗯，那么在更新节点大小时，要求<code>{w: max(50, width + offset.x), h: max(30, height + offset.y)}</code>就可以了吧（最小宽度50，最小高度30）？</p>
+<p>这时，更诡异的事情发生了。虽然节点的宽高不会因为我把鼠标向内测拉得过远，而变得更小以至于成为负数了；但当我把鼠标再往反向拉时，会发现节点紧接着就变大了，还没等鼠标回归到手柄的位置（就是说，应该等鼠标反向到达刚才相对节点最小尺寸拉过头的距离，节点才开始跟着变大）。</p>
+<p>这是因为，我们一直是根据鼠标每次移动的位移，来计算节点尺寸的变化量。当尺寸过小时，我们是直接忽略了变化量，取最小尺寸；但这段鼠标的行程，我们并未做任何记录，以至于鼠标返程的立刻，位移就被当做有效的变化量，更新到节点尺寸中了。</p>
+<h4 id="采用草稿机制">采用草稿机制</h4>
+<p>由于我们前面的设计，是每次鼠标的移动都会直接影响到节点实际坐标，这就要求我们计算每次鼠标移动的相对变化，也就增加了设置边界的难度。</p>
+<p>如果我们可以始终计算鼠标相对于按下时坐标的位移，而且节点的初始大小能够被保留，问题就简单多了——初始大小加上总体位移，即将要改成的大小。我们只需保证这个目标大小不小于最小尺寸即可。由于位移也总是相对于鼠标按下时的坐标，鼠标走过头的路程也都会折算在内。</p>
+<p>那么，与其说是保留节点的初始坐标和大小，不如说我们把新的坐标和大小更新到一个草稿状态中。</p>
+<p>在<code>FlowState</code>中，有一个状态：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#a6e22e">draftNodeLayout</span>: <span style="color:#66d9ef">Map</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">NodeId</span>, <span style="color:#a6e22e">Rect</span><span style="color:#f92672">&gt;</span>;
+</code></pre></div><p>它对应了正在被移动或缩放的节点的草稿布局。节点在渲染时，也会获得这一草稿布局，如果草稿布局不为空，则采用草稿布局绘制节点的坐标和大小。</p>
+<h4 id="bonus">Bonus</h4>
+<p>草稿机制为我们带来了一个额外奖励！那就是我们能够丢弃草稿，恢复编辑前的布局。</p>
+<p>于是，我增加了一个<code>Esc</code>按键事件的响应，可以取消刚才对节点的移动或缩放。</p>
+<p>最终代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">MovingCallback</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">offset</span>: <span style="color:#66d9ef">Offset</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">StartMovingFunction</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>, <span style="color:#a6e22e">limit?</span>: <span style="color:#66d9ef">LimitRect</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">StopMovingFunction</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">cancel</span>: <span style="color:#66d9ef">boolean</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">void</span>;
+<span style="color:#66d9ef">export</span> <span style="color:#a6e22e">type</span> <span style="color:#a6e22e">MovingEventListener</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">boolean</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">useMoving</span>(<span style="color:#a6e22e">callback</span>: <span style="color:#66d9ef">MovingCallback</span>)<span style="color:#f92672">:</span> [<span style="color:#a6e22e">StartMovingFunction</span>, <span style="color:#a6e22e">StopMovingFunction</span>, <span style="color:#a6e22e">MovingEventListener</span>] {
+    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">initPos</span>, <span style="color:#a6e22e">setInitPos</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Point</span><span style="color:#f92672">&gt;</span>();
+    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">setLimit</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">LimitRect</span><span style="color:#f92672">&gt;</span>();
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">startMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">StartMovingFunction</span><span style="color:#f92672">&gt;</span>((<span style="color:#a6e22e">e</span>, <span style="color:#a6e22e">limit</span>) <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">initPos</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">e.pageX</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">e.pageY</span> };
+        <span style="color:#a6e22e">setInitPos</span>(<span style="color:#a6e22e">initPos</span>);
+        <span style="color:#a6e22e">setLimit</span>(<span style="color:#a6e22e">limit</span>);
+    }, []);
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">stopMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">StopMovingFunction</span><span style="color:#f92672">&gt;</span>(<span style="color:#a6e22e">cancel</span> <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">cancel</span>)
+            <span style="color:#a6e22e">callback</span>({ <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">0</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">0</span> });
+        <span style="color:#a6e22e">setInitPos</span>(<span style="color:#66d9ef">undefined</span>);
+    }, [<span style="color:#a6e22e">callback</span>]);
+
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onMoving</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">MovingEventListener</span><span style="color:#f92672">&gt;</span>((<span style="color:#a6e22e">e</span>) <span style="color:#f92672">=&gt;</span> {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">initPos</span>) {
+            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">offset</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">e.pageX</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">initPos</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">e.pageY</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">initPos</span>.<span style="color:#a6e22e">y</span> };
+
+            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">limit</span>) {
+                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">left</span> <span style="color:#f92672">!==</span> <span style="color:#66d9ef">undefined</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">left</span>) <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">left</span>;
+                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">top</span> <span style="color:#f92672">!==</span> <span style="color:#66d9ef">undefined</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">top</span>) <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">top</span>;
+                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">right</span> <span style="color:#f92672">!==</span> <span style="color:#66d9ef">undefined</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">right</span>) <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">right</span>;
+                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">bottom</span> <span style="color:#f92672">!==</span> <span style="color:#66d9ef">undefined</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">bottom</span>) <span style="color:#a6e22e">offset</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">limit</span>.<span style="color:#a6e22e">bottom</span>;
+            }
+
+            <span style="color:#a6e22e">callback</span>(<span style="color:#a6e22e">offset</span>);
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+        }
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+    }, [<span style="color:#a6e22e">initPos</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">callback</span>]);
+
+    <span style="color:#66d9ef">return</span> [<span style="color:#a6e22e">startMoving</span>, <span style="color:#a6e22e">stopMoving</span>, <span style="color:#a6e22e">onMoving</span>];
+}
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#75715e">// Correct the offset by current scale factor
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">startMovingNode</span>, <span style="color:#a6e22e">stopMovingNode</span>, <span style="color:#a6e22e">onMovingNode</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMoving</span>(<span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">offset</span>: <span style="color:#66d9ef">Offset</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;moveSelectedNodes&#39;</span>, <span style="color:#a6e22e">offset</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">x</span>: <span style="color:#66d9ef">offset.x</span> <span style="color:#f92672">/</span> <span style="color:#a6e22e">scale</span>, <span style="color:#a6e22e">y</span>: <span style="color:#66d9ef">offset.y</span> <span style="color:#f92672">/</span> <span style="color:#a6e22e">scale</span> } });
+}, [<span style="color:#a6e22e">dispatch</span>, <span style="color:#a6e22e">scale</span>]));
+
+<span style="color:#75715e">// Mouse up will stop and confirm moving or resizing to update the draft layout to real layout
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">useEventListener</span>(<span style="color:#e6db74">&#39;mouseup&#39;</span>, <span style="color:#a6e22e">useCallback</span>(() <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">stopMovingNode</span>(<span style="color:#66d9ef">false</span>);
+    <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;stopMovingNodes&#39;</span>, <span style="color:#a6e22e">cancel</span>: <span style="color:#66d9ef">false</span> });
+}, [<span style="color:#a6e22e">stopMovingNode</span>, <span style="color:#a6e22e">dispatch</span>]));
+
+<span style="color:#a6e22e">useEventListener</span>(<span style="color:#e6db74">&#39;keydown&#39;</span>, <span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">e</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#75715e">// Escape will cancel the current moving or resizing and restore the previous layout
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">key</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;Escape&#39;</span>) {
+        <span style="color:#a6e22e">stopMovingNode</span>(<span style="color:#66d9ef">true</span>);
+        <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;stopMovingNodes&#39;</span>, <span style="color:#a6e22e">cancel</span>: <span style="color:#66d9ef">true</span> });
+    }
+}, [<span style="color:#a6e22e">stopMovingNode</span>, <span style="color:#a6e22e">dispatch</span>]))
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onNodeMouseDown</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>, <span style="color:#a6e22e">id</span>: <span style="color:#66d9ef">string</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#a6e22e">startMovingNode</span>(<span style="color:#a6e22e">e</span>);
+    <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stopPropagation</span>();
+}, [<span style="color:#a6e22e">startMovingNode</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onCanvasMouseMove</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>((<span style="color:#a6e22e">e</span>: <span style="color:#66d9ef">React.MouseEvent</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">onMovingNode</span>(<span style="color:#a6e22e">e</span>);
+}, [<span style="color:#a6e22e">onMovingNode</span>]);
+
+<span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">onNodeMouseDown</span>, <span style="color:#a6e22e">onCanvasMouseMove</span> };
+</code></pre></div><h3 id="视图裁剪">视图裁剪</h3>
+<p>这个问题花了我不少工夫，前前后后做了很多次实验。最终也算有一个比较满意的性能表现，也就是满足了最初的小目标，不考虑连接边的情况下，100K节点可以较为顺畅地展示，且画布移动起来也不会感受到明显的卡顿。</p>
+<h4 id="快速原型天真的算法">快速原型：天真的算法</h4>
+<p>最开始开发的时候，都会想着先实现基本功能，有个快速原型出来。因此，视图裁剪这个功能也不例外。</p>
+<p>在我已经实现好了节点的移动、缩放，以及画布的平移等操作之后，我将测试生成的节点数增加到100K，然后进行测试，确实能够感受到明显的卡顿——甚至一切都是卡住的，许久才能等到顿的那一下。而且，这都已经不是移动节点才有的卡顿，就连节点的hover CSS样式都不能及时地在我鼠标悬浮时更新！</p>
+<p>此时，我便开始了视图裁剪的原型设计——天真（Naive）的算法：</p>
+<blockquote>
+<p>在渲染时，枚举全部节点，过滤掉其布局不在当前视图内的节点。</p>
+</blockquote>
+<p>写成简略的代码（本想叫伪代码，但其实除了为了便于展示省略和修改了部分东西，大都还挺真的）大概是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tsx" data-lang="tsx"><span style="color:#75715e">// ... In utils: ...
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isIntersected</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">r1</span>: <span style="color:#66d9ef">Rect</span>, <span style="color:#a6e22e">r2</span>: <span style="color:#66d9ef">Rect</span>) <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">w</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">h</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">w</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">r1</span>.<span style="color:#a6e22e">h</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">r2</span>.<span style="color:#a6e22e">y</span>;
+};
+
+<span style="color:#75715e">// ... In Canvas Component: ...
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">nodes</span>
+    .<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">node</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">isIntersected</span>(<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>, <span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">viewBound</span>))
+    .<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">node</span> <span style="color:#f92672">=&gt;</span> (
+        <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Node</span> 
+            <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">id</span>}
+            <span style="color:#a6e22e">x</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">x</span>}
+            <span style="color:#a6e22e">y</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">y</span>}
+            <span style="color:#a6e22e">w</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">w</span>}
+            <span style="color:#a6e22e">h</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">h</span>}
+            <span style="color:#a6e22e">draftLayout</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">draftNodeLayout</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">id</span>)}
+        <span style="color:#f92672">&gt;</span>
+    ));
+</code></pre></div><p>再次测试，发现操作性能好了很多！起码能有点反应了！</p>
+<p>不过，拖拽移动、缩放等等还是能感受到明显的不跟手，画布平移更是相当卡顿。</p>
+<h4 id="记住它们">记住它们！</h4>
+<p>上面的做法是在每次Canvas渲染时，都要遍历所有节点来筛选出视图内的节点。这样，即使画布没有平移，当我们移动、缩放节点时，画布都需要重绘，这一耗时的遍历也就会不断地执行。</p>
+<p>这也是为什么移动和缩放节点会不跟手，因为每次鼠标的轻微移动，背后都是这庞大的遍历运算。</p>
+<p>然而，我们可以假设，只要画布不平移，当前视图内应当显示的节点也不会发生变化——毕竟用户不会把一个节点移动到视图以外，或者把视图外的移动到视图内。</p>
+<p>所以，我们完全可以利用<code>useMemo</code>优化掉不必要的遍历计算。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tsx" data-lang="tsx"><span style="color:#a6e22e">useMemo</span>(() <span style="color:#f92672">=&gt;</span> (
+    <span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">nodes</span>.<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">node</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">isIntersected</span>(<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>, <span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">viewBound</span>))
+), [<span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">nodes</span>, <span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">viewBound</span>])
+.<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">node</span> <span style="color:#f92672">=&gt;</span> (
+        <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Node</span> 
+            <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">id</span>}
+            <span style="color:#a6e22e">x</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">x</span>}
+            <span style="color:#a6e22e">y</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">y</span>}
+            <span style="color:#a6e22e">w</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">w</span>}
+            <span style="color:#a6e22e">h</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">h</span>}
+            <span style="color:#a6e22e">draftLayout</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">flow</span>.<span style="color:#a6e22e">draftNodeLayout</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">id</span>)}
+        <span style="color:#f92672">&gt;</span>
+    ));
+</code></pre></div><p>经过这一次优化，移动和缩放节点都变得流畅跟手了。</p>
+<p>但平移画布时，毕竟要重新遍历计算当前试图可见的节点，仍然会很卡。想解决这一问题，看来必须采用更优的算法来裁剪视图。</p>
+<h4 id="分块裁剪">分块裁剪</h4>
+<p>我其实知道四叉树搞得定这个问题，但我真心不想写。</p>
+<p>分块裁剪是一个比较折中的办法，应该能有效改善计算效率，写起来也比较容易。</p>
+<p>做法就是：把整个画布分成200 x 200（其他数值也可以，这里随便写一个）的矩形块，然后把记录每个矩形都包含哪些节点；视图裁剪时，只需根据当前视图的偏移和大小（也就是一个矩形），看看与画布的哪些200 x 200的块相交，然后直接把预存好的这些块里面的节点加到可见节点中即可；当节点布局有变化时，或者增删节点时，增量地更新这个分块信息即可，复杂度也不高。</p>
+<p>至于如何找到相交的分块，也不必枚举所有分块；可以在保证分块的顺序后，通过除法和求余算出相交分块的索引。</p>
+<p>这种分块裁剪的方案，相当于把之前遍历每一个节点，变成了合并视图内的几个分块所包含的节点。复杂度取决于视图大小和分块大小。</p>
+<p>在视图大小恒定的情况下，分块越大，裁剪越快，但最终保留的节点越多，渲染性能相对较低；分块越小，裁剪越慢，但裁剪精细，最终渲染的节点数目少。</p>
+<p>大概试验了几个不同的数值，基本上都能让画布平移时的卡顿明显减轻不少。毕竟从遍历全部节点，到只遍历视图内的分块，是巨大的复杂度降低。</p>
+<p>当然了，如果视图很大（比如把画布缩小），视图中需要遍历的分块依然很多，再加上要合并每一个分块包含的节点列表，性能仍然不尽如人意。</p>
+<h4 id="四叉树">四叉树</h4>
+<p>一不做二不休，直接上四叉树吧。</p>
+<p>四叉树的节点数据结构如下：</p>
+<blockquote>
+<p>注意区分<strong>树节点</strong>和画布里面的<strong>工作流节点</strong></p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Node</span> {
+    <span style="color:#a6e22e">data</span>: <span style="color:#66d9ef">Flow.NodeId</span>[]; <span style="color:#75715e">// 用于存放该树节点对应分块内的节点列表
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">bound</span>: <span style="color:#66d9ef">Basic.Rect</span>; <span style="color:#75715e">// 对应分块边界
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">left</span><span style="color:#f92672">:</span> { <span style="color:#75715e">// 左侧
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">top?</span>: <span style="color:#66d9ef">Node</span>; <span style="color:#75715e">// 左上 子分块树节点
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">bottom?</span>: <span style="color:#66d9ef">Node</span>; <span style="color:#75715e">// 左下
+</span><span style="color:#75715e"></span>    };
+    <span style="color:#a6e22e">right</span><span style="color:#f92672">:</span> { <span style="color:#75715e">// 右侧
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">top?</span>: <span style="color:#66d9ef">Node</span>; <span style="color:#75715e">// 右上
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">bottom?</span>: <span style="color:#66d9ef">Node</span>; <span style="color:#75715e">// 右下
+</span><span style="color:#75715e"></span>    };
+}
+</code></pre></div><p>四叉树插入一个节点的布局矩形时，会将该节点的索引，加入所有与该节点布局矩形相交的分块对应的树节点中：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">insert</span>(<span style="color:#a6e22e">root</span>: <span style="color:#66d9ef">Node</span>, <span style="color:#a6e22e">rect</span>: <span style="color:#66d9ef">Basic.Rect</span>, <span style="color:#a6e22e">data</span>: <span style="color:#66d9ef">Flow.NodeId</span>, <span style="color:#a6e22e">resolution</span>: <span style="color:#66d9ef">number</span>) {
+    <span style="color:#75715e">// Not intersected means the node&#39;s children cannot contain it either
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">isIntersected</span>(<span style="color:#a6e22e">root</span>.<span style="color:#a6e22e">bound</span>, <span style="color:#a6e22e">rect</span>)) <span style="color:#66d9ef">return</span>;
+    <span style="color:#a6e22e">root</span>.<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">data</span>);
+
+    <span style="color:#75715e">// If current node&#39;s bound size is smaller than resolution, skip children
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">root</span>.<span style="color:#a6e22e">bound</span>.<span style="color:#a6e22e">w</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">resolution</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">root</span>.<span style="color:#a6e22e">bound</span>.<span style="color:#a6e22e">h</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">resolution</span>) <span style="color:#66d9ef">return</span>;
+
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">leftOrRight</span> <span style="color:#a6e22e">of</span> [<span style="color:#e6db74">&#39;left&#39;</span>, <span style="color:#e6db74">&#39;right&#39;</span>] <span style="color:#66d9ef">as</span> <span style="color:#a6e22e">LeftOrRight</span>[]) {
+        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">topOrBottom</span> <span style="color:#a6e22e">of</span> [<span style="color:#e6db74">&#39;top&#39;</span>, <span style="color:#e6db74">&#39;bottom&#39;</span>] <span style="color:#66d9ef">as</span> <span style="color:#a6e22e">TopOrBottom</span>[]) {
+            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">currentNode</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">root</span>[<span style="color:#a6e22e">leftOrRight</span>][<span style="color:#a6e22e">topOrBottom</span>];
+            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">currentNode</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">undefined</span>) {
+                <span style="color:#a6e22e">currentNode</span> <span style="color:#f92672">=</span> {
+                    <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> [],
+                    <span style="color:#a6e22e">bound</span>: <span style="color:#66d9ef">subRect</span>(<span style="color:#a6e22e">root</span>, <span style="color:#a6e22e">leftOrRight</span>, <span style="color:#a6e22e">topOrBottom</span>),
+                    <span style="color:#a6e22e">left</span><span style="color:#f92672">:</span> {},
+                    <span style="color:#a6e22e">right</span><span style="color:#f92672">:</span> {},
+                };
+                <span style="color:#a6e22e">root</span>[<span style="color:#a6e22e">leftOrRight</span>][<span style="color:#a6e22e">topOrBottom</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">currentNode</span>;
+            }
+            <span style="color:#a6e22e">insert</span>(<span style="color:#a6e22e">currentNode</span>, <span style="color:#a6e22e">rect</span>, <span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">resolution</span>);
+        }
+    }
+}
+</code></pre></div><p>可以看到，我们为了提高性能，对四叉树的最小分块大小也做了设置，即参数中的<code>resolution</code>。</p>
+<p>四叉树这里，还有一些关于<code>删除</code>的算法，与这段<code>插入</code>的代码思路基本一致。<br>
+<code>裁剪</code>算法，则有点不同——只有当树节点分块被当前视图完全包含，才将该树节点存储的全部节点列表追加到可见节点列表中，且不再搜索其叶子；当树节点分块与当前视图不相交时，直接跳过该树节点及其叶子；其他情况，则继续搜索其叶子。</p>
+<p>成功应用四叉树以后，用鼠标滚动平移画布真的又流畅了很多。</p>
+<h4 id="小优化">小优化</h4>
+<p>尽管比起最开始一动不能动，已经好了太多太多，但在深度试用之后，还是感受到不友好的地方：刚刚开始滚动的一瞬间，可能会卡顿一下，导致刚刚平移进来的一块画布是空白。</p>
+<p>为了解决这个问题，我把每次视图裁剪时的视图矩形扩大了一些（描了一层厚厚的边），相当于多缓存一些当前视图周围的节点。</p>
+<p>这下，当我进行较小的平移时（较小的平移预期也是最常见的实际应用场景），不会出现屏幕出现短暂但惹人注意的空白了。</p>
+<p>不过，视图裁剪的范围变大后，视图裁剪运算性能也就受到一些影响，毕竟我给视图描的边有500px粗，几乎是我视图原本宽度的一半了！于是，平移画布又出现了卡顿。</p>
+<p>这可怎么办，如果描边不够粗，那用户平移的稍微多一点，就很容易看到一瞬间的空白。</p>
+<p>灵机一动。</p>
+<p>当用户正在平移视图时，可以先保留之前的节点，也就是说，不是把刚刚视图裁剪好的节点直接替换掉当前可见的节点列表，而是取并集，而且这一个视图裁剪无需扩大视图（因为用户正在平移过程中）。当用户停止平移一段时间后（可以很短，比如半秒），缓存更大的视图裁剪结果，并直接替换掉当前可见的节点列表。</p>
+<h4 id="最终代码示例">最终代码示例</h4>
+<p>最终设计中，除了新加入可见节点列表、当前可见节点列表外，还有选中节点列表、高亮节点列表（当边被选中时，相连的节点会被高亮）。</p>
+<p>新加入可见节点和当前可见节点为什么要区分呢？因为我为新加入可见节点设计了渐显的动效，如果不加以区分，那么当一个节点从被选中节点列表加回正常的可见节点列表中时，他可能又会触发一次动效了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tsx" data-lang="tsx"><span style="color:#75715e">// Update newly visible nodes once view bound is changed without timeout
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">useEffect</span>(() <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;updateNewlyVisibleNodes&#39;</span> }), [<span style="color:#a6e22e">viewBound</span>, <span style="color:#a6e22e">dispatch</span>]);
+
+<span style="color:#75715e">// After 500ms without view bound changes, 
+</span><span style="color:#75715e">// newly visible nodes will be transformed to confirmed visible nodes,
+</span><span style="color:#75715e">// which will disable the entering animation and also has a larger cached view.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">useEffect</span>(() <span style="color:#f92672">=&gt;</span> {
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">timer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">setTimeout</span>(() <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;updateVisibleNodes&#39;</span>, <span style="color:#a6e22e">cacheExpandSize</span>: <span style="color:#66d9ef">500</span> }), <span style="color:#ae81ff">300</span>);
+    <span style="color:#66d9ef">return</span> () <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">clearTimeout</span>(<span style="color:#a6e22e">timer</span>);
+}, [<span style="color:#a6e22e">viewBound</span>, <span style="color:#a6e22e">dispatch</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">newlyVisibleNodes</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMemo</span>(() <span style="color:#f92672">=&gt;</span>
+    <span style="color:#a6e22e">newlyVisibleNodeIds</span>
+        .<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">selectedNodeIds</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">i</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">highlightedNodeIds</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">i</span>))
+        .<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>[<span style="color:#a6e22e">i</span>]] <span style="color:#66d9ef">as</span> [<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">Node</span>]),
+    [<span style="color:#a6e22e">newlyVisibleNodeIds</span>, <span style="color:#a6e22e">highlightedNodeIds</span>, <span style="color:#a6e22e">selectedNodeIds</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">visibleNodes</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMemo</span>(() <span style="color:#f92672">=&gt;</span>
+    Array.<span style="color:#a6e22e">from</span>(<span style="color:#a6e22e">visibleNodeIds</span>.<span style="color:#a6e22e">keys</span>())
+        .<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">selectedNodeIds</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">i</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">highlightedNodeIds</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">i</span>))
+        .<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>[<span style="color:#a6e22e">i</span>]] <span style="color:#66d9ef">as</span> [<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">Node</span>]),
+    [<span style="color:#a6e22e">visibleNodeIds</span>, <span style="color:#a6e22e">highlightedNodeIds</span>, <span style="color:#a6e22e">selectedNodeIds</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">highlightedNodes</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMemo</span>(() <span style="color:#f92672">=&gt;</span>
+    Array.<span style="color:#a6e22e">from</span>(<span style="color:#a6e22e">highlightedNodeIds</span>.<span style="color:#a6e22e">keys</span>())
+        .<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>[<span style="color:#a6e22e">i</span>]] <span style="color:#66d9ef">as</span> [<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">Node</span>]),
+    [<span style="color:#a6e22e">highlightedNodeIds</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">selectedNodes</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useMemo</span>(() <span style="color:#f92672">=&gt;</span>
+    Array.<span style="color:#a6e22e">from</span>(<span style="color:#a6e22e">selectedNodeIds</span>.<span style="color:#a6e22e">keys</span>())
+        .<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>[<span style="color:#a6e22e">i</span>]] <span style="color:#66d9ef">as</span> [<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">Node</span>]),
+    [<span style="color:#a6e22e">selectedNodeIds</span>, <span style="color:#a6e22e">raw</span>.<span style="color:#a6e22e">nodes</span>]);
+</code></pre></div>
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/">editflow系列（一）：科普React Hooks</a></li>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/">editflow系列（零）：简介</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/">简易问卷系统（四）演示</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/">简易问卷系统（三）代码编辑器和组件动态调用</a></li>
+        
+            <li><a href="/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/">简易问卷系统（二）接口设计</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "bbdb2faed8bf75b7578ff98b6a6adb66",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

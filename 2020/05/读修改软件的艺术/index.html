@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="读《修改软件的艺术》" />
+<meta property="og:description" content="最近工作中又面临特别令人纠结痛苦的事儿——明明是自己新设计的程序架构，好多优势都吹出去了，现在又觉得有很多设计失误，想要大幅度重构，以至于像" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/" />
+<meta property="article:published_time" content="2020-05-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-05-27T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="读《修改软件的艺术》"/>
+<meta name="twitter:description" content="最近工作中又面临特别令人纠结痛苦的事儿——明明是自己新设计的程序架构，好多优势都吹出去了，现在又觉得有很多设计失误，想要大幅度重构，以至于像"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/">
+
+  <title>
+    
+    读《修改软件的艺术》 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2020/05/%E8%AF%BB%E4%BF%AE%E6%94%B9%E8%BD%AF%E4%BB%B6%E7%9A%84%E8%89%BA%E6%9C%AF/">读《修改软件的艺术》</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        May 27, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+    
+        <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+    
+        <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <p>最近工作中又面临特别令人纠结痛苦的事儿——明明是自己新设计的程序架构，好多优势都吹出去了，现在又觉得有很多设计失误，想要大幅度重构，以至于像是重写了。</p>
+<p>我倒也理解体谅自己，谁也不能把事情一次做对，很多经验也都是在做的过程中积累起来的。往往是做过一次，第二次才能把事情做得稳健，而后也不可避免地有第三次第四次的不断改进。</p>
+<p>只是，第一次的水已经泼出去了，第二次再做总要受到兼容性的限制，束手束脚，因此想来图书馆找点安慰。</p>
+<p>翻到这本书，一上来就看到“遗留代码危机”；再看到目录，也有大量有关“遗留代码”的方法论介绍。于是直接在书架旁边就看起来了，直到闭馆……</p>
+<hr>
+<p>这算是本哲学书，又或者有点像鸡汤，但也有不少方法论——我其实不必写太多感想，毕竟你要有兴趣，照着做就好嘛！<br>
+不过呢，我结合自己的经历聊一聊这本书，想必更能引起读者的兴趣，也让鸡汤展现得更立体一些。</p>
+<p>下面分享一些摘录和感想，也算做个总结。</p>
+<h2 id="为什么瀑布模型不管用">为什么瀑布模型不管用</h2>
+<p>瀑布模型想必大家都知道，一个个开发阶段叠在一起，要求开发过程具有完整详细的规划。</p>
+<p>作者举了一个形象的现实类比：盖房子的时候，都会希望所需的材料尽在手边准备就绪，照着图纸盖就好。<br>
+瀑布模型也是类似，将产品拆分成不同功能来开发，最终再打包成成品，是一种符合直觉的先部分后整体的逻辑。</p>
+<p>然而作者说，在虚拟世界中，这不奏效。</p>
+<p>瀑布模型意味着长发布周期，也就是说几个月后才能看到代码真正执行——即便是执行，往往也只是测试环境，与最终实际应用的生产环境可能又大相径庭。这就是一个巨大的风险。</p>
+<p>很多人以为，瀑布模型的主要问题是流程繁杂，周期长，因此效率低下。作者却不这么想。</p>
+<p>盖好的房子，就在那里了，也不会再加盖额外的房间；但做好的软件，总会被频繁的添加新功能，被用于不同的环境。</p>
+<p>效率低下不是主要问题，<strong>难以改变</strong>才是。</p>
+<p>在增量构建的实践中，开发者往往会采用一些扩展机制，以便后期变更；但瀑布模型中，开发者几乎不考虑这件事情，只求按照“图纸”实现完成。</p>
+<p>作者又用食谱和配方类比。</p>
+<p>厨师根据食谱制作菜肴，可以有自己的发挥，调整材料添加的量和种类，制作出不同风味。</p>
+<p>而面包师烘焙面包，酿酒师酿酒，都要严格按照配方，可能稍微改变配料的比例，就会直接导致产品的失败。</p>
+<p>软件开发应遵照食谱，而非配方。因为，能够改变对于软件而言是无比重要的事情。就像我在关于重构那本书的读后感中提到的，“为有源头活水来”才是让一款软件产品的开发长久不衰的根本。</p>
+<h2 id="专家知道些什么">专家知道些什么</h2>
+<p>作者举了一个医学界的例子：医学界曾嘲笑关于微生物导致疾病的理论，不认可外科医生术前洗手这件事会影响病人生死。当时细菌学并未出现。</p>
+<p>就像当时大多数医学界人士一样，软件开发领域也充满了“外行人”。</p>
+<p>“代码的质量并不重要，重要的是软件正常工作”——这是常见的错误认知。</p>
+<p>软件被使用，就会被修改。没有质量保证，就难以修改。为了降低软件支持成本，就必须关注软件的构建过程。</p>
+<p>一般来说，专家的认知上下文与一般人不同，知道重点在哪里。我们应当多听听专家的意见。就像我们熟知的一个故事：专家修理一个机器，只在机器上画了一道线，说了操作方法，便开价一万美元。他说：“用粉笔画一条线1美元，但知道在哪里画线9999美元。”</p>
+<p>软件开发领域的专家，优秀的开发者往往是整洁的程序员。他们速度快并不意味着他们粗心大意，事实正相反——快速的程序员特别注意让代码保持容易维护的状态，会频繁调整方法的位置，重命名变量和方法，及时删除无用代码……</p>
+<p>他们不会不顾代码质量而加快速度，反而因为保持了代码的高质量才能保持快速！</p>
+<h2 id="产品负责人">产品负责人</h2>
+<p>产品需要负责人，对整个项目全权负责。他们应当和客户接触最频繁，对产品理解最深刻。</p>
+<p>作者说，大多数由委员会设计出来的东西都行不通。这让我不禁想到前几天看到知乎上轮子哥吐槽C#编程语言，自从Anders大神不管了，C#委员会的审美走向也越发奇怪了。不过这毕竟还只是面向开发者的编程语言，若是面向外部客户的产品，“两耳不闻窗外事”的委员会“闭门造车”肯定是不行的。</p>
+<p>产品负责人未必是技术人员，但需要引导推动开发流程。</p>
+<p>开发者往往会想到一些一般人想不到的问题，因为编写软件需要考虑很多条件和潜在问题，而需求制定者往往只考虑了最常见的用例（快乐路径）。开发者的这些问题，需要有人来回答——回答这些问题也是产品负责人的责任。</p>
+<p>开发者搞错事情，往往不是搞错代码，而是搞错代码应该做的事情。所以由产品负责人来对一些问题拍板定论相当重要，避免产品开发不断走偏。</p>
+<h2 id="用户故事">用户故事</h2>
+<p>既然是用户故事，就应该讲用户需要什么，而不是开发者应该怎么做。</p>
+<p>同时，讲清楚功能为什么需要，是做给谁，也会大大帮助开发者理解功能的使用场景，以便做出更好的开发设计。</p>
+<p>用户故事还要有验收标准，明确告知开发者做到什么程度算是收工。毕竟开发者很容易做出过度设计，耽误宝贵的开发时间。</p>
+<h2 id="小">小</h2>
+<p>我们肯定希望确定性，因此希望为工作单元做出时间规划。而小的工作单元，更容易做出时间规划。</p>
+<p>“小”到可度量即可。</p>
+<h3 id="更小的谎言">更小的谎言</h3>
+<p>现实中总有突发情况，我们的“规划”往往都只是“鬼话”——自我欺骗的谎言——说三天做好最终做了五天是常有的事儿。</p>
+<p>不过，谎言未必总是贬义的。如果谎言足够小，面对真相到来，我们就不必惊慌失措，因为我们可以快速调整——把三天调整成五天，并不会造成多大的影响。</p>
+<p>这是敏捷的本质：设立小目标以支持尽早快速调整。</p>
+<h3 id="分而治之与未知">分而治之与未知</h3>
+<p>我们需要把问题分解。简单说，我们要把问题分解成已知的和未知的。</p>
+<p>已知的问题我们能做出相对确定的规划，对于未知的问题，我们则可以采用两种方式来对待：</p>
+<ol>
+<li>将未知变为已知。这个不用多说。</li>
+<li>封装未知，把未知的东西藏起来，留待日后解决。<br>
+就像是“搁置争议，共同开发”的南海政策，把困难问题留给更有智慧的后代解决。对于软件开发中的未知问题，我们也完全可以暂时提供一个已知但“丑陋”的实现，封装到API内部，足以支持其他功能正常运转即可。日后也许团队里进来了一位才子，可以替我们修改这个API的实现了。</li>
+</ol>
+<h2 id="待办列表">待办列表</h2>
+<p>我们需要MMF（Minimal Marketable Feature set，最小可市场化功能集）来支持增量式开发，因此必然会有做事的先后，也就需要一个待办列表。</p>
+<p>对于待办列表，我们要讨论的并非事项的优先级，而是完成他们的<strong>顺序</strong>。</p>
+<p>产品负责人应该是唯一拍板决定下一个构建什么的人。</p>
+<p>优先级这个属性，其实很不显然。有时候看起来虽然是最重要的功能，但可能过于复杂，不如等到次要的功能先完成再做，也许就事半功倍了。</p>
+<p>当然，对于待办列表的计划，有一点很重要——不要打断。已经在迭代的功能，就继续坚持做下去。新想法都应该安排到下次迭代，或者未来的某次迭代中去。</p>
+<h2 id="完成">完成</h2>
+<p>什么是完成？作者也给出了几种不同“完成”的定义：</p>
+<p>一般的“完成”，就像是瀑布模型中，编写完一个功能，可以在开发机器上执行。</p>
+<p>“完整完成”，指代码不仅在开发机器上正常执行，还应经过了集成。</p>
+<p>“完美完成”，则是指代码经过集成，而且清晰健壮，易于阅读和维护。</p>
+<p>这样一种定义也就告诉我们，不要轻易说自己“做完了”。我们所谓的“做完了”，往往都只是一般的“完成”，“完整完成”都很少（毕竟多少Demo都是在开发机器上完成的呀！）。</p>
+<p>只有代码到达了并保持住“完美完成”的境地，产品的开发才能说是立于了可持续发展的不败之地。</p>
+<h2 id="持续部署">持续部署</h2>
+<p>作者说的绝大部分，我想大家都应该熟知了。这里只强调一点，我们应当将配置文件、数据库模型、测试代码和脚本、第三方库、安装脚本、文档、设计图例等等等等全部进行版本管理。</p>
+<p>换句话说，持续部署就应该能够通过版本管理中的一切从零部署好一整套产品系统。</p>
+<h2 id="结对编程">结对编程</h2>
+<p>“结对编程”，以前仅有耳闻，一直觉得像是闹着玩一样，想想就很尴尬——难不成是传说中的“面向‘对象’编程”！</p>
+<p>看过这本书的介绍，才想象到“结对编程”的魅力，逐渐开始接纳认可，甚至忍不住想去实践一下。</p>
+<p>结对编程，可以让资深开发者直接指导经验欠缺的开发者，可以让大家互相学习。<br>
+同时，有人关注的情况下，开发者不容易偷懒，也不容易写出糟糕的代码，大家也会更容易统一编码风格。<br>
+结对编程能够形成代码的集体所有权，有助于代码的风格统一，便于阅读维护。</p>
+<p>另外，作者也提到，两个人在一起交流合作的时候，一般不会有人来打扰；但一个人默默无闻写代码的时候，时常就会有人来打扰一下了。这也算是一个不小的优势。</p>
+<p>结对编程的形式一般是有一位“驾驶员”，负责敲键盘实际写代码；还有一位“领航员”，给予及时的评价，包括认可赞赏和指正批评。</p>
+<p>结对的搭配可以随机生成，毕竟熟人之间容易尴尬或者懈怠，结对效果不佳。</p>
+<h3 id="其他解决难题的方式">其他解决难题的方式</h3>
+<ul>
+<li>穿刺：两个或两个以上的开发者一起干一件事</li>
+<li>群战：整个小组做同一件事，但分别进行。（这就有点像《流浪地球》里面的饱和式救援）</li>
+<li>围攻：整个小组一起分解着做一件事。</li>
+</ul>
+<h2 id="测试驱动开发tddtest-driven-development">测试驱动开发（TDD，Test-Driven Development）</h2>
+<p>简单说，先写测试，后写实现。</p>
+<p>有人会问，没有实现，测试怎么写？</p>
+<p>可以先定义接口，或者类的成员，但让具体实现均为空。接着按照正确的工作流编写测试，调用这些虚假的接口。</p>
+<p>此时，测试肯定是失败的。开发者接下来就应当通过实现接口来完成整个测试驱动开发。</p>
+<p>这里的哲学就是：先想做什么（也就是怎么被应用，测试就是在应用我们的接口），再想怎么做。</p>
+<p>当然有时候先写好的测试，很难做出使其正确执行的实现。这本书在这里也提到：“第二次做好”。<br>
+我们不可避免地需要反复修改测试用例和实现，作者说就像二者在对话一样。程序员有时就是要做到人格分裂。</p>
+<p>摘录一段书中原话：</p>
+<blockquote>
+<p>在编写测试的时候其实是在说：“你好代码，你能做到这些吗？”</p>
+<p>代码当然不能，所以测试失败。</p>
+<p>得到了否定回答，你说：“好吧，让我来告诉你怎么做。”</p>
+<p>之后你编写完实现，然后说：“你好代码，现在你能做到吗？”</p>
+<p>然后如此往复。</p>
+</blockquote>
+<h2 id="重构技巧">重构技巧</h2>
+<p>本书中提到了几个重构技巧，这里选我印象深刻的两种：</p>
+<ol>
+<li>图钉测试。这是一种可能覆盖成百上千行代码的粗粒度测试，可以保证端到端行为的正确性，也就能够帮助我们在重构的过程中检查是否产生对结果的影响。</li>
+<li>系统扼杀。指用自己的服务包装原有的服务，不断替代它，直到最终扼杀。</li>
+</ol>
+<p>最近在工作中，我们就应用了这两项技巧：</p>
+<p>首先是在维护古老的代码时，想做一些性能优化的重构。但这份代码被用于很多地方，如果有功能结果的变化，会为用户带来巨大的维护成本（例如大量的数据更新等）。因此，为了避免有结果的改变，我们直接找了一份巨大的数据作为输入，跑古老的代码，并与重构后的代码跑出的结果相对比，以确定重构没有造成任何功能效果的影响。</p>
+<p>另外，系统扼杀也常常我在工作中遇到。我们需要维护古老的代码，但也同时在开发现代化的新产品，可是就像前面提到的，兼容性往往是很多客户重视的。因此我们希望渐进式的替换，把古老的代码包了一层与现代化接口相似的接口，希望将来能够逐渐被取代。</p>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2019/12/%E8%AF%BB%E9%87%8D%E6%9E%84%E6%94%B9%E5%96%84%E6%97%A2%E6%9C%89%E4%BB%A3%E7%A0%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E7%AC%AC%E4%BA%8C%E7%89%88/">读《重构——改善既有代码的设计》（第二版）</a></li>
+        
+            <li><a href="/2020/05/%E8%AF%BB%E7%BC%96%E7%A8%8B%E5%8E%9F%E6%9C%AC/">读《编程原本》</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "0506646571b33dd0af07704961e33bbc",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="右值引用、构造函数和完美转发" />
+<meta property="og:description" content="背景 最近同学想到一个问题，有关C&#43;&#43;的右值引用。我本以为自己读了两遍C&#43;&#43; Primer，总该得心应手，却发现越解释，越迷糊。 这篇文章不会介绍" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/" />
+<meta property="article:published_time" content="2019-06-28T21:56:00+00:00" />
+<meta property="article:modified_time" content="2019-06-28T21:56:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="右值引用、构造函数和完美转发"/>
+<meta name="twitter:description" content="背景 最近同学想到一个问题，有关C&#43;&#43;的右值引用。我本以为自己读了两遍C&#43;&#43; Primer，总该得心应手，却发现越解释，越迷糊。 这篇文章不会介绍"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">
+
+  <title>
+    
+    右值引用、构造函数和完美转发 | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2019/06/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">右值引用、构造函数和完美转发</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        Jun 28, 2019
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+    
+        <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <h2 id="背景">背景</h2>
+<p>最近同学想到一个问题，有关C++的右值引用。我本以为自己读了两遍C++ Primer，总该得心应手，却发现越解释，越迷糊。</p>
+<p>这篇文章不会介绍有关右值引用和移动构造函数的概念，而是直接通过描述同学的问题并深入探讨，来尝试解释一些右值引用、移动构造和完美转发的具体用途。</p>
+<h2 id="问题">问题</h2>
+<p>STL里面的<a href="https://en.cppreference.com/w/cpp/container/map/insert">std::map&lt;Key, T, Compare, Allocator&gt;::insert</a>，有两个<code>insert</code>方法的重载：</p>
+<ol>
+<li>
+<p>自C++11</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">P</span><span style="color:#f92672">&gt;</span>
+std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(P<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+<li>
+<p>自C++17</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(value_type<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+</ol>
+<p>这两个方法有什么不同用途？为什么在C++17时，又增加了第二个方法重载？</p>
+<h2 id="一些知识点">一些知识点</h2>
+<ol>
+<li>
+<p><code>std::move</code> 只是一个到右值的类型转换，并不做任何其他实质性的事情。</p>
+</li>
+<li>
+<p>右值引用的右值引用可以合成为右值引用，其他的引用组合都只能合称为左值引用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;</span>  lref;
+<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> rref;
+<span style="color:#66d9ef">int</span> n;
+lref<span style="color:#f92672">&amp;</span>  r1 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r1 is int&amp;
+</span><span style="color:#75715e"></span>lref<span style="color:#f92672">&amp;&amp;</span> r2 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r2 is int&amp;
+</span><span style="color:#75715e"></span>rref<span style="color:#f92672">&amp;</span>  r3 <span style="color:#f92672">=</span> n; <span style="color:#75715e">// type of r3 is int&amp;
+</span><span style="color:#75715e"></span>rref<span style="color:#f92672">&amp;&amp;</span> r4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// type of r4 is int&amp;&amp;
+</span></code></pre></div></li>
+<li>
+<p>右值引用变量在表达式中是左值：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+f(x);            <span style="color:#75715e">// calls f(int&amp; x)
+</span><span style="color:#75715e"></span>f(std<span style="color:#f92672">::</span>move(x)); <span style="color:#75715e">// calls f(int&amp;&amp; x)
+</span></code></pre></div></li>
+<li>
+<p>转发引用是一种特殊的引用，可以保留函数参数的原始类别。<br>
+比如，模板函数参数声明为没有const/volatile修饰符的右值引用类型：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span><span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">int</span> f(T<span style="color:#f92672">&amp;&amp;</span> x) {                    <span style="color:#75715e">// x is a forwarding reference
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">g</span>(std<span style="color:#f92672">::</span>forward<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(x)); <span style="color:#75715e">// and so can be forwarded
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">int</span> i;
+    f(i); <span style="color:#75715e">// argument is lvalue, calls f&lt;int&amp;&gt;(int&amp;), std::forward&lt;int&amp;&gt;(x) is lvalue
+</span><span style="color:#75715e"></span>    f(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// argument is rvalue, calls f&lt;int&gt;(int&amp;&amp;), std::forward&lt;int&gt;(x) is rvalue
+</span><span style="color:#75715e"></span>}
+</code></pre></div></li>
+</ol>
+<h2 id="实验-1">实验 1</h2>
+<p>想搞清楚那两个方法的用途，最好的办法就是用一下他们。</p>
+<p>不过<code>map::insert</code>方法过于复杂，我们写一个简单的程序，有类似的方法：</p>
+<blockquote>
+<p>这里可以简单浏览代码，后面会详细展开解释。</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;list&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">A</span>
+{
+    string str;
+
+    A(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a) <span style="color:#f92672">:</span> str(a.str)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;copy A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(A<span style="color:#f92672">&amp;&amp;</span> a) <span style="color:#66d9ef">noexcept</span> <span style="color:#f92672">:</span> str(move(a.str))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;move A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(<span style="color:#66d9ef">const</span> string<span style="color:#f92672">&amp;</span> str) <span style="color:#f92672">:</span> str(str)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (const string&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(string<span style="color:#f92672">&amp;&amp;</span> str) <span style="color:#f92672">:</span> str(move(str))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (string&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A(<span style="color:#66d9ef">int</span> n) <span style="color:#f92672">:</span> str(to_string(n))
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;init A (int)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> rhs)
+    {
+        str <span style="color:#f92672">=</span> rhs.str;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;copy assign A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+    }
+
+    A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(A<span style="color:#f92672">&amp;&amp;</span> rhs) <span style="color:#66d9ef">noexcept</span>
+    {
+        str <span style="color:#f92672">=</span> move(rhs.str);
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;move assign A&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+    }
+};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Container</span>
+{
+    list<span style="color:#f92672">&lt;</span>A<span style="color:#f92672">&gt;</span> aList;
+
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(A&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.push_back(move(a));
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(const A&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.push_back(a);
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+
+    <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+    <span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+    {
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Add(U&amp;&amp;)&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+
+        aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+
+        cout <span style="color:#f92672">&lt;&lt;</span> aList.back().str <span style="color:#f92672">&lt;&lt;</span> endl;
+        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;---&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+    }
+};
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+    Container c;
+
+    <span style="color:#75715e">// 传入`A`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// pass in `A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   构造自`string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     构造自`const char *`
+</span><span style="color:#75715e"></span>        c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+
+        <span style="color:#75715e">// 传入`A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   构造自`string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     构造自`const char *`
+</span><span style="color:#75715e"></span>        c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+
+        <span style="color:#75715e">// 传入`A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   构造自`string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//     构造自`const char *`
+</span><span style="color:#75715e"></span>        c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+
+        <span style="color:#75715e">// 传入`A` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   构造自`string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;4&#34;</span>);
+            c.Add(A(x));
+        }
+
+        <span style="color:#75715e">// 传入`A` lvalue
+</span><span style="color:#75715e"></span>        {
+            A a(<span style="color:#e6db74">&#34;5&#34;</span>);
+            c.Add(a);
+        }
+    }
+
+    <span style="color:#75715e">// 传入`string`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// 传入`string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   构造自`const char *`
+</span><span style="color:#75715e"></span>        c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+
+        <span style="color:#75715e">// 传入`string` rvalue
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//   moved from`string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;7&#34;</span>);
+            c.Add(move(x));
+        }
+
+        <span style="color:#75715e">// 传入`string` lvalue
+</span><span style="color:#75715e"></span>        {
+            string x(<span style="color:#e6db74">&#34;8&#34;</span>);
+            c.Add(x);
+        }
+    }
+
+    <span style="color:#75715e">// 传入`int`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// 传入`int` rvalue
+</span><span style="color:#75715e"></span>        c.Add(<span style="color:#ae81ff">9</span>);
+
+        <span style="color:#75715e">// 传入`int` lvalue
+</span><span style="color:#75715e"></span>        {
+            <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+            c.Add(n);
+        }
+    }
+
+    <span style="color:#75715e">// 传入`const char *`
+</span><span style="color:#75715e"></span>    {
+        <span style="color:#75715e">// This is only applicable to Add(T&amp;&amp;).
+</span><span style="color:#75715e"></span>        c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+    }
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><h3 id="程序说明">程序说明</h3>
+<p>这段程序很简单，但是有点长，所以在这里一段段地解释一下。</p>
+<h4 id="struct-a">Struct <code>A</code></h4>
+<p><code>A</code> 有<code>拷贝构造</code>、<code>移动构造</code>、<code>拷贝赋值</code>、<code>移动赋值</code>，还有3个<code>类型转换构造</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">A(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a);
+A(A<span style="color:#f92672">&amp;&amp;</span> a) <span style="color:#66d9ef">noexcept</span>;
+A(<span style="color:#66d9ef">const</span> string<span style="color:#f92672">&amp;</span> str);
+A(string<span style="color:#f92672">&amp;&amp;</span> str);
+A(<span style="color:#66d9ef">int</span> n);
+
+A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> rhs);
+A<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(A<span style="color:#f92672">&amp;&amp;</span> rhs) <span style="color:#66d9ef">noexcept</span>;
+</code></pre></div><h4 id="struct-container-对list简单的包装">Struct <code>Container</code> (对<code>list</code>简单的包装)</h4>
+<p><code>Container</code>里面有一个<code>list&lt;A&gt;</code>成员变量，以及3个重载方法可以向这个列表增加<code>A</code>类型元素。</p>
+<p>下面的代码是简化后的<code>Container</code>的实现（删减了输出等语句）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">list<span style="color:#f92672">&lt;</span>A<span style="color:#f92672">&gt;</span> aList;
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+</code></pre></div><h4 id="main">Main</h4>
+<p>在主函数，我用通过不同构造函数构造的<code>A</code>调用了不同的<code>Add</code>方法。</p>
+<p>后面我会一一分析解释他们。</p>
+<h2 id="输出">输出</h2>
+<p>分析之前，我们先看一下程序输出的结果，以供参考和理解。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+1
+---
+init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+2
+---
+init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+3
+---
+init A (const string&amp;)
+Add(A&amp;&amp;)
+move A
+4
+---
+init A (string&amp;&amp;)
+Add(U&amp;&amp;)
+copy A
+5
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+6
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+7
+---
+Add(U&amp;&amp;)
+init A (const string&amp;)
+8
+---
+Add(U&amp;&amp;)
+init A (int)
+9
+---
+Add(U&amp;&amp;)
+init A (int)
+10
+---
+Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+11
+---
+</code></pre></div><h2 id="分析">分析</h2>
+<h3 id="case-1">Case 1</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>因为<code>&quot;1&quot;</code>是一个<code>string</code>右值，<code>A(...)</code>也是一个右值，所以我们看到<code>A</code>是通过<code>string&amp;&amp;</code>构造的，然后<code>Add(A&amp;&amp;)</code>被调用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+</code></pre></div><p>在<code>Add(A&amp;&amp;)</code>里面，<code>A</code>右值要被移动（<code>move</code>）到<code>aList</code>里面。</p>
+<h3 id="case-2">Case 2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>实际上，除了这里用到了列表初始化，和Case 1没有什么不同。</p>
+<p>这里的列表初始化会产生一个右值。所以他要匹配一个移动构造函数，同时接收<code>const char *</code>类型的参数。因为<code>const char *</code>可以隐式转换为<code>string</code>，所以最终<code>A(string&amp;&amp;)</code>被调用。</p>
+<p>后面的事情和Case 1完全一样。</p>
+<h3 id="case-3">Case 3</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>这个Case也完全与Case 1和2一样。</p>
+<p>内部的列表初始化构造<code>string</code>右值，外部的列表初始化构造<code>A</code>右值。</p>
+<h3 id="case-4">Case 4</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;4&#34;</span>);
+c.Add(A(x));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (const string&amp;)
+Add(A&amp;&amp;)
+move A
+</code></pre></div><p>这个Case和前面三个Case的唯一区别在于这里传入<code>A</code>构造函数的是一个<code>string</code>左值。</p>
+<p>所以不同的<code>A</code>构造函数，即<code>A(const string&amp;)</code>被调用。后面仍然一样。</p>
+<h3 id="case-5">Case 5</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` lvalue
+</span><span style="color:#75715e"></span>A <span style="color:#a6e22e">a</span>(<span style="color:#e6db74">&#34;5&#34;</span>);
+c.Add(a);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">init A (string&amp;&amp;)
+Add(U&amp;&amp;)
+copy A
+</code></pre></div><p>这个Case，一个<code>A</code>左值被传入<code>Add</code>，所以它匹配到<code>Add(U&amp;&amp;)</code>，此时<code>U = A&amp;</code>。</p>
+<p>你也许会问<code>Add(A&amp; &amp;&amp;)</code>是啥？记得前面在<a href="#%E4%B8%80%E4%BA%9B%E7%9F%A5%E8%AF%86%E7%82%B9">一些知识点</a>里讲过转发引用嘛？</p>
+<p>那么，既然传入的是<code>A</code>左值，为什么不调用<code>A(const A&amp;)</code>呢？</p>
+<p>为什么要调用呢？如果调用<code>A(const A&amp;)</code>，需要额外的const转换。但模板方法是直接匹配的。</p>
+<p>你可以试试在<code>A a(&quot;5&quot;)</code>前面加一个<code>const</code>，然后看看怎么样。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = A&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p><code>emplace</code>会直接转发参数到构造函数，并在需要的内存位置中直接构造相应的对象。</p>
+<p>因为<code>v</code>是<code>A&amp;</code>类型，<code>emplace_back</code>就调用了<code>A</code>的拷贝构造来使其就位。</p>
+<h3 id="case-6">Case 6</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>显然这里<code>U = string</code>。</p>
+<p>所以，在调用<code>Add</code>之前，<code>A</code>并不需要被构造出来。</p>
+<p>在<code>Add</code>内部，<code>list&lt;A&gt;::emplace_back</code>被调用，它会将参数直接转发到<code>A</code>的构造函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = string, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(string<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(move(v));
+}
+</code></pre></div><p>这里，<code>U = string</code>，<code>v</code>是一个<code>string</code>右值，<code>A</code>通过<code>v</code>来构造，所以<code>A(string&amp;&amp;)</code>构造函数被调用。</p>
+<p>可以看到，<code>A</code>构造后，并没有额外的移动或拷贝。这还是因为<code>emplace</code>会直接转发参数，将<code>A</code>构造在所需的内存位置。既然它已经就位，就没有必要在移动或拷贝了。</p>
+<p>本例和Case 5不同，因为Case 5传入的是左值。</p>
+<h3 id="case-7">Case 7</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`string` rvalue moved from`string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;7&#34;</span>);
+c.Add(move(x));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>本例与Case 6完全一样，因为我们<code>move</code>了一个左值，即转换为了右值。</p>
+<h3 id="case-8">Case 8</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;8&#34;</span>);
+c.Add(x);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (const string&amp;)
+</code></pre></div><p>这里<code>U = string&amp;</code>，所以<code>A</code>在调用<code>Add</code>前并不需要被构造。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = string&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(string<span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p>在<code>Add</code>内部，<code>A</code>通过<code>emplace_back</code>由一个<code>string</code>左值构造。所以<code>A(const string&amp;)</code>构造函数被调用。</p>
+<p><code>A</code>已就位，无需后续操作。</p>
+<h3 id="case-9">Case 9</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`int` rvalue
+</span><span style="color:#75715e"></span>c.Add(<span style="color:#ae81ff">9</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (int)
+</code></pre></div><p>这里<code>U = int</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = int, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(move(v));
+}
+</code></pre></div><p><code>A</code>只有一个能接受<code>int</code>右值的构造函数，也就是<code>A(int)</code>。</p>
+<h3 id="case-10">Case 10</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`int` lvalue
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+c.Add(n);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (int)
+</code></pre></div><p>本例与Case 9唯一不同是传入了<code>int</code>左值，即<code>U = int&amp;</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = int&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p>但<code>A</code>的构造函数能接受<code>int</code>左值的还是只有<code>A(int)</code>。</p>
+<h3 id="case-11">Case 11</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`const char *`
+</span><span style="color:#75715e"></span>c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Add(U&amp;&amp;)
+init A (string&amp;&amp;)
+</code></pre></div><p>这里<code>U = const char &amp;[3]</code>，或者也可以当作是<code>const char *&amp;</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+
+<span style="color:#75715e">// when U = const char *&amp;, the equivalent method is:
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*&amp;</span> v)
+{
+    aList.emplace_back(v);
+}
+</code></pre></div><p><code>const char *&amp; v</code>在被<code>emplace_back</code>转发至构造函数时，被隐式转换为<code>string</code>，所以<code>A(string&amp;)</code>被调用。</p>
+<h2 id="实验-2">实验 2</h2>
+<p>上面的实验和分析解释了不同的构造函数和<code>Add</code>方法具有怎样的行为。但现在我们更想知道为什么我们需要他们。</p>
+<p>所以，实验2中，我会移除一个<code>Add</code>方法，看看会发生什么。</p>
+<h3 id="移除addu">移除<code>Add(U&amp;&amp;)</code></h3>
+<p>本实验中，我将模板方法<code>Add</code>注释掉了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(A<span style="color:#f92672">&amp;&amp;</span> a)
+{
+    aList.push_back(move(a));
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#75715e">/*
+</span><span style="color:#75715e">template &lt;class U, class = enable_if_t&lt;is_constructible_v&lt;A, U&gt;&gt;&gt;
+</span><span style="color:#75715e">void Add(U&amp;&amp; v)
+</span><span style="color:#75715e">{
+</span><span style="color:#75715e">    aList.emplace_back(forward&lt;U&gt;(v));
+</span><span style="color:#75715e">}
+</span><span style="color:#75715e">*/</span>
+</code></pre></div><p>立刻会发现，程序编译不通过。错误来自：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">c.Add(<span style="color:#e6db74">&#34;11&#34;</span>);
+</code></pre></div><p>因为现在它无法匹配到一个合适的<code>Add</code>重载方法，毕竟没有<code>A</code>可以直接从<code>const char *</code>构造。</p>
+<p>于是干脆暂时删掉这个Case 11，其他的Case都还能编译通过。</p>
+<p>我们来看一下变化！</p>
+<h4 id="case-5-变化">Case 5 变化</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-5.png" alt="change-1-case-5"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` lvalue
+</span><span style="color:#75715e"></span>A <span style="color:#a6e22e">a</span>(<span style="color:#e6db74">&#34;5&#34;</span>);
+c.Add(a);
+</code></pre></div><p>因为现在没有模板方法<code>Add</code>，所以<code>Add(const A&amp;)</code>被调用。没有什么性能上的差异。</p>
+<h4 id="case-6-变化">Case 6 变化</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-6.png" alt="change-1-case-6"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add(string(<span style="color:#e6db74">&#34;6&#34;</span>));
+</code></pre></div><p>现在没有<code>Add</code>方法直接接受<code>string</code>，所以，<code>Add(A&amp;&amp;)</code>被调用。在这之前，<code>string</code>右值必须被转换构造为<code>A</code>右值。</p>
+<p>可以看到构造和<code>Add</code>的调用顺序发生了变化，也证实了前面的说法。</p>
+<p>最后，<code>A</code>需要被移动到<code>aList</code>中，也带来了额外的运行代价。</p>
+<p>也许你会问，为什么不在这里用<code>emplace_back</code>来避免移动这一运行代价。</p>
+<p>其实<code>emplace</code>确实可以在这里使用，但代价是去除不掉的。因为<code>emplace</code>也只是转发传入的<code>A</code>右值，仍然会调用<code>A</code>的移动构造函数。这和前一实验中的<code>emplace</code>不同，之前是传入的<code>string</code>右值，直接通过它构造<code>A</code>，构造被推迟到了<code>emplace</code>这里；而这里我们在<code>emplace</code>之前已经有一个<code>A</code>，是不就位的，移动是不可避免的。</p>
+<h4 id="case-7-10-变化">Case 7-10 变化</h4>
+<p><img src="/images/cpp/rvalue/change-1-case-7-10.png" alt="change-1-case-7-10"></p>
+<p>在这几例中，<code>A</code>的构造过程也提前了，正如Case 6一样。不过，这几例会通过不同的构造函数构造<code>A</code>的右值。</p>
+<p>后面<code>A</code>右值传入<code>Add(A&amp;&amp;)</code>后的过程，与Case 6完全一样。</p>
+<h4 id="实验-2-总结">实验 2 总结</h4>
+<p>可以看到，没有模板方法<code>Add</code>，我们就没有办法利用好<code>emplace</code>方法，也就避免不了一些本可避免的额外移动或拷贝的代价。</p>
+<p>那么，<code>Add(A&amp;&amp;)</code>又有什么用呢？它是否能被模板方法<code>Add</code>替代？</p>
+<p>让我们继续实验！</p>
+<h2 id="实验-3">实验 3</h2>
+<h3 id="移除adda">移除<code>Add(A&amp;&amp;)</code></h3>
+<p>这里，我注释掉了<code>Add(A&amp;&amp;)</code>方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">/*
+</span><span style="color:#75715e">void Add(A&amp;&amp; a)
+</span><span style="color:#75715e">{
+</span><span style="color:#75715e">    aList.push_back(move(a));
+</span><span style="color:#75715e">}
+</span><span style="color:#75715e">*/</span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">const</span> A<span style="color:#f92672">&amp;</span> a)
+{
+    aList.push_back(a);
+}
+
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span>, <span style="color:#66d9ef">class</span> <span style="color:#960050;background-color:#1e0010">= </span><span style="color:#a6e22e">enable_if_t</span><span style="color:#f92672">&lt;</span>is_constructible_v<span style="color:#f92672">&lt;</span>A, U<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#66d9ef">void</span> Add(U<span style="color:#f92672">&amp;&amp;</span> v)
+{
+    aList.emplace_back(forward<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span>(v));
+}
+</code></pre></div><p>让我们再来看看变化！</p>
+<h4 id="case-14-变化">Case 1,4 变化</h4>
+<p><img src="/images/cpp/rvalue/change-2-case-1.png" alt="change-2-case-1"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add(A(<span style="color:#e6db74">&#34;1&#34;</span>));
+</code></pre></div><p><img src="/images/cpp/rvalue/change-2-case-4.png" alt="change-2-case-4"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` lvalue
+</span><span style="color:#75715e"></span>string <span style="color:#a6e22e">x</span>(<span style="color:#e6db74">&#34;4&#34;</span>);
+c.Add(A(x));
+</code></pre></div><p>因为没有<code>Add(A&amp;&amp;)</code>匹配，他们会转而匹配模板方法，<code>U = A</code>。没有什么其他运行代价的变化。</p>
+<h4 id="case-2-3-changes">Case 2-3 Changes</h4>
+<p><img src="/images/cpp/rvalue/change-2-case-2-3.png" alt="change-2-case-2-3"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add({ <span style="color:#e6db74">&#34;2&#34;</span> });
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// 传入`A` rvalue 构造自`string` rvalue 构造自`const char *`
+</span><span style="color:#75715e"></span>c.Add({ {<span style="color:#e6db74">&#34;3&#34;</span>} });
+</code></pre></div><p>因为花括号初始化（列表初始化）也是调用构造函数，需要知道具体的构造类型。模板方法是无法提供一个具体类型的，所以<code>Add(const A&amp;)</code>就被调用了。</p>
+<p>当然，后果就是之前的移动变成了现在的拷贝，增加了运行代价。</p>
+<h4 id="实验-3-总结">实验 3 总结</h4>
+<p><code>Add(A&amp;&amp;)</code>对于花括号（列表）初始化很有用，因为编译器需要匹配类型才能正确调用构造函数，但模板方法无法提供具体的类型。</p>
+<p>你可以试试把<code>Add(A&amp;&amp;)</code>和<code>Add(const A&amp;)</code>都删掉，那么Case 2和3就无法编译通过了。</p>
+<h2 id="回到问题">回到问题</h2>
+<ol>
+<li>
+<p>自C++11</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">P</span><span style="color:#f92672">&gt;</span>
+std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(P<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+<li>
+<p>自C++17</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(value_type<span style="color:#f92672">&amp;&amp;</span> value);
+</code></pre></div></li>
+</ol>
+<p>首先，我们要知道<code>map&lt;Key, T&gt;</code>的<code>value_type</code>是<code>pair&lt;const Key, T&gt;</code>。而<code>pair</code>拥有非常多的构造函数。</p>
+<p>所以，为了能够利用<code>emplace</code>的好处，以及尽可能多地使用移动构造而非拷贝构造，同时提供上述两种方法是必要的。</p>
+<h3 id="gcc-71-和-gcc-91-比较">gcc 7.1 和 gcc 9.1 比较</h3>
+<blockquote>
+<p>请放大网页或右键图片从新标签页打开查看。</p>
+<p>请忽略编译器参数上的&ndash;std=c++14，看起来对有没有<code>map::insert(value_type&amp;&amp;)</code>这个库函数没啥用。</p>
+</blockquote>
+<p><img src="/images/cpp/rvalue/map-gcc-7.png" alt="map-gcc-7">
+<img src="/images/cpp/rvalue/map-gcc-9.png" alt="map-gcc-9"></p>
+<h2 id="新问题">新问题</h2>
+<p>然而我现在很困惑<code>Add(const A&amp;)</code>。</p>
+<p>在实验1中，他根本没被调用。</p>
+<p>实际上，想调用它，除非传入的正好是<code>const A</code>左值。但单独去处理const左值的意义是什么呢？</p>
+<p>尤其是在<code>map</code>中，也提供了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span>iterator, <span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span> insert(<span style="color:#66d9ef">const</span> value_type<span style="color:#f92672">&amp;</span> value);
+</code></pre></div><p>这是有必要的吗？</p>
+
+
+    
+      <h4>翻译</h4>
+      <ul>
+        
+        <li>
+          <a href="/en/2019/06/rvalue-reference-move-constructor-and-perfect-forwarding/">en: RValue-Reference, Move Constructor and Perfect Forwarding</a>
+        </li>
+        
+      </ul>
+    
+
+    
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "e2e581a6691ac7f85aeae1ab49ffc3b1",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

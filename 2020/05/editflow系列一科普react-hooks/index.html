@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta property="og:title" content="editflow系列（一）：科普React Hooks" />
+<meta property="og:description" content="在讲解editflow相关设计之前，先来熟悉一下React Hooks。 React Hooks的函数式思维 官方文档中Hooks的例程非常简单： import React, { useState }" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/" />
+<meta property="article:published_time" content="2020-05-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-05-17T00:00:00+00:00" /><meta property="og:site_name" content="旭旭" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="editflow系列（一）：科普React Hooks"/>
+<meta name="twitter:description" content="在讲解editflow相关设计之前，先来熟悉一下React Hooks。 React Hooks的函数式思维 官方文档中Hooks的例程非常简单： import React, { useState }"/>
+
+
+
+  <link rel="canonical" href="https://xuhongxu.com/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/">
+
+  <title>
+    
+    editflow系列（一）：科普React Hooks | 旭旭
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css"
+    crossorigin="anonymous">
+
+  <link href="https://xuhongxu.com/css/style.css" rel="stylesheet">
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69634713-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  
+
+</head>
+
+<body>
+  
+  <header class="blog-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            旭旭
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/">主页</a>
+                    
+                </li>
+                
+                <li class="nav-item ">
+                    
+                        <a class="nav-link" href="/about/">关于</a>
+                    
+                </li>
+                
+            </ul>
+            
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        语言
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/">简体中文</a>
+                        
+                            <a class="dropdown-item" href="https://xuhongxu.com/en/">English</a>
+                        
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </nav>
+</header>
+  
+
+  
+  
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-12 col-lg-8 blog-main">
+
+          
+
+<header>
+    <h2 class="blog-post-title">
+        <a class="text-dark" href="/2020/05/editflow%E7%B3%BB%E5%88%97%E4%B8%80%E7%A7%91%E6%99%AEreact-hooks/">editflow系列（一）：科普React Hooks</a>
+    </h2>
+    
+
+
+<div class="blog-post-date text-secondary">
+    
+        May 17, 2020
+    
+    
+        作者 <span rel="author">许宏旭</span>
+    
+</div>
+
+    
+<div class="blog-post-tags text-secondary">
+    <strong>标签:</strong>
+    
+        <a class="badge badge-primary" href="/tags/react">React</a>
+    
+        <a class="badge badge-primary" href="/tags/hooks">Hooks</a>
+    
+        <a class="badge badge-primary" href="/tags/typescript">TypeScript</a>
+    
+        <a class="badge badge-primary" href="/tags/dag">DAG</a>
+    
+        <a class="badge badge-primary" href="/tags/workflow">Workflow</a>
+    
+        <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+    
+</div>
+
+    
+<div class="blog-post-categories text-secondary">
+    <strong>分类:</strong>
+    
+        <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+    
+</div>
+
+    <hr>
+</header>
+<article class="blog-post">
+    <p>在讲解editflow相关设计之前，先来熟悉一下React Hooks。</p>
+<h2 id="react-hooks的函数式思维">React Hooks的函数式思维</h2>
+<p>官方文档中Hooks的例程非常简单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Example</span>() {
+  <span style="color:#75715e">// 声明一个新的叫做 “count” 的 state 变量
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">setCount</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">You</span> <span style="color:#a6e22e">clicked</span> {<span style="color:#a6e22e">count</span>} <span style="color:#a6e22e">times</span>&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setCount</span>(<span style="color:#a6e22e">count</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;
+        <span style="color:#a6e22e">Click</span> <span style="color:#a6e22e">me</span>
+      &lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p>通过<code>useState</code>就可以在函数组件中“使用状态”。“状态”对于函数来说是本应是一个副作用，Hooks则为纯函数带来了使用各式各样的副作用的方案。</p>
+<h3 id="什么叫副作用呢">什么叫副作用呢？</h3>
+<p>数学里面的函数，或者纯函数式编程里面的函数，对于确定的输入/参数，函数返回/输出的结果也应当是确定的。</p>
+<p>对于React函数式组件而言，<code>props</code>是输入，<code>return</code>的Virutal DOM则是输出。对于确定的<code>props</code>，组件的内容和样式应当是确定不变的。</p>
+<p>但是像React组件这种UI的组成部分，往往需要根据一些外部状态，改变其展现的界面内容或样式。也就是说，即使输入的<code>props</code>保持一致，组件的输出结果仍然可能发生变化。</p>
+<p>就像上面的例子，组件根本没有<code>props</code>，即没有输入，当然也就可以认为输入是恒定的；但每次组件的按钮被单击，都会使得计数器数值增加1，也就是输出并不恒定——这说明该组件不应是纯函数组件。</p>
+<p>组件函数内部使用了一个外部状态<code>count</code>和修改外部状态的方法<code>setCount</code>。他们构成了函数的副作用。</p>
+<blockquote>
+<p>我一般倾向于将状态描述为“<strong>函数内部使用的外部状态</strong>”，而不是“函数内部的状态”，因为该状态实际上只是被函数所用，二者并没有包含或者拥有关系。</p>
+</blockquote>
+<p>这个状态会因按钮单击而发生变化（也就是组件<code>Example</code>会改变外部状态），同时<code>&lt;p&gt;</code>的值也会随<code>count</code>状态值的改变而改变（外部状态会影响<code>Example</code>的行为）。如此一来，纯函数式组件就做不到了。因为“受外部状态影响”或者“改变外部状态”，这些都是副作用，纯函数不应拥有副作用。</p>
+<p>以前，只能使用React的组件类来实现副作用；但现在有了Hooks，函数式组件也同样可以做到。</p>
+<h3 id="usestate">useState</h3>
+<p>使用状态，即创建/使用/修改一个外部状态。</p>
+<p>函数式组件渲染，相当于执行一次该函数获得返回的Virtual DOM。<code>useState</code>的作用简单概括一下，就是只在第一次渲染（执行函数）时，创建<code>state</code>并赋初值，后续的渲染（执行函数）<code>useState</code>只会返回上次<code>state</code>的值。</p>
+<p>这样一来就构成了一个外部的状态，<code>useState</code>与函数的输入无关，仅仅用于初始化或获取状态的值。</p>
+<p>当然，<code>useState</code>返回的第二个参数<code>setState</code>用于改变状态，允许函数拥有改变外部状态的能力。</p>
+<p>乍一听好像函数拥有了状态了，似乎不再纯粹。但实际上还是前文提到的，函数本身并无状态。这里仅仅是注入了外部的一个状态，相当于一种输入；同时函数会根据输入，不仅仅输出Virtual DOM，还会“输出一些副作用”，并不产生副作用。简单点说，就是函数调用<code>setState</code>方法并不会真的改变相应<code>state</code>的值，而是对外输出一个“改变的意向/效果”。React调度器知道了它有这个意向，才会真正实现对应的效果——改变状态值。</p>
+<p>所有的Hooks其实都是这样，并不会直接产生副作用，而是使得函数有能力对外输出产生副作用的意向。<br>
+不过，我为了表述方便，下面就不再咬文嚼字特意区分这个概念了。毕竟已经了解，就不必过于纠结字眼，能够方便理解其应用才是后文应该关心的。</p>
+<h3 id="useeffect">useEffect</h3>
+<p>使用副作用，即，使得函数在某些情况下可以触发副作用（引起外部环境改变）。</p>
+<p>其实按我理解，当你使用<code>useState</code>返回的<code>setState</code>函数时，同样也是触发了副作用。不过那个副作用，是改变了外部的React状态。</p>
+<p>这里<code>useEffect</code>可以做到的是，改变任意外部环境的状态（而不仅限于React的state变量），比如修改浏览器的标题、发起IO（如网络请求）等。</p>
+<p>另外，<code>useEffect</code>并非由程序主动触发，而是根据依赖变量值的变化触发。默认情况是每次渲染（执行函数）都会触发，但提供了依赖变量后，副作用仅在依赖变量的值发生改变时触发。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span>, <span style="color:#a6e22e">useEffect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Example</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">setCount</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+
+  <span style="color:#a6e22e">useEffect</span>(() =&gt; {
+    document.<span style="color:#a6e22e">title</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`You clicked </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">count</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> times`</span>;
+  }, [<span style="color:#a6e22e">count</span>]);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">You</span> <span style="color:#a6e22e">clicked</span> {<span style="color:#a6e22e">count</span>} <span style="color:#a6e22e">times</span>&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setCount</span>(<span style="color:#a6e22e">count</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;
+        <span style="color:#a6e22e">Click</span> <span style="color:#a6e22e">me</span>
+      &lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p>上例中，修改<code>document.title</code>是一个副作用，它仅会在<code>count</code>改变时触发。指定依赖变量可以避免不必要的副作用触发，提高性能。</p>
+<p>简单一点理解，<code>useEffect</code>就是声明一些事情随着一些变量的改变而发生。</p>
+<p><code>useEffect</code>的第一个参数即副作用函数，它还可以拥有一个返回值，返回值的类型也是一个函数。这个函数将被用于清理副作用。</p>
+<p>每次副作用被触发时，React会首先调用上次副作用返回的清理函数以清理上次的副作用。这在使用时钟、发起网络请求等场景中十分有用。</p>
+<p>例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#a6e22e">useEffect</span>(() =&gt; {
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">timer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">setTimeout</span>(() =&gt; { 
+        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;timeout&#34;</span>); 
+    }, <span style="color:#ae81ff">1000</span>);
+    <span style="color:#66d9ef">return</span> () =&gt; <span style="color:#a6e22e">clearTimeout</span>(<span style="color:#a6e22e">timer</span>);
+});
+</code></pre></div><h3 id="usecontext">useContext</h3>
+<p>有时候我们需要一个状态或者全局的数据同时被多个子组件甚至子孙组件获得或改变，除了把状态或数据当作<code>props</code>一层层传下去，还有什么办法吗？</p>
+<p>那就是使用<code>useContext</code>了！</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">MyCtx</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">createContext</span>({ <span style="color:#a6e22e">val</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span> });
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">MyCtx</span><span style="color:#a6e22e">.Provider</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{{ <span style="color:#a6e22e">val</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span> }}&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/MyCtx.Provider&gt;</span>
+  );
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Example</span>() {
+  <span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">val</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">useContext</span>(<span style="color:#a6e22e">MyCtx</span>);
+  <span style="color:#66d9ef">return</span> &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;;
+}
+</code></pre></div><p>可以看到上例中，三个<code>Example</code>都没有从<code>props</code>中接受上层组件的信息，而是直接通过<code>useContext</code>获取。
+这样可以大大减少传递变量的代码量，让代码更加简洁清晰。</p>
+<p>再举一个共享状态的例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">MyCtx</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">createContext</span>({ <span style="color:#a6e22e">val</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span> });
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">MyCtx</span><span style="color:#a6e22e">.Provider</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{[<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>]}&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+      &lt;<span style="color:#f92672">Example</span> /&gt;
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/MyCtx.Provider&gt;</span>
+  );
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Example</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useContext</span>(<span style="color:#a6e22e">MyCtx</span>);
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p><img src="/images/editflow/1/useContext.png" alt="useContext"></p>
+<p>点击任意一个<code>Example</code>组件的按钮，都会调用<code>MyCtx</code>这个<code>Context</code>的<code>setVal</code>，也就是上层<code>App</code>的<code>setVal</code>，也就会改变上层<code>App</code>的<code>val</code>状态，从而导致所有<code>Example</code>组件的<code>&lt;p&gt;</code>的值发生改变。</p>
+<p>可见，<code>useContext</code>是共享状态的利器！</p>
+<h3 id="usereducer">useReducer</h3>
+<p>这个东西和<code>useState</code>是类似的，只不过<code>setState</code>这种直接替换整个<code>state</code>的函数，被<code>reducer</code>函数所取代。</p>
+<p><code>reducer</code>函数形如<code>(state, action) =&gt; newState</code>，接受旧状态和一个表示变换操作的<code>action</code>，返回新状态。主要的不同就在于<code>action</code>，也就是说<code>reducer</code>可以支持更多样的改变状态的逻辑。</p>
+<blockquote>
+<p>这个东西配合<code>useContext</code>基本上可以取代Redux库的功能。</p>
+</blockquote>
+<p><code>useReducer</code>很好理解，所以我就不多说了，直接搬运官网的例子:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">initialState</span> <span style="color:#f92672">=</span> {<span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>};
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">reducer</span>(<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">action</span>) {
+  <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span>) {
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;increment&#39;</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> {<span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>};
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;decrement&#39;</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">return</span> {<span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>};
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error();
+  }
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Counter</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#a6e22e">initialState</span>);
+  <span style="color:#66d9ef">return</span> (
+    <span style="color:#f92672">&lt;&gt;</span>
+      <span style="color:#a6e22e">Count</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span>}
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({<span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;decrement&#39;</span>})}&gt;<span style="color:#f92672">-</span>&lt;/<span style="color:#f92672">button</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({<span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;increment&#39;</span>})}&gt;<span style="color:#f92672">+</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/&gt;</span>
+  );
+}
+</code></pre></div><h3 id="usememo-memo-usecallback">useMemo, memo, useCallback</h3>
+<p><code>useMemo</code>用于记忆值（<code>useMemo</code>即<code>use Memorized Value</code>）。</p>
+<p>如果不用<code>useMemo</code>，考虑一下下面的程序：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+
+      {[...Array(<span style="color:#ae81ff">100000</span>).<span style="color:#a6e22e">keys</span>()].<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span>) =&gt; (
+        &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">i</span>}&gt;<span style="color:#a6e22e">p</span>{<span style="color:#a6e22e">i</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      ))}
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p>每次单击按钮，都会使得<code>val</code>发生改变从而导致<code>App</code>重渲染。而每次重渲染，意味着执行<code>App</code>函数，也就意味着<code>100000</code>个成员的数组会被重新构造一次。所以，每次单击按钮，用户都要忍受一次UI的卡顿。</p>
+<p><code>100000</code>个成员的数组用于生成相应数量的<code>&lt;p&gt;</code>节点，节点内容与外部状态无关，因此完全可以将生成的结果使用<code>useMemo</code>记忆下来：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onclick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+
+      {<span style="color:#a6e22e">useMemo</span>(() =&gt; [...Array(<span style="color:#ae81ff">50000</span>).<span style="color:#a6e22e">keys</span>()].<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span>) =&gt; (
+        &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">i</span>}&gt;<span style="color:#a6e22e">p</span>{<span style="color:#a6e22e">i</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      )), [])}
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+</code></pre></div><p>再次尝试，就会发现每次点击按钮后，UI的响应速度基本如常了。</p>
+<p>可以看到这里使用<code>useMemo</code>时，传递的第二个参数是<code>[]</code>。这个参数是记忆值的依赖变量列表，表示记忆值应当跟随它们的变化而更新。由于这里记忆的东西与外界状态、属性均无关联，所以可以直接填空。</p>
+<p>空依赖变量列表可以理解成，仅当组件首次渲染时触发记忆。其实前面<code>useEffect</code>也同理，空依赖变量列表的<code>useEffect</code>即仅首次渲染时触发的副作用。</p>
+<p><code>memo</code>类似于<code>useMemo</code>，但是是组件级别的记忆：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+
+      &lt;<span style="color:#f92672">Example</span> <span style="color:#a6e22e">n</span><span style="color:#f92672">=</span>{<span style="color:#ae81ff">50000</span>} /&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Example</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">memo</span>(<span style="color:#a6e22e">props</span> =&gt;
+  [...Array(<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">n</span>).<span style="color:#a6e22e">keys</span>()].<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span>) =&gt; &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">i</span>}&gt;<span style="color:#a6e22e">p</span>{<span style="color:#a6e22e">i</span>}&lt;/<span style="color:#f92672">p</span>&gt;)
+);
+</code></pre></div><p>可以看到，<code>Example</code>组件是记忆化组件，意味着它仅在<code>props</code>发生改变时进行渲染，因此可以实现与前面<code>useMemo</code>的例子相同的性能优化的效果。</p>
+<p>另外，<code>useCallback</code>之所以放在这一小节，是因为它和<code>useMemo</code>是等价的：<br>
+<code>useCallback(fn, deps)</code>相当于<code>useMemo(() =&gt; fn, deps)</code></p>
+<p>你可能会问，构造一个函数的代价会很大吗，为什么也需要记忆？<br>
+其实<code>useCallback</code>记忆函数有另外的更重要的目的，就是使得回调函数不变以避免重渲染。</p>
+<p>还是举个例子吧：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+
+      &lt;<span style="color:#f92672">Example</span> <span style="color:#a6e22e">n</span><span style="color:#f92672">=</span>{<span style="color:#ae81ff">50000</span>} <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; {}} /&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Example</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">memo</span>(<span style="color:#a6e22e">props</span> =&gt; (
+  &lt;<span style="color:#f92672">div</span>&gt;
+    &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">onClick</span>}&gt;<span style="color:#a6e22e">button</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    {[...Array(<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">n</span>).<span style="color:#a6e22e">keys</span>()].<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span>) =&gt; (
+      &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">i</span>}&gt;<span style="color:#a6e22e">p</span>{<span style="color:#a6e22e">i</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+    ))}
+  &lt;/<span style="color:#f92672">div</span>&gt;
+));
+</code></pre></div><p>你会发现在点击<code>add</code>按钮时，UI又卡住了！</p>
+<p>这是因为当<code>App</code>重渲染时，<code>Example</code>的<code>onClick</code>属性对应的回调函数<code>() =&gt; {}</code>会重新构造一个，虽然实现一致，但并不是上次的那个函数了。</p>
+<p>这也就意味着<code>Example</code>的<code>props</code>发生了改变，所以<code>Example</code>即使是<code>memo</code>的组件，也仍然要重渲染。</p>
+<p>这时候<code>useCallback</code>就派上用场了，我们需要把<code>() =&gt; {}</code>记忆下来：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">App</span>() {
+  <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">setVal</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">1</span>);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cb</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useCallback</span>(() =&gt; {}, []);
+
+  <span style="color:#66d9ef">return</span> (
+    &lt;<span style="color:#f92672">div</span>&gt;
+      &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">val</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setVal</span>(<span style="color:#a6e22e">i</span> =&gt; <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">add</span>&lt;/<span style="color:#f92672">button</span>&gt;
+
+      &lt;<span style="color:#f92672">Example</span> <span style="color:#a6e22e">n</span><span style="color:#f92672">=</span>{<span style="color:#ae81ff">30000</span>} <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">cb</span>} /&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+  );
+}
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Example</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">memo</span>(<span style="color:#a6e22e">props</span> =&gt; (
+  &lt;<span style="color:#f92672">div</span>&gt;
+    &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">onClick</span>}&gt;<span style="color:#a6e22e">button</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    {[...Array(<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">n</span>).<span style="color:#a6e22e">keys</span>()].<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span>) =&gt; (
+      &lt;<span style="color:#f92672">p</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">i</span>}&gt;<span style="color:#a6e22e">p</span>{<span style="color:#a6e22e">i</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+    ))}
+  &lt;/<span style="color:#f92672">div</span>&gt;
+));
+</code></pre></div><p>终于，一切正常了。</p>
+<h3 id="useref">useRef</h3>
+<p><code>useRef</code>非常像<code>useState</code>，主要区别于两点：<code>useRef</code>不会触发重渲染，且是同步的。</p>
+<p>所以，<code>useRef</code>更像一个纯粹的外部状态，因为它不像<code>useState</code>和<code>React</code>的渲染机制挂钩，它单纯的用于在组件的生命周期内保存数据。</p>
+<p>因此，它可以被类比成组件类的一个成员变量。</p>
+<p>正是这种保存数据的特性，使得它可以用于引用DOM节点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-jsx" data-lang="jsx"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">TextInputWithFocusButton</span>() {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">inputEl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#66d9ef">null</span>);
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onButtonClick</span> <span style="color:#f92672">=</span> () =&gt; {
+    <span style="color:#75715e">// `current` 指向已挂载到 DOM 上的文本输入元素
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">inputEl</span>.<span style="color:#a6e22e">current</span>.<span style="color:#a6e22e">focus</span>();
+  };
+  <span style="color:#66d9ef">return</span> (
+    <span style="color:#f92672">&lt;&gt;</span>
+      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">ref</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">inputEl</span>} <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> /&gt;
+      &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">onButtonClick</span>}&gt;<span style="color:#a6e22e">Focus</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">input</span>&lt;/<span style="color:#f92672">button</span>&gt;
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/&gt;</span>
+  );
+}
+</code></pre></div><hr>
+<p>最后还剩几个Hooks，并不常用，有兴趣直接看官网的文档吧。</p>
+<p><a href="https://zh-hans.reactjs.org/docs/hooks-reference.html">https://zh-hans.reactjs.org/docs/hooks-reference.html</a></p>
+<blockquote>
+<p>有人说React Hooks的原理基于函数式编程Algebraic Effects的概念，有兴趣可以了解一下。</p>
+</blockquote>
+
+
+    
+
+    
+
+    <h4 class="related-header">相关文章</h4>
+    <ul>
+        
+            <li><a href="/2020/05/editflow%E7%B3%BB%E5%88%97%E9%9B%B6%E7%AE%80%E4%BB%8B/">editflow系列（零）：简介</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E5%9B%9B%E6%BC%94%E7%A4%BA/">简易问卷系统（四）演示</a></li>
+        
+            <li><a href="/2018/09/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%89%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E5%92%8C%E7%BB%84%E4%BB%B6%E5%8A%A8%E6%80%81%E8%B0%83%E7%94%A8/">简易问卷系统（三）代码编辑器和组件动态调用</a></li>
+        
+            <li><a href="/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%BA%8C%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/">简易问卷系统（二）接口设计</a></li>
+        
+            <li><a href="/2018/08/%E7%AE%80%E6%98%93%E9%97%AE%E5%8D%B7%E7%B3%BB%E7%BB%9F%E4%B8%80%E8%83%8C%E6%99%AF%E5%92%8C%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/">简易问卷系统（一）背景和模型设计</a></li>
+        
+    </ul>
+
+
+</article>
+
+<div id="gitalk-container"></div>
+
+
+
+        </div>
+
+        <aside class="col-12 col-lg-3 ml-auto blog-sidebar">
+    
+        
+
+
+<section>
+    <h4>近期文章</h4>
+    <ol class="list-unstyled">
+        
+        <li>
+            <a href="/post/">Posts</a>
+        </li>
+        
+        <li>
+            <a href="/2024/02/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2023/01/%E4%B8%80%E5%B9%B4/">一年</a>
+        </li>
+        
+        <li>
+            <a href="/2022/09/%E8%AF%BB%E5%A4%A7%E8%A7%84%E6%A8%A1c-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%B0%88%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">读《大规模C++程序设计》，谈架构设计</a>
+        </li>
+        
+        <li>
+            <a href="/2020/07/editflow%E7%B3%BB%E5%88%97%E4%B8%89%E4%BD%BF%E7%94%A8blender%E5%88%B6%E4%BD%9C%E5%AE%A3%E4%BC%A0%E7%89%87/">editflow系列（三）：使用Blender制作宣传片</a>
+        </li>
+        
+    </ol>
+</section>
+
+    
+    
+        <section>
+    
+        
+        <h4>分类</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/categories/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0">开发笔记</a>
+            
+            <a class="badge badge-primary" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/categories/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/categories/%E9%98%85%E8%AF%BB">阅读</a>
+            
+        </p>
+        
+    
+        
+        <h4>标签</h4>
+        <p>
+            
+            <a class="badge badge-primary" href="/tags/asp.net-core">asp.net-core</a>
+            
+            <a class="badge badge-primary" href="/tags/blender">blender</a>
+            
+            <a class="badge badge-primary" href="/tags/c&#43;&#43;">c&#43;&#43;</a>
+            
+            <a class="badge badge-primary" href="/tags/cmake">cmake</a>
+            
+            <a class="badge badge-primary" href="/tags/concept">concept</a>
+            
+            <a class="badge badge-primary" href="/tags/cpp">cpp</a>
+            
+            <a class="badge badge-primary" href="/tags/dag">dag</a>
+            
+            <a class="badge badge-primary" href="/tags/git">git</a>
+            
+            <a class="badge badge-primary" href="/tags/hooks">hooks</a>
+            
+            <a class="badge badge-primary" href="/tags/laravel">laravel</a>
+            
+            <a class="badge badge-primary" href="/tags/macos">macos</a>
+            
+            <a class="badge badge-primary" href="/tags/monaco">monaco</a>
+            
+            <a class="badge badge-primary" href="/tags/opengl">opengl</a>
+            
+            <a class="badge badge-primary" href="/tags/python">python</a>
+            
+            <a class="badge badge-primary" href="/tags/react">react</a>
+            
+            <a class="badge badge-primary" href="/tags/restful">restful</a>
+            
+            <a class="badge badge-primary" href="/tags/rvalue">rvalue</a>
+            
+            <a class="badge badge-primary" href="/tags/sigmoid">sigmoid</a>
+            
+            <a class="badge badge-primary" href="/tags/traits">traits</a>
+            
+            <a class="badge badge-primary" href="/tags/type">type</a>
+            
+            <a class="badge badge-primary" href="/tags/type-traits">type-traits</a>
+            
+            <a class="badge badge-primary" href="/tags/typescript">typescript</a>
+            
+            <a class="badge badge-primary" href="/tags/workflow">workflow</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB">二元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E4%BF%A1%E5%BF%B5%E7%BD%91%E7%BB%9C">信念网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%85%AC%E5%85%B1%E8%87%AA%E8%A1%8C%E8%BD%A6">公共自行车</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93">动态链接库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8C%97%E4%BA%AC%E5%B8%88%E8%8C%83%E5%A4%A7%E5%AD%A6">北京师范大学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8E%86%E5%8F%B2">历史</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD">反向传播</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E6%A8%A1%E5%9E%8B">图模型</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%9B%BE%E8%AE%BA">图论</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E5%85%83%E5%88%86%E7%B1%BB">多元分类</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92">多项式回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BD%92%E4%B8%80%E5%8C%96">归一化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7">微信公众号</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%80%A7%E8%83%BD">性能</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%8F%E6%8D%B7">敏捷</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%99%E5%8A%A1%E5%8A%A9%E6%89%8B">教务助手</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%97%A7%E4%BA%8B%E9%87%8D%E6%8F%90">旧事重提</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A0%A1%E5%9B%AD">校园</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D">梯度下降</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%A6%82%E7%8E%87">概率</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E5%8C%96">正规化</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B">正规方程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E6%B5%8B%E8%AF%95">测试</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%94%9F%E6%B4%BB">生活</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%AE%97%E6%B3%95">算法</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92">线性回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E7%A8%8B">编程</a>
+            
+            <a class="badge badge-primary" href="/tags/%E7%BC%96%E8%AF%91">编译</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AE%B0%E5%BF%86">记忆</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0">读书笔记</a>
+            
+            <a class="badge badge-primary" href="/tags/%E8%B8%8F%E9%B8%BD%E8%A1%8C">踏鸽行</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%87%BD%E6%95%B0">逻辑函数</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92">逻辑回归</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%87%8D%E6%9E%84">重构</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%93%BE%E6%8E%A5">链接</a>
+            
+            <a class="badge badge-primary" href="/tags/%E9%9A%8F%E7%AC%94">随笔</a>
+            
+        </p>
+        
+    
+</section>
+    
+</aside>
+
+      </div>
+    </div>
+    
+
+    
+    
+
+
+
+
+
+
+<footer class="blog-footer w-100">
+    <nav class="navbar navbar-light bg-light">
+        <p class="w-100 text-center"><a href="https://beian.miit.gov.cn" target="_blank">Hongxu Xu © 2020 苏ICP备2021014763号-1</a></p>
+        <p class="w-100 text-center"><a href="#">回到顶部</a></p>
+    </nav>
+</footer>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+});
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax();
+    for(var i = 0; i != all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/javascript">
+    String.prototype.trimEnd = function (str) {
+        if (this.endsWith(str)) {
+            return this.substring(0, this.length - str.length);
+        }
+        return this;
+    }
+
+    function cleanedHref() {
+        var res = location.href.trim();
+        var regex = /(index\.html?|[#/])+$/gi;
+        return res.replace(regex, '')
+    }
+
+    var gitalk = new Gitalk({
+        clientID: 'dd67fbd38a74844e6dce',
+        clientSecret: '7278e4bf15c952b3491d7c61716b9672962f4460',
+        repo: 'xuhongxu96.github.io',
+        owner: 'xuhongxu96',
+        admin: ['xuhongxu96'],
+        id: "d44c59bec6c9fadfc08a80be2c1b4069",      
+        distractionFreeMode: true  
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+    
+
+    
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

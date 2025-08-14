@@ -5,7 +5,9 @@ src = "src"
 title = "Hongxu Xu"
 
 [build]
-build-dir = "html"
+build-dir = "docs"
 
 [output.html]
 mathjax-support = true
+smart-punctuation = true
+cname = "xuhongxu.com"

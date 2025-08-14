@@ -1,0 +1,11 @@
+[book]
+authors = ["Hongxu Xu"]
+language = "en"
+src = "src"
+title = "Hongxu Xu"
+
+[build]
+build-dir = "html"
+
+[output.html]
+mathjax-support = true

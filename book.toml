@@ -1,5 +1,6 @@
 [book]
 authors = ["Hongxu Xu"]
+description = "Hongxu Xu's personal website"
 language = "en"
 src = "src"
 title = "Hongxu Xu"
@@ -11,3 +12,4 @@ build-dir = "docs"
 mathjax-support = true
 smart-punctuation = true
 cname = "xuhongxu.com"
+additional-css = ["style.css"]

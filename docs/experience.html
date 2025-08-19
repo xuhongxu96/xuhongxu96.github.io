@@ -252,6 +252,9 @@ Beijing, China (Transferred to Suzhou, Jiangsu, China in May 2019)</p>
   automaton minimization. 
   Reduced the latency by 20%. -->
 
+
+                        <footer id="footer" style="margin-top: 8em;">
+                        </footer>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -280,6 +283,57 @@ Beijing, China (Transferred to Suzhou, Jiangsu, China in May 2019)</p>
             </nav>
 
         </div>
+
+        <!-- Set the theme for giscus comments -->
+        <script>
+            function normGiscusTheme (theme) {
+                if (theme == "light") {
+                    return "light";
+                } else if (theme == "rust") {
+                    return "noborder_light";
+                } else {
+                    return "transparent_dark";
+                }
+            }
+
+            function changeGiscusTheme (theme) {
+                theme = normGiscusTheme(theme);
+
+                function sendMessage(message) {
+                    const iframe = document.querySelector('iframe.giscus-frame');
+                    if (!iframe) return;
+                    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+                }
+
+                sendMessage({
+                    setConfig: {
+                    theme: theme
+                    }
+                });
+            }
+
+            let giscusAttributes = {
+                "src": "https://giscus.app/client.js",
+                "data-repo": "xuhongxu96/xuhongxu96.github.io",
+                "data-repo-id": "MDEwOlJlcG9zaXRvcnkxNDA0NTkxOTg=",
+                "data-category": "Comments",
+                "data-category-id": "DIC_kwDOCF88vs4CuW9z",
+                "data-mapping": "pathname",
+                "data-strict": "1",
+                "data-reactions-enabled": "1",
+                "data-emit-metadata": "0",
+                "data-input-position": "bottom",
+                "data-theme": normGiscusTheme(theme),
+                "data-lang": "en",
+                "data-loading": "lazy",
+                "crossorigin": "anonymous",
+                "async": "",
+            };
+            
+            let giscusScript = document.createElement("script");
+            Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+            document.getElementById("footer").appendChild(giscusScript);
+        </script>
 
 
 

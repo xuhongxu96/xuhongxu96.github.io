@@ -1,0 +1,565 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Conjunctive Queries - Hongxu Xu</title>
+
+
+        <!-- Custom HTML head -->
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PMJ5E1FYG6"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        
+          gtag('config', 'G-PMJ5E1FYG6');
+        </script>
+        <meta name="description" content="Hongxu Xu&#x27;s personal website">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+        <meta property="og:title" content="notes/cs848/foundations/02.conjunctive-queries.md" />
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../style.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Hongxu Xu</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="conjunctive-queries"><a class="header" href="#conjunctive-queries">Conjunctive Queries</a></h1>
+<!-- prettier-ignore-start -->
+<blockquote>
+<p><em>Mathjax</em> may have <a href="https://meta.stackexchange.com/questions/384924/i-think-there-is-a-mathjax-bug-for-mathcal-typesetting-on-some-platforms">issues</a> to display math symbols in particular styles, such as \(\mathcal{A}\).<br />
+You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Common HTML</em> (right click on any math expressions):
+<img src="../../../mathjax.png" alt="mathjax" />
+\( \newcommand{\att}{\textbf{att}} \)
+\( \newcommand{\attTotalOrder}{\leq_{\att}} \)
+\( \newcommand{\dom}{\textbf{dom}} \)
+\( \newcommand{\Dom}{\textit{Dom}} \)
+\( \newcommand{\relname}{\textbf{relname}} \)
+\( \newcommand{\sort}{\textit{sort}} \)
+\( \newcommand{\arity}{\textit{arity}} \)
+\( \newcommand{\finPowerSet}{\mathcal{P}^{\text{fin}}} \)
+\( \newcommand{\dbschema}[1]{\textbf{#1}} \)
+\( \newcommand{\dbinst}[1]{\textbf{#1}} \)
+\( \newcommand{\rel}[1]{\textit{#1}} \)
+\( \newcommand{\attname}[1]{\textit{#1}} \)
+\( \newcommand{\varSet}{\textbf{var}} \)
+\( \newcommand{\ans}{\textit{ans}} \)
+\( \newcommand{\var}{\textit{var}} \)
+\( \newcommand{\adom}{\textit{adom}} \)
+\( \newcommand{\tableau}{\textbf{T}} \)
+\( \newcommand{\free}{\textit{free}} \)</p>
+</blockquote>
+<!-- prettier-ignore-end -->
+<p>a query (mapping) is <em>from</em> (or <em>over</em>) its input schema and <em>to</em> its output schema.</p>
+<!-- prettier-ignore-start -->
+<ul>
+<li><em>query</em>: a syntactic object</li>
+<li><em>query mapping</em>: a function defined by a query interpreted under a specified semantics
+<ul>
+<li>its domain: the family of all instances of an input schema</li>
+<li>its range: the family of instances of an output schema</li>
+<li>we often blur query and query mapping when the meaning is clear from context</li>
+</ul>
+</li>
+<li><em>input schema</em>: a specified relation or database schema</li>
+<li><em>output schema</em>: a relation schema or database schema
+<ul>
+<li>For a relation schema, the relation name may be specified as part of the query syntax or by the context</li>
+</ul>
+</li>
+<li>\(q_1 \equiv q_2\) denotes two queries \(q_1\) and \(q_2\) over \(\dbschema{R}\) are <em>equivalent</em>,
+i.e., they have the same output schema and \(q_1(\dbinst{I}) = q_2(\dbinst{I})\) for each instance \(\dbinst{I}\) over \(\dbschema{R}\).</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h2 id="logic-based-perspective"><a class="header" href="#logic-based-perspective">Logic-Based Perspective</a></h2>
+<p>Three versions of conjunctive queries:</p>
+<ol>
+<li>Rule-Based Conjunctive Queries</li>
+<li>Tableau Queries</li>
+<li>Conjunctive Calculus</li>
+</ol>
+<h3 id="rule-based-conjunctive-queries"><a class="header" href="#rule-based-conjunctive-queries">Rule-Based Conjunctive Queries</a></h3>
+<h4 id="definition"><a class="header" href="#definition">Definition</a></h4>
+<!-- prettier-ignore-start -->
+<p>A <em>rule-based conjunctive query</em> (or often more simply called <em>rules</em>) \(q\) over a relation schema \(\dbschema{R}\) is an expression of the form
+\[
+\ans(u) \leftarrow \rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)
+\]
+where \(n \geq 0\), \(\rel{R}_1, \ldots, \rel{R}_n\) are relation names in \(\dbschema{R}\);
+\(\ans\) is a relation name not in \(\dbschema{R}\);
+and \(u, u_1, \ldots, u_n\) are free tuples (i.e., may use either variables or constants).</p>
+<ul>
+<li>\(\var(q)\): the set of variables occurring in \(q\).</li>
+<li><em>body</em>: \(\rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)\)</li>
+<li><em>head</em>: \(\ans(u)\)</li>
+<li><em>range restricted</em>: each variable occurring in the head also occurs in the body
+<ul>
+<li>all conjunctive queries considered here are range restricted</li>
+</ul>
+</li>
+<li><em>valuation</em>: a valuation \(v\) over \(V\), a finite subset of \(\varSet\), is a total function \(v\) from \(V\) to \(\dom\) (of constants)
+<ul>
+<li>extended to be identity on \(\dom\) (so that the domain can contain both variables and constants)</li>
+<li>extended to map free tuples to tuples (so that the domain/range can be in the tuple form)</li>
+</ul>
+</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h4 id="semantics"><a class="header" href="#semantics">Semantics</a></h4>
+<p>Let \(q\) be the query, and let \(\dbinst{I}\) be a database instance of schema \(\dbschema{R}\).
+The <em>image</em> of \(\dbinst{I}\) under \(q\) is:</p>
+<!-- prettier-ignore-start -->
+<p>\[
+q(\dbinst{I}) = \{ v(u) \mid v \text{ is a valuation over } \var(q) \text{ and } v(u_i) \in \dbinst{I}(\rel{R}_i) \text{ for each } i \in [1, n] \}
+\]</p>
+<ul>
+<li><em>active domain</em>
+<ul>
+<li>of a database instance \(\dbinst{I}\), denoted \(\adom(\dbinst{I})\), is the set of constants that occur in \(\dbinst{I}\)</li>
+<li>of a relation instance \(I\), denoted \(\adom(I)\), is the set of constants that occur in \(I\)</li>
+<li>of a query \(q\), denoted \(\adom(q)\), is the set of constants that occur in \(q\)</li>
+<li>\(\adom(q, \dbinst{I})\) is an abbreviation for \(\adom(q) \cup \adom(\dbinst{I})\)
+<ul>
+<li>\(\adom(q(\dbinst{I})) \subseteq \adom(q, \dbinst{I})\)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>extensional</em> relations: relations in the body of the query, i.e., \(\rel{R}_1, \ldots, \rel{R}_n\)
+<ul>
+<li>because they are known/provided by the input instance \(\dbinst{I}\)</li>
+</ul>
+</li>
+<li><em>intensional</em> relation: the relation in the head of the query, i.e., \(\ans\)
+<ul>
+<li>because it is not stored and its value is computed on request by the query</li>
+</ul>
+</li>
+<li><em>extensional database (edb)</em>: a database instance associated with the extensional relations</li>
+<li><em>intensional database (idb)</em>: the rule itself</li>
+<li><em>idb relation</em>: the relation defined by the idb</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h4 id="properties"><a class="header" href="#properties">Properties</a></h4>
+<p>Conjunctive queries are:</p>
+<ul>
+<li><em>monotonic</em>: a query \(q\) over \(\dbschema{R}\) is monotonic if for each \{\dbinst{I}, \dbinst{J}\} over \(\dbschema{R}\),
+\(\dbinst{I} \subseteq \dbinst{J} \implies q(\dbinst{I}) \subseteq q(\dbinst{J})\)</li>
+<li><em>satisfiable</em>: a query \(q\) is satisfiable if there exists a database instance \(\dbinst{I}\) such that \(q(\dbinst{I}) \neq \emptyset\)</li>
+</ul>
+<h3 id="tableau-queries"><a class="header" href="#tableau-queries">Tableau Queries</a></h3>
+<p>A <em>tableau query</em> is simply a pair \((\tableau, u)\) where \(\tableau\) is a tableau
+and each variable in \(u\) also occurs in \(\tableau\).</p>
+<p>This is closest to the visual form provided by Query-By-Example (QBE).</p>
+<ul>
+<li><em>summary</em>: the free tuple \(u\) representing the tuples included in the answer to the query</li>
+<li><em>embedding</em>: a valuation \(v\) for the variables occurring in \(\tableau\) such that \(v(\tableau) \subseteq \dbinst{I}\)
+<ul>
+<li>the output of \((\tableau, u)\) on \(\dbinst{I}\) consists of all tuples \(v(u)\) for each embedding \(v\) of \(\tableau\) into \(\dbinst{I}\)</li>
+</ul>
+</li>
+<li><em>typed</em>: a tableau query \(q = (\tableau, u)\) under the named perspective, where \(\tableau\) is
+over relation schema \(R\) and \(\sort(u) \subseteq \sort(R)\), is typed if no variable of \(\tableau\)
+is associated with two distinct attributes in \(q\)</li>
+</ul>
+<h4 id="examples"><a class="header" href="#examples">Examples</a></h4>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>\(x_{ti}\)</td><td>“Bergman”</td><td>\(x_{ac}\)</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Location</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Address</th><th>Phone</th></tr></thead><tbody>
+<tr><td>\(x_{th}\)</td><td>\(x_{ad}\)</td><td>\(x_p\)</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Pariscope</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Title</th><th>Schedule</th></tr></thead><tbody>
+<tr><td>\(x_{th}\)</td><td>\(x_{ti}\)</td><td>\(x_{s}\)</td></tr>
+</tbody></table>
+</div>
+<p>The above tableau query is typed because each variable is associated with only one attribute:</p>
+<ul>
+<li>\(x_{ti}\): \(\attname{Title}\)</li>
+<li>\(x_{ac}\): \(\attname{Actor}\)</li>
+<li>\(x_{th}\): \(\attname{Theater}\)</li>
+<li>\(x_{ad}\): \(\attname{Address}\)</li>
+<li>\(x_p\): \(\attname{Phone}\)</li>
+<li>\(x_{s}\): \(\attname{Schedule}\)</li>
+</ul>
+<p>However, the following tableau query is untyped:</p>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>\(x_{ti}\)</td><td>\(x_{ac}\)</td><td>\(x_{ac}\)</td></tr>
+</tbody></table>
+</div>
+<p>Because \(x_{ac}\) is associated with both \(\attname{Director}\) and \(\attname{Actor}\).</p>
+<h3 id="conjunctive-calculus"><a class="header" href="#conjunctive-calculus">Conjunctive Calculus</a></h3>
+<p>The conjunctive query
+\[
+\ans(u) \leftarrow \rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)
+\]</p>
+<p>can be expressed as the following conjunctive calculus query that has the same semantics:
+\[
+\left\{ e_1, \ldots, e_m \vert \exists x_1, \ldots, x_k \left( \rel{R}(u_1) \wedge \ldots \wedge \rel{R}(u_n) \right) \right\}
+\]
+where \(x_1, \ldots, x_k\) are all the variables occurring in the body and not the head.</p>
+<h4 id="conjunctive-calculus-formula"><a class="header" href="#conjunctive-calculus-formula">Conjunctive Calculus Formula</a></h4>
+<p>Let \(\dbschema{R}\) be a relation schema.
+A <em>(well-formed) formula</em> over \(\dbschema{R}\) for the conjunctive calculus is an expression having <strong>one of</strong> the following forms:</p>
+<ol>
+<li>an atom over \(\dbschema{R}\);</li>
+<li>\(\varphi \wedge \psi \), where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\); or</li>
+<li>\(\exists x \varphi\), where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\).</li>
+</ol>
+<p>An occurrence of a variable \(x\) in formula \(\varphi\) is <em>free</em> if:</p>
+<ol>
+<li>\(\varphi\) is an atom; or</li>
+<li>\(\varphi = (\psi \wedge \xi)\) and the occurrence of \(x\) is free in \(\psi\) or \(\xi\); or</li>
+<li>\(\varphi = \exists y \psi\), \(x \neq y\), and the occurrence of \(x\) is free in \(\psi\).</li>
+</ol>
+<p>\(\free(\varphi)\): the set of free variables in \(\varphi\).</p>
+<p>An occurrence of a variable that is not free is <em>bound</em>.</p>
+<h4 id="conjunctive-calculus-query"><a class="header" href="#conjunctive-calculus-query">Conjunctive Calculus Query</a></h4>
+<p>A <em>conjunctive calculus query</em> over database schema \(\dbschema{R}\) is an expression of the form
+\[
+\{ e_1, \ldots, e_m \mid \varphi \}
+\]
+where</p>
+<ul>
+<li>\(\varphi\) is a conjunctive calculus formula,</li>
+<li>\(\langle e_1, \ldots, e_m \rangle\) is a free tuple, and</li>
+<li>the set of variables occurring in \(\langle e_1, \ldots, e_m \rangle\) is exactly \(\free(\varphi)\).</li>
+</ul>
+<p>For named perspective, the above query can be written as:
+\[
+\{ \langle e_1, \ldots, e_m \rangle : A_1, \ldots, A_m \mid \varphi \}
+\]</p>
+<blockquote>
+<p>Note: In the previous chapter, a named tuple was usually denoted as:</p>
+<p>\[ \langle A_1:a_1, \ldots, A_m:a_m \rangle \]</p>
+<p>But here we denote the named tuple as:</p>
+<p>\[ \langle e_1, \ldots, e_m \rangle : A_1, \ldots, A_m \]</p>
+<p>Not sure which one is better or whether the author did this intentionally.</p>
+</blockquote>
+<h4 id="semantics-1"><a class="header" href="#semantics-1">Semantics</a></h4>
+<h5 id="valuation"><a class="header" href="#valuation">Valuation</a></h5>
+<p>A <em>valuation</em> over \(V \subset \varSet \) is a total function \(v\) from \(V\) to \(\dom\),
+which can be viewed as a syntactic expression of the form:
+\[
+\{ x_1/a_1, \ldots, x_n/a_n \}
+\]
+where</p>
+<ul>
+<li>\(x_1, \ldots, x_n\) is a listing of \(V\),</li>
+<li>\(a_i = v(x_i)\) for each \(i \in [1, n]\).</li>
+</ul>
+<h5 id="interpretation-as-a-set"><a class="header" href="#interpretation-as-a-set">Interpretation as a Set</a></h5>
+<p>If \(x \not \in V\), and \(c \in \dom\),
+then \(v \cup \{ x/c \}\) is the valuation over \(V \cup \{ x \}\)
+that agrees with \(v\) on \(V\) and maps \(x\) to \(c\).</p>
+<h5 id="satisfaction"><a class="header" href="#satisfaction">Satisfaction</a></h5>
+<p>Let \(\dbschema{R}\) be a database schema, \(\varphi\) a conjunctive calculus formula over \(\dbschema{R}\),
+and \(v\) a valuation over \(\free(\varphi)\).
+Then \(\dbinst{I} \models \varphi[v]\), if</p>
+<ol>
+<li>\(\varphi = \rel{R}(u)\) is an atom and \(v(u) \in \dbinst{I}(\rel{R})\); or</li>
+<li>\(\varphi = (\psi \wedge \xi)\) and \(\dbinst{I} \models \psi[v \vert_{\free(\psi)}]\) and \(\dbinst{I} \models \xi[v \vert_{\free(\xi)}]\); or</li>
+<li>\(\varphi = \exists x \psi\) and there exists a constant \(c \in \dom\) such that
+\(\dbinst{I} \models \psi[v \cup \{ x/c \}]\).</li>
+</ol>
+<h5 id="image"><a class="header" href="#image">Image</a></h5>
+<!-- prettier-ignore-start -->
+<p>Let \(q = \{ e_1, \ldots, e_m \mid \varphi \}\) be a conjunctive calculus query over \(\dbschema{R}\).
+For an instance \(\dbinst{I}\) over \(\dbschema{R}\), the <em>image</em> of \(\dbinst{I}\) under \(q\) is:
+\[
+q(\dbinst{I}) = \{ v( \langle e_1, \ldots, e_m \rangle ) \mid v \text{ is a valuation over } \free(\varphi) \text{ and } \dbinst{I} \models \varphi[v] \}
+\]</p>
+<!-- prettier-ignore-end -->
+<ul>
+<li><em>active domain</em>
+<ul>
+<li>of a formula \(\varphi\), denoted \(\adom(\varphi)\), is the set of constants that occur in \(\varphi\)</li>
+<li>\(\adom(\varphi, \dbinst{I})\) is an abbreviation for \(\adom(\varphi) \cup \adom(\dbinst{I})\)</li>
+<li>If \(\dbinst{I} \models \varphi[v]\), then the range of \(v\) is contained in \(\adom(\dbinst{I})\)
+<ul>
+<li>to evaluate a conjunctive calculus query, one need only consider valuations with range constrained in \(\adom(\varphi, \dbinst{I})\),
+i.e., only a finite number of them</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>equivalent</em>: conjunctive calculus formulas \(\varphi\) and \(\psi\) over \(\dbschema{R}\) are equivalent,
+if
+<ul>
+<li>they have the same free variables and,</li>
+<li>for each \(\dbinst{I}\) over \(\dbschema{R}\) and valuation \(v\) over \(\free(\varphi) = \free(\psi)\),
+\(\dbinst{I} \models \varphi[v]\) if and only if \(\dbinst{I} \models \psi[v]\)</li>
+</ul>
+</li>
+</ul>
+<h4 id="normal-form"><a class="header" href="#normal-form">Normal Form</a></h4>
+
+
+                        <footer id="footer" style="margin-top: 8em;">
+                        </footer>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../notes/cs848/foundations/01.the-relation-model.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../notes/cs848/foundations/01.the-relation-model.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <!-- Set the theme for giscus comments -->
+        <script>
+            function normGiscusTheme (theme) {
+                if (theme == "light") {
+                    return "light";
+                } else if (theme == "rust") {
+                    return "noborder_light";
+                } else {
+                    return "transparent_dark";
+                }
+            }
+
+            function changeGiscusTheme (theme) {
+                theme = normGiscusTheme(theme);
+
+                function sendMessage(message) {
+                    const iframe = document.querySelector('iframe.giscus-frame');
+                    if (!iframe) return;
+                    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+                }
+
+                sendMessage({
+                    setConfig: {
+                    theme: theme
+                    }
+                });
+            }
+
+            let giscusAttributes = {
+                "src": "https://giscus.app/client.js",
+                "data-repo": "xuhongxu96/xuhongxu96.github.io",
+                "data-repo-id": "MDEwOlJlcG9zaXRvcnkxNDA0NTkxOTg=",
+                "data-category": "Comments",
+                "data-category-id": "DIC_kwDOCF88vs4CuW9z",
+                "data-mapping": "og:title",
+                "data-strict": "1",
+                "data-reactions-enabled": "1",
+                "data-emit-metadata": "0",
+                "data-input-position": "bottom",
+                "data-theme": normGiscusTheme(theme),
+                "data-lang": "en",
+                "data-loading": "lazy",
+                "crossorigin": "anonymous",
+                "async": "",
+            };
+            
+            let giscusScript = document.createElement("script");
+            Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+            document.getElementById("footer").appendChild(giscusScript);
+        </script>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

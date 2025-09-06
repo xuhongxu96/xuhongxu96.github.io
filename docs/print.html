@@ -20,6 +20,7 @@
         <meta name="description" content="Hongxu Xu&#x27;s personal website">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
+        <meta property="og:title" content="print.md" />
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -1720,6 +1721,490 @@ class MultiHeadAttention(nn.Module):
 
 \end{document}
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cs-848-advanced-topics-in-database-algorithmic-aspects-of-database-query-processing"><a class="header" href="#cs-848-advanced-topics-in-database-algorithmic-aspects-of-database-query-processing">CS 848: Advanced Topics in Database: Algorithmic Aspects of Database Query Processing</a></h1>
+<blockquote>
+<p>Fall 25</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="notes-for-foundations-of-databases"><a class="header" href="#notes-for-foundations-of-databases">Notes for <em>Foundations of Databases</em></a></h1>
+<p><a href="http://webdam.inria.fr/Alice/">Foundations of Databases (The Alice Book)</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-relational-model"><a class="header" href="#the-relational-model">The Relational Model</a></h1>
+<!-- prettier-ignore-start -->
+<blockquote>
+<p><em>Mathjax</em> may have <a href="https://meta.stackexchange.com/questions/384924/i-think-there-is-a-mathjax-bug-for-mathcal-typesetting-on-some-platforms">issues</a> to display math symbols in particular styles, such as \(\mathcal{A}\).<br />
+You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Common HTML</em> (right click on any math expressions):
+<img src="notes/cs848/foundations/../../../mathjax.png" alt="mathjax" />
+\( \newcommand{\att}{\textbf{att}} \)
+\( \newcommand{\attTotalOrder}{\leq_{\att}} \)
+\( \newcommand{\dom}{\textbf{dom}} \)
+\( \newcommand{\Dom}{\textit{Dom}} \)
+\( \newcommand{\relname}{\textbf{relname}} \)
+\( \newcommand{\sort}{\textit{sort}} \)
+\( \newcommand{\arity}{\textit{arity}} \)
+\( \newcommand{\finPowerSet}{\mathcal{P}^{\text{fin}}} \)
+\( \newcommand{\dbschema}[1]{\textbf{#1}} \)
+\( \newcommand{\dbinst}[1]{\textbf{#1}} \)
+\( \newcommand{\rel}[1]{\textit{#1}} \)
+\( \newcommand{\attname}[1]{\textit{#1}} \)
+\( \newcommand{\varSet}{\textbf{var}} \)</p>
+</blockquote>
+<!-- prettier-ignore-end -->
+<h2 id="informal-terminology"><a class="header" href="#informal-terminology">Informal Terminology</a></h2>
+<ul>
+<li><em>Relation</em>: table
+<ul>
+<li><em>Relation Name</em>: name of the table</li>
+</ul>
+</li>
+<li><em>Attribute</em>: column name</li>
+<li><em>Tuple/Record</em>: line in the table</li>
+<li><em>Domain</em>: set of constants that entries of tuples can take</li>
+<li><em>Database Schema</em>: specifying the structure of the database</li>
+<li><em>Database Instance</em>: specifying the actual content in the database</li>
+</ul>
+<h2 id="formal-definitions"><a class="header" href="#formal-definitions">Formal Definitions</a></h2>
+<ul>
+<li>\(\att\): a countably infinite set of <em>attributes</em>
+<ul>
+<li>assume \(\att\) is fixed</li>
+</ul>
+</li>
+<li>\(\attTotalOrder\): a total order on \(\att\)
+<ul>
+<li>the elements of a set of attributes \(U\) are written according to \(\attTotalOrder\) unless otherwise specified</li>
+</ul>
+</li>
+<li>\(\dom\): a countably infinite set of <em>domains</em> (disjoint from \(\att\))
+<ul>
+<li>assume \(\dom\) is fixed</li>
+<li>a <em>constant</em> is an element of \(\dom\)</li>
+<li>for most cases, the same domain of values is used for all attributes;
+<ul>
+<li>otherwise, assume a mapping \(\Dom\) on \(\att\), where \(\Dom(A)\) is a set called the domain of attribute \(A\)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>\(\relname\): a countably infinite set of <em>relation names</em> (disjoint from \(\att\) and \(\dom\))</li>
+<li>\(\sort\): a function from \(\relname\) to \(\finPowerSet(\att)\) (the finitary powerset of \(\att\))
+<ul>
+<li>\(\sort^{-1}(U)\) is inifinite for each (possibly empty) finite set of attributes \(U\)
+<ul>
+<li>which allows multiple relations to have the same set of attributes</li>
+</ul>
+</li>
+<li>\(\sort(R)\) is called the \(\sort\) of a relation name \(R\)</li>
+<li>\(\arity(R) = |\sort(R)|\): the \(\arity\) of relation name \(R\)</li>
+</ul>
+</li>
+<li>\(R\): a relation name or a <em>relation schema</em>
+<ul>
+<li>Alternative notations:
+<ul>
+<li>\(R[U]\): indicating \(\sort(R) = U\)</li>
+<li>\(R[n]\): indicating \(\arity(R) = n\)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>\(\dbschema{R}\): a <em>database schema</em>
+<ul>
+<li>a nonempty finite set of relation names</li>
+<li>might be written as \(\dbschema{R} = \{R_1[U_1], \ldots, R_n[U_n]\}\)</li>
+</ul>
+</li>
+</ul>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>A</td><td>X</td><td>Y</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Location</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Address</th><th>Phone</th></tr></thead><tbody>
+<tr><td>T1</td><td>Addr1</td><td>P1</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Pariscope</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Title</th><th>Schedule</th></tr></thead><tbody>
+<tr><td>T1</td><td>A</td><td>9:00</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li>The database schema \(\dbschema{CINEMA} = \{ \rel{Movies}, \rel{Location}, \rel{Pariscope} \}\)</li>
+<li>The sorts of the relation names
+<ul>
+<li>\(\sort(\rel{Movies}) = \{ \attname{Title}, \attname{Director}, \attname{Actor} \}\)</li>
+<li>\(\sort(\rel{Location}) = \{ \attname{Theater}, \attname{Address}, \attname{Phone} \}\)</li>
+<li>\(\sort(\rel{Pariscope}) = \{ \attname{Theater}, \attname{Title}, \attname{Schedule} \}\)</li>
+</ul>
+</li>
+</ul>
+<h2 id="named-vs-unnamed-attributestuples"><a class="header" href="#named-vs-unnamed-attributestuples">Named v.s. Unnamed Attributes/Tuples</a></h2>
+<h3 id="named-perspective"><a class="header" href="#named-perspective">Named Perspective</a></h3>
+<p>E.g. \( \langle A:5, B:3 \rangle \)</p>
+<p>a <em>tuple</em> over a finite set of attributes \(U\) (or over a relation schema \(R[U]\))
+is a total mapping (viewed as a function) \(u\) from \(U\) to \(\dom\).</p>
+<ul>
+<li>\(u(U)\): \(u\) is a tuple over \(U\)</li>
+<li>\(u(A)\): the value of \(u\) on an attribute \(A\) in \(U\) (\(A \in U\))</li>
+<li>\(u[V] = u \vert_V\): the restriction of \(u\) to a subset \(V \subseteq U\), i.e.,
+\(u[V]\) denotes the tuple \(v\) over \(V\) such that \(v(A) = u(A)\) for all \(A \in V\)</li>
+</ul>
+<h3 id="unnamed-perspective"><a class="header" href="#unnamed-perspective">Unnamed Perspective</a></h3>
+<p>E.g. \( \langle 5, 3 \rangle \)</p>
+<p>a <em>tuple</em> is an ordered <em>n</em>-tuple (\(n \geq 0\)) of constants (i.e., an element of the Cartesian product \(\dom^n\))</p>
+<ul>
+<li>\(u(i)\): the \(i\)-th coordinate of \(u\)</li>
+</ul>
+<h3 id="correspondence"><a class="header" href="#correspondence">Correspondence</a></h3>
+<p>Because of the total order \(\attTotalOrder\), a tuple \(\langle A_1:a_1, A_2:a_2 \rangle\) (defined as a function)
+can be viewed as an ordered tuple with \((A_1:a_1)\) as a first component and \((A_2:a_2)\) as a second component.
+Ignoring the names, this tuple can be viewed as the ordered tuple \(\langle a_1, a_2 \rangle\).</p>
+<p>Conversely, the ordered tuple \(t = \langle a_1, a_2 \rangle\) can be viewed as a function over the set of integers \(\{1, 2\}\)
+with \(t(i) = a_i\) for each \(i\).</p>
+<h2 id="conventional-vs-logic-programming-relational-model"><a class="header" href="#conventional-vs-logic-programming-relational-model">Conventional v.s. Logic Programming Relational Model</a></h2>
+<h3 id="conventional-perspective"><a class="header" href="#conventional-perspective">Conventional Perspective</a></h3>
+<p>a <em>relation (instance)</em> over a relation schema \(\rel{R}[U]\) is a finite set of tuples \(I\) with sort \(U\).</p>
+<p>a <em>database instance</em> of database schema \(\dbschema{R}\) is a mapping \(\dbinst{I}\) with domain \(\dbschema{R}\),
+such that \(\dbinst{I}(\rel{R})\) is a relation over \(\rel{R}\) for each \(\rel{R} \in \dbschema{R}\).</p>
+<h3 id="logic-programming-perspective"><a class="header" href="#logic-programming-perspective">Logic Programming Perspective</a></h3>
+<p>This perspective is used primarily with the ordered-tuple perspective on tuples.</p>
+<p>A <em>fact</em> over \(\rel{R}\) is an expression of the form \(\rel{R}(a_1, \ldots, a_n)\),
+where \(a_i \in \dom\) for \(i \in [1, n]\).<br />
+If \(u = \langle a_1, \ldots, a_n \rangle\), we sometimes write \(\rel{R}(u)\) for \(\rel{R}(a_1, \ldots, a_n)\).</p>
+<p>a <em>relation (instance)</em> over a relation schema \(\rel{R}\) is a finite set of facts over \(\rel{R}\).</p>
+<p>a <em>database instance</em> of database schema \(\dbschema{R}\) is a finite set \(\dbinst{I}\) that is
+the union of relation instances over \(\rel{R}\) for all \(\rel{R} \in \dbschema{R}\).</p>
+<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
+<p>Assume \(\sort(R) = AB, \sort(S) = A\).</p>
+<h4 id="named-and-conventional"><a class="header" href="#named-and-conventional">Named and Conventional</a></h4>
+<p>\[
+\begin{split}
+I(R) = \{ f_1, f_2, f_3 \} \quad &amp;&amp; \\
+&amp; f_1(A) = a &amp;\quad f_1(B) = b \\
+&amp; f_2(A) = c &amp;\quad f_2(B) = b \\
+&amp; f_3(A) = a &amp;\quad f_3(B) = a \\
+I(S) = \{g\} \quad &amp;&amp; \\
+&amp; g(A) = d &amp;
+\end{split}
+\]</p>
+<h4 id="unnamed-and-conventional"><a class="header" href="#unnamed-and-conventional">Unnamed and Conventional</a></h4>
+<p>\[
+\begin{split}
+I(R) = \{ \langle a, b \rangle, \langle c, b \rangle, \langle a, a \rangle \} \quad &amp;&amp; \\
+I(S) = \{ \langle d \rangle \} \quad &amp;&amp;
+\end{split}
+\]</p>
+<h4 id="named-and-logic-programming"><a class="header" href="#named-and-logic-programming">Named and Logic Programming</a></h4>
+<p>\[
+\{ R(A:a, B:b), R(A:c, B:b), R(A:a, B:a), S(A:d) \}
+\]</p>
+<h4 id="unnamed-and-logic-programming"><a class="header" href="#unnamed-and-logic-programming">Unnamed and Logic Programming</a></h4>
+<p>\[
+\{ R(a, b), R(c, b), R(a, a), S(d) \}
+\]</p>
+<h2 id="variables"><a class="header" href="#variables">Variables</a></h2>
+<p>an infinite set of <em>variables</em> \(\varSet\) will be used to range over elements of \(\dom\).</p>
+<!-- prettier-ignore-start -->
+<ul>
+<li>a <em>free tuple</em> over \(U\) or \(\rel{R}(U)\) is a function \(u\) from \(U\) to \(\dom \cup \varSet\)</li>
+<li>an <em>atom</em> over \(\rel{R}\) is an expression of the form \(\rel{R}(e_1, \ldots, e_n)\),
+where \(n = \arity(\rel{R})\) and each <em>term</em> \(e_i \in \dom \cup \varSet\)</li>
+<li>a <em>ground atom</em> is an atom with no variables, i.e., a <em>fact</em> (see <a href="notes/cs848/foundations/01.the-relation-model.html#logic-programming-perspective">Logic Programming Perspective</a>)</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h2 id="notations"><a class="header" href="#notations">Notations</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Object</th><th>Notation</th></tr></thead><tbody>
+<tr><td>Constants</td><td>\(a, b, c\)</td></tr>
+<tr><td>Variables</td><td>\(x, y\)</td></tr>
+<tr><td>Sets of Variables</td><td>\(X, Y\)</td></tr>
+<tr><td>Terms</td><td>\(e\)</td></tr>
+<tr><td>Attributes</td><td>\(A, B, C\)</td></tr>
+<tr><td>Sets of Attributes</td><td>\(U, V, W\)</td></tr>
+<tr><td>Relation Names</td><td>\(\rel{R}, \rel{S}; \rel{R}[U], \rel{S}[V] \)</td></tr>
+<tr><td>Database Schemas</td><td>\(\dbschema{R}, \dbschema{S} \)</td></tr>
+<tr><td>Tuples</td><td>\(t, s\)</td></tr>
+<tr><td>Free Tuples</td><td>\(u, v, w\)</td></tr>
+<tr><td>Facts</td><td>\(\rel{R}(a_1, \ldots, a_n), R(t)\)</td></tr>
+<tr><td>Atoms</td><td>\(\rel{R}(e_1, \ldots, e_n), R(u)\)</td></tr>
+<tr><td>Relation Instances</td><td>\(I, J\)</td></tr>
+<tr><td>Database Instances</td><td>\(\dbinst{I}, \dbinst{J} \)</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="conjunctive-queries"><a class="header" href="#conjunctive-queries">Conjunctive Queries</a></h1>
+<!-- prettier-ignore-start -->
+<blockquote>
+<p><em>Mathjax</em> may have <a href="https://meta.stackexchange.com/questions/384924/i-think-there-is-a-mathjax-bug-for-mathcal-typesetting-on-some-platforms">issues</a> to display math symbols in particular styles, such as \(\mathcal{A}\).<br />
+You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Common HTML</em> (right click on any math expressions):
+<img src="notes/cs848/foundations/../../../mathjax.png" alt="mathjax" />
+\( \newcommand{\att}{\textbf{att}} \)
+\( \newcommand{\attTotalOrder}{\leq_{\att}} \)
+\( \newcommand{\dom}{\textbf{dom}} \)
+\( \newcommand{\Dom}{\textit{Dom}} \)
+\( \newcommand{\relname}{\textbf{relname}} \)
+\( \newcommand{\sort}{\textit{sort}} \)
+\( \newcommand{\arity}{\textit{arity}} \)
+\( \newcommand{\finPowerSet}{\mathcal{P}^{\text{fin}}} \)
+\( \newcommand{\dbschema}[1]{\textbf{#1}} \)
+\( \newcommand{\dbinst}[1]{\textbf{#1}} \)
+\( \newcommand{\rel}[1]{\textit{#1}} \)
+\( \newcommand{\attname}[1]{\textit{#1}} \)
+\( \newcommand{\varSet}{\textbf{var}} \)
+\( \newcommand{\ans}{\textit{ans}} \)
+\( \newcommand{\var}{\textit{var}} \)
+\( \newcommand{\adom}{\textit{adom}} \)
+\( \newcommand{\tableau}{\textbf{T}} \)
+\( \newcommand{\free}{\textit{free}} \)</p>
+</blockquote>
+<!-- prettier-ignore-end -->
+<p>a query (mapping) is <em>from</em> (or <em>over</em>) its input schema and <em>to</em> its output schema.</p>
+<!-- prettier-ignore-start -->
+<ul>
+<li><em>query</em>: a syntactic object</li>
+<li><em>query mapping</em>: a function defined by a query interpreted under a specified semantics
+<ul>
+<li>its domain: the family of all instances of an input schema</li>
+<li>its range: the family of instances of an output schema</li>
+<li>we often blur query and query mapping when the meaning is clear from context</li>
+</ul>
+</li>
+<li><em>input schema</em>: a specified relation or database schema</li>
+<li><em>output schema</em>: a relation schema or database schema
+<ul>
+<li>For a relation schema, the relation name may be specified as part of the query syntax or by the context</li>
+</ul>
+</li>
+<li>\(q_1 \equiv q_2\) denotes two queries \(q_1\) and \(q_2\) over \(\dbschema{R}\) are <em>equivalent</em>,
+i.e., they have the same output schema and \(q_1(\dbinst{I}) = q_2(\dbinst{I})\) for each instance \(\dbinst{I}\) over \(\dbschema{R}\).</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h2 id="logic-based-perspective"><a class="header" href="#logic-based-perspective">Logic-Based Perspective</a></h2>
+<p>Three versions of conjunctive queries:</p>
+<ol>
+<li>Rule-Based Conjunctive Queries</li>
+<li>Tableau Queries</li>
+<li>Conjunctive Calculus</li>
+</ol>
+<h3 id="rule-based-conjunctive-queries"><a class="header" href="#rule-based-conjunctive-queries">Rule-Based Conjunctive Queries</a></h3>
+<h4 id="definition"><a class="header" href="#definition">Definition</a></h4>
+<!-- prettier-ignore-start -->
+<p>A <em>rule-based conjunctive query</em> (or often more simply called <em>rules</em>) \(q\) over a relation schema \(\dbschema{R}\) is an expression of the form
+\[
+\ans(u) \leftarrow \rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)
+\]
+where \(n \geq 0\), \(\rel{R}_1, \ldots, \rel{R}_n\) are relation names in \(\dbschema{R}\);
+\(\ans\) is a relation name not in \(\dbschema{R}\);
+and \(u, u_1, \ldots, u_n\) are free tuples (i.e., may use either variables or constants).</p>
+<ul>
+<li>\(\var(q)\): the set of variables occurring in \(q\).</li>
+<li><em>body</em>: \(\rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)\)</li>
+<li><em>head</em>: \(\ans(u)\)</li>
+<li><em>range restricted</em>: each variable occurring in the head also occurs in the body
+<ul>
+<li>all conjunctive queries considered here are range restricted</li>
+</ul>
+</li>
+<li><em>valuation</em>: a valuation \(v\) over \(V\), a finite subset of \(\varSet\), is a total function \(v\) from \(V\) to \(\dom\) (of constants)
+<ul>
+<li>extended to be identity on \(\dom\) (so that the domain can contain both variables and constants)</li>
+<li>extended to map free tuples to tuples (so that the domain/range can be in the tuple form)</li>
+</ul>
+</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h4 id="semantics"><a class="header" href="#semantics">Semantics</a></h4>
+<p>Let \(q\) be the query, and let \(\dbinst{I}\) be a database instance of schema \(\dbschema{R}\).
+The <em>image</em> of \(\dbinst{I}\) under \(q\) is:</p>
+<!-- prettier-ignore-start -->
+<p>\[
+q(\dbinst{I}) = \{ v(u) \mid v \text{ is a valuation over } \var(q) \text{ and } v(u_i) \in \dbinst{I}(\rel{R}_i) \text{ for each } i \in [1, n] \}
+\]</p>
+<ul>
+<li><em>active domain</em>
+<ul>
+<li>of a database instance \(\dbinst{I}\), denoted \(\adom(\dbinst{I})\), is the set of constants that occur in \(\dbinst{I}\)</li>
+<li>of a relation instance \(I\), denoted \(\adom(I)\), is the set of constants that occur in \(I\)</li>
+<li>of a query \(q\), denoted \(\adom(q)\), is the set of constants that occur in \(q\)</li>
+<li>\(\adom(q, \dbinst{I})\) is an abbreviation for \(\adom(q) \cup \adom(\dbinst{I})\)
+<ul>
+<li>\(\adom(q(\dbinst{I})) \subseteq \adom(q, \dbinst{I})\)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>extensional</em> relations: relations in the body of the query, i.e., \(\rel{R}_1, \ldots, \rel{R}_n\)
+<ul>
+<li>because they are known/provided by the input instance \(\dbinst{I}\)</li>
+</ul>
+</li>
+<li><em>intensional</em> relation: the relation in the head of the query, i.e., \(\ans\)
+<ul>
+<li>because it is not stored and its value is computed on request by the query</li>
+</ul>
+</li>
+<li><em>extensional database (edb)</em>: a database instance associated with the extensional relations</li>
+<li><em>intensional database (idb)</em>: the rule itself</li>
+<li><em>idb relation</em>: the relation defined by the idb</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h4 id="properties"><a class="header" href="#properties">Properties</a></h4>
+<p>Conjunctive queries are:</p>
+<ul>
+<li><em>monotonic</em>: a query \(q\) over \(\dbschema{R}\) is monotonic if for each \{\dbinst{I}, \dbinst{J}\} over \(\dbschema{R}\),
+\(\dbinst{I} \subseteq \dbinst{J} \implies q(\dbinst{I}) \subseteq q(\dbinst{J})\)</li>
+<li><em>satisfiable</em>: a query \(q\) is satisfiable if there exists a database instance \(\dbinst{I}\) such that \(q(\dbinst{I}) \neq \emptyset\)</li>
+</ul>
+<h3 id="tableau-queries"><a class="header" href="#tableau-queries">Tableau Queries</a></h3>
+<p>A <em>tableau query</em> is simply a pair \((\tableau, u)\) where \(\tableau\) is a tableau
+and each variable in \(u\) also occurs in \(\tableau\).</p>
+<p>This is closest to the visual form provided by Query-By-Example (QBE).</p>
+<ul>
+<li><em>summary</em>: the free tuple \(u\) representing the tuples included in the answer to the query</li>
+<li><em>embedding</em>: a valuation \(v\) for the variables occurring in \(\tableau\) such that \(v(\tableau) \subseteq \dbinst{I}\)
+<ul>
+<li>the output of \((\tableau, u)\) on \(\dbinst{I}\) consists of all tuples \(v(u)\) for each embedding \(v\) of \(\tableau\) into \(\dbinst{I}\)</li>
+</ul>
+</li>
+<li><em>typed</em>: a tableau query \(q = (\tableau, u)\) under the named perspective, where \(\tableau\) is
+over relation schema \(R\) and \(\sort(u) \subseteq \sort(R)\), is typed if no variable of \(\tableau\)
+is associated with two distinct attributes in \(q\)</li>
+</ul>
+<h4 id="examples-2"><a class="header" href="#examples-2">Examples</a></h4>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>\(x_{ti}\)</td><td>“Bergman”</td><td>\(x_{ac}\)</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Location</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Address</th><th>Phone</th></tr></thead><tbody>
+<tr><td>\(x_{th}\)</td><td>\(x_{ad}\)</td><td>\(x_p\)</td></tr>
+</tbody></table>
+</div>
+<p>Table <em>Pariscope</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Title</th><th>Schedule</th></tr></thead><tbody>
+<tr><td>\(x_{th}\)</td><td>\(x_{ti}\)</td><td>\(x_{s}\)</td></tr>
+</tbody></table>
+</div>
+<p>The above tableau query is typed because each variable is associated with only one attribute:</p>
+<ul>
+<li>\(x_{ti}\): \(\attname{Title}\)</li>
+<li>\(x_{ac}\): \(\attname{Actor}\)</li>
+<li>\(x_{th}\): \(\attname{Theater}\)</li>
+<li>\(x_{ad}\): \(\attname{Address}\)</li>
+<li>\(x_p\): \(\attname{Phone}\)</li>
+<li>\(x_{s}\): \(\attname{Schedule}\)</li>
+</ul>
+<p>However, the following tableau query is untyped:</p>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>\(x_{ti}\)</td><td>\(x_{ac}\)</td><td>\(x_{ac}\)</td></tr>
+</tbody></table>
+</div>
+<p>Because \(x_{ac}\) is associated with both \(\attname{Director}\) and \(\attname{Actor}\).</p>
+<h3 id="conjunctive-calculus"><a class="header" href="#conjunctive-calculus">Conjunctive Calculus</a></h3>
+<p>The conjunctive query
+\[
+\ans(u) \leftarrow \rel{R}_1(u_1), \ldots, \rel{R}_n(u_n)
+\]</p>
+<p>can be expressed as the following conjunctive calculus query that has the same semantics:
+\[
+\left\{ e_1, \ldots, e_m \vert \exists x_1, \ldots, x_k \left( \rel{R}(u_1) \wedge \ldots \wedge \rel{R}(u_n) \right) \right\}
+\]
+where \(x_1, \ldots, x_k\) are all the variables occurring in the body and not the head.</p>
+<h4 id="conjunctive-calculus-formula"><a class="header" href="#conjunctive-calculus-formula">Conjunctive Calculus Formula</a></h4>
+<p>Let \(\dbschema{R}\) be a relation schema.
+A <em>(well-formed) formula</em> over \(\dbschema{R}\) for the conjunctive calculus is an expression having <strong>one of</strong> the following forms:</p>
+<ol>
+<li>an atom over \(\dbschema{R}\);</li>
+<li>\(\varphi \wedge \psi \), where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\); or</li>
+<li>\(\exists x \varphi\), where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\).</li>
+</ol>
+<p>An occurrence of a variable \(x\) in formula \(\varphi\) is <em>free</em> if:</p>
+<ol>
+<li>\(\varphi\) is an atom; or</li>
+<li>\(\varphi = (\psi \wedge \xi)\) and the occurrence of \(x\) is free in \(\psi\) or \(\xi\); or</li>
+<li>\(\varphi = \exists y \psi\), \(x \neq y\), and the occurrence of \(x\) is free in \(\psi\).</li>
+</ol>
+<p>\(\free(\varphi)\): the set of free variables in \(\varphi\).</p>
+<p>An occurrence of a variable that is not free is <em>bound</em>.</p>
+<h4 id="conjunctive-calculus-query"><a class="header" href="#conjunctive-calculus-query">Conjunctive Calculus Query</a></h4>
+<p>A <em>conjunctive calculus query</em> over database schema \(\dbschema{R}\) is an expression of the form
+\[
+\{ e_1, \ldots, e_m \mid \varphi \}
+\]
+where</p>
+<ul>
+<li>\(\varphi\) is a conjunctive calculus formula,</li>
+<li>\(\langle e_1, \ldots, e_m \rangle\) is a free tuple, and</li>
+<li>the set of variables occurring in \(\langle e_1, \ldots, e_m \rangle\) is exactly \(\free(\varphi)\).</li>
+</ul>
+<p>For named perspective, the above query can be written as:
+\[
+\{ \langle e_1, \ldots, e_m \rangle : A_1, \ldots, A_m \mid \varphi \}
+\]</p>
+<blockquote>
+<p>Note: In the previous chapter, a named tuple was usually denoted as:</p>
+<p>\[ \langle A_1:a_1, \ldots, A_m:a_m \rangle \]</p>
+<p>But here we denote the named tuple as:</p>
+<p>\[ \langle e_1, \ldots, e_m \rangle : A_1, \ldots, A_m \]</p>
+<p>Not sure which one is better or whether the author did this intentionally.</p>
+</blockquote>
+<h4 id="semantics-1"><a class="header" href="#semantics-1">Semantics</a></h4>
+<h5 id="valuation"><a class="header" href="#valuation">Valuation</a></h5>
+<p>A <em>valuation</em> over \(V \subset \varSet \) is a total function \(v\) from \(V\) to \(\dom\),
+which can be viewed as a syntactic expression of the form:
+\[
+\{ x_1/a_1, \ldots, x_n/a_n \}
+\]
+where</p>
+<ul>
+<li>\(x_1, \ldots, x_n\) is a listing of \(V\),</li>
+<li>\(a_i = v(x_i)\) for each \(i \in [1, n]\).</li>
+</ul>
+<h5 id="interpretation-as-a-set"><a class="header" href="#interpretation-as-a-set">Interpretation as a Set</a></h5>
+<p>If \(x \not \in V\), and \(c \in \dom\),
+then \(v \cup \{ x/c \}\) is the valuation over \(V \cup \{ x \}\)
+that agrees with \(v\) on \(V\) and maps \(x\) to \(c\).</p>
+<h5 id="satisfaction"><a class="header" href="#satisfaction">Satisfaction</a></h5>
+<p>Let \(\dbschema{R}\) be a database schema, \(\varphi\) a conjunctive calculus formula over \(\dbschema{R}\),
+and \(v\) a valuation over \(\free(\varphi)\).
+Then \(\dbinst{I} \models \varphi[v]\), if</p>
+<ol>
+<li>\(\varphi = \rel{R}(u)\) is an atom and \(v(u) \in \dbinst{I}(\rel{R})\); or</li>
+<li>\(\varphi = (\psi \wedge \xi)\) and \(\dbinst{I} \models \psi[v \vert_{\free(\psi)}]\) and \(\dbinst{I} \models \xi[v \vert_{\free(\xi)}]\); or</li>
+<li>\(\varphi = \exists x \psi\) and there exists a constant \(c \in \dom\) such that
+\(\dbinst{I} \models \psi[v \cup \{ x/c \}]\).</li>
+</ol>
+<h5 id="image"><a class="header" href="#image">Image</a></h5>
+<!-- prettier-ignore-start -->
+<p>Let \(q = \{ e_1, \ldots, e_m \mid \varphi \}\) be a conjunctive calculus query over \(\dbschema{R}\).
+For an instance \(\dbinst{I}\) over \(\dbschema{R}\), the <em>image</em> of \(\dbinst{I}\) under \(q\) is:
+\[
+q(\dbinst{I}) = \{ v( \langle e_1, \ldots, e_m \rangle ) \mid v \text{ is a valuation over } \free(\varphi) \text{ and } \dbinst{I} \models \varphi[v] \}
+\]</p>
+<!-- prettier-ignore-end -->
+<ul>
+<li><em>active domain</em>
+<ul>
+<li>of a formula \(\varphi\), denoted \(\adom(\varphi)\), is the set of constants that occur in \(\varphi\)</li>
+<li>\(\adom(\varphi, \dbinst{I})\) is an abbreviation for \(\adom(\varphi) \cup \adom(\dbinst{I})\)</li>
+<li>If \(\dbinst{I} \models \varphi[v]\), then the range of \(v\) is contained in \(\adom(\dbinst{I})\)
+<ul>
+<li>to evaluate a conjunctive calculus query, one need only consider valuations with range constrained in \(\adom(\varphi, \dbinst{I})\),
+i.e., only a finite number of them</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>equivalent</em>: conjunctive calculus formulas \(\varphi\) and \(\psi\) over \(\dbschema{R}\) are equivalent,
+if
+<ul>
+<li>they have the same free variables and,</li>
+<li>for each \(\dbinst{I}\) over \(\dbschema{R}\) and valuation \(v\) over \(\free(\varphi) = \free(\psi)\),
+\(\dbinst{I} \models \varphi[v]\) if and only if \(\dbinst{I} \models \psi[v]\)</li>
+</ul>
+</li>
+</ul>
+<h4 id="normal-form"><a class="header" href="#normal-form">Normal Form</a></h4>
 
 
                         <footer id="footer" style="margin-top: 8em;">
@@ -1775,7 +2260,7 @@ class MultiHeadAttention(nn.Module):
                 "data-repo-id": "MDEwOlJlcG9zaXRvcnkxNDA0NTkxOTg=",
                 "data-category": "Comments",
                 "data-category-id": "DIC_kwDOCF88vs4CuW9z",
-                "data-mapping": "title",
+                "data-mapping": "og:title",
                 "data-strict": "1",
                 "data-reactions-enabled": "1",
                 "data-emit-metadata": "0",

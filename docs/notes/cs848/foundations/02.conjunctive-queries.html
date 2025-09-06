@@ -210,7 +210,8 @@ You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Commo
 \( \newcommand{\var}{\textit{var}} \)
 \( \newcommand{\adom}{\textit{adom}} \)
 \( \newcommand{\tableau}{\textbf{T}} \)
-\( \newcommand{\free}{\textit{free}} \)</p>
+\( \newcommand{\free}{\textit{free}} \)
+\( \newcommand{\body}{\text{body}} \)</p>
 </blockquote>
 <!-- prettier-ignore-end -->
 <p>a query (mapping) is <em>from</em> (or <em>over</em>) its input schema and <em>to</em> its output schema.</p>
@@ -306,7 +307,7 @@ q(\dbinst{I}) = \{ v(u) \mid v \text{ is a valuation over } \var(q) \text{ and }
 <h4 id="properties"><a class="header" href="#properties">Properties</a></h4>
 <p>Conjunctive queries are:</p>
 <ul>
-<li><em>monotonic</em>: a query \(q\) over \(\dbschema{R}\) is monotonic if for each \{\dbinst{I}, \dbinst{J}\} over \(\dbschema{R}\),
+<li><em>monotonic</em>: a query \(q\) over \(\dbschema{R}\) is monotonic if for each \(\dbinst{I}, \dbinst{J}\) over \(\dbschema{R}\),
 \(\dbinst{I} \subseteq \dbinst{J} \implies q(\dbinst{I}) \subseteq q(\dbinst{J})\)</li>
 <li><em>satisfiable</em>: a query \(q\) is satisfiable if there exists a database instance \(\dbinst{I}\) such that \(q(\dbinst{I}) \neq \emptyset\)</li>
 </ul>
@@ -462,6 +463,90 @@ if
 </li>
 </ul>
 <h4 id="normal-form"><a class="header" href="#normal-form">Normal Form</a></h4>
+<p>\[
+\exists x_1, \ldots, x_m \left( \rel{R}_1(u_1) \wedge \ldots \wedge \rel{R}_n(u_n) \right)
+\]</p>
+<p>Each conjunctive calculus query is equivalent to a conjunctive calculus query in normal form.</p>
+<h3 id="expressiveness-of-query-languages"><a class="header" href="#expressiveness-of-query-languages">Expressiveness of Query Languages</a></h3>
+<!-- prettier-ignore-start -->
+<p>Let \(\mathcal{Q}_1\) and \(\mathcal{Q}_2\) be two query languages.</p>
+<ul>
+<li>\(\mathcal{Q}_1 \sqsubseteq \mathcal{Q}_2\):
+\(\mathcal{Q}_1\) is <em>dominated</em> by \(\mathcal{Q}_2\)
+(or \(\mathcal{Q}_2\) is <em>weaker</em> than \(\mathcal{Q}_1\)),
+if for each query \(q_1 \in \mathcal{Q}_1\),
+there exists a query \(q_2 \in \mathcal{Q}_2\) such that \(q_1 \equiv q_2\).</li>
+<li>\(\mathcal{Q}_1 \equiv \mathcal{Q}_2\):
+\(\mathcal{Q}_1\) and \(\mathcal{Q}_2\) are <em>equivalent</em>,
+if \(\mathcal{Q}_1 \sqsubseteq \mathcal{Q}_2\) and \(\mathcal{Q}_2 \sqsubseteq \mathcal{Q}_1\).</li>
+</ul>
+<!-- prettier-ignore-end -->
+<p>The rule-based conjunctive queries, tableau queries, and conjunctive calculus queries are all equivalent.</p>
+<h2 id="incorporating-equality"><a class="header" href="#incorporating-equality">Incorporating Equality</a></h2>
+<p>The conjunctive query</p>
+<p>\[
+\begin{split}
+\ans(x_{th}, x_{ad}) \leftarrow &amp; \rel{Movies}(x_{ti}, \text{“Bergman”}, x_{ac}), \\
+&amp; \qquad \rel{Location}(x_{th}, x_{ad}, x_p), \rel{Pariscope}(x_{th}, x_{ti}, x_s)
+\end{split}
+\]</p>
+<p>can be expressed as:</p>
+<p>\[
+\begin{split}
+\ans(x_{th}, x_{ad}) \leftarrow &amp; \rel{Movies}(x_{ti}, x_d, x_{ac}), x_d = \text{“Bergman”}, \\
+&amp; \qquad \rel{Location}(x_{th}, x_{ad}, x_p), \rel{Pariscope}(x_{th}, x_{ti}, x_s)
+\end{split}
+\]</p>
+<h3 id="problem-1-infinite-answers"><a class="header" href="#problem-1-infinite-answers">Problem 1: Infinite Answers</a></h3>
+<p>Unrestricted rules with equality may yield infinite answers:
+\[
+\ans(x, y) \leftarrow \rel{R}(x), y = z
+\]</p>
+<p>A <em>rule-based conjunctive query with equality</em> is a <em>range-restricted</em> rule-based conjunctive query with equality.</p>
+<h3 id="problem-2-unsatisfiable-queries"><a class="header" href="#problem-2-unsatisfiable-queries">Problem 2: Unsatisfiable Queries</a></h3>
+<p>Consider the following query:
+\[
+\ans(x) \leftarrow \rel{R}(x), x = a, x = b
+\]
+where \(\rel{R}\) is a unary relation and \(a, b \in \dom\) with \(a \neq b\).</p>
+<p>Each satisfiable rule with equality is equivalent to a rule without equality.<br />
+No expressive power is gained if the query is satisfiable.</p>
+<h2 id="query-composition-and-views"><a class="header" href="#query-composition-and-views">Query Composition and Views</a></h2>
+<p>a <em>conjunctive query program</em> (with or without equality) is a sequence \(P\)
+of rules having the form:
+\[
+\begin{split}
+S_1(u_1) &amp; \leftarrow \text{body}_1 \\
+S_2(u_2) &amp; \leftarrow \text{body}_2 \\
+&amp; \vdots \\
+S_m(u_m) &amp; \leftarrow \text{body}_m
+\end{split}
+\]
+where</p>
+<!-- prettier-ignore-start -->
+<ul>
+<li>each \(S_i\) is a distinct relation name not in \(\dbschema{R}\),</li>
+<li>for each \(i \in [1, m]\), the only relation names that may occur in \(\body_i\) are in \(\dbschema{R} \cup \{ S_1, \ldots, S_{i-1} \}\).</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h3 id="closure-under-composition"><a class="header" href="#closure-under-composition">Closure under Composition</a></h3>
+<p>If conjunctive query program \(P\) defines final relation \(S\),
+then there is a conjunctive query \(q\),
+possibly with equality,
+such that on all input instances \(\dbinst{I}\),
+\(q(\dbinst{I}) = P(\dbinst{I})(S)\).</p>
+<p>If \(P\) is satisfiable, then there is a \(q\) without equality.</p>
+<h3 id="composition-and-user-views"><a class="header" href="#composition-and-user-views">Composition and User Views</a></h3>
+<p><em>views</em> are specified as queries (or query programs), which may be</p>
+<ul>
+<li><em>materialized</em>: a physical copy of the view is stored and maintained</li>
+<li><em>virtual</em>: relevant information about the view is computed as needed
+<ul>
+<li>queries against the virtual view generate composed queries against the underlying database</li>
+</ul>
+</li>
+</ul>
+<h2 id="algebraic-perspectives"><a class="header" href="#algebraic-perspectives">Algebraic Perspectives</a></h2>
 
 
                         <footer id="footer" style="margin-top: 8em;">
@@ -474,6 +559,9 @@ if
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -485,6 +573,9 @@ if
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

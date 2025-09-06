@@ -8,7 +8,7 @@
 
 ---
 
-# Notes
+# Course Notes (UWaterloo)
 
 - [CS 452/652: Real-Time Programming](notes/cs652.md)
 - [CS 480/680: Intro to ML](notes/cs680.md)

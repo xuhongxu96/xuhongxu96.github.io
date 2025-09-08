@@ -214,6 +214,77 @@ You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Commo
 \( \newcommand{\body}{\text{body}} \)</p>
 </blockquote>
 <!-- prettier-ignore-end -->
+<ul>
+<li><a href="#logic-based-perspective">Logic-Based Perspective</a>
+<ul>
+<li><a href="#rule-based-conjunctive-queries">Rule-Based Conjunctive Queries</a>
+<ul>
+<li><a href="#definition">Definition</a></li>
+<li><a href="#semantics">Semantics</a></li>
+<li><a href="#properties">Properties</a></li>
+</ul>
+</li>
+<li><a href="#tableau-queries">Tableau Queries</a>
+<ul>
+<li><a href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a href="#conjunctive-calculus">Conjunctive Calculus</a>
+<ul>
+<li><a href="#conjunctive-calculus-formula">Conjunctive Calculus Formula</a></li>
+<li><a href="#conjunctive-calculus-query">Conjunctive Calculus Query</a></li>
+<li><a href="#semantics-1">Semantics</a></li>
+<li><a href="#normal-form">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="#expressiveness-of-query-languages">Expressiveness of Query Languages</a></li>
+</ul>
+</li>
+<li><a href="#incorporating-equality">Incorporating Equality</a>
+<ul>
+<li><a href="#problem-1-infinite-answers">Problem 1: Infinite Answers</a></li>
+<li><a href="#problem-2-unsatisfiable-queries">Problem 2: Unsatisfiable Queries</a></li>
+</ul>
+</li>
+<li><a href="#query-composition-and-views">Query Composition and Views</a>
+<ul>
+<li><a href="#closure-under-composition">Closure under Composition</a></li>
+<li><a href="#composition-and-user-views">Composition and User Views</a></li>
+</ul>
+</li>
+<li><a href="#algebraic-perspectives">Algebraic Perspectives</a>
+<ul>
+<li><a href="#the-unnamed-perspective-the-spc-algebra">The Unnamed Perspective: The SPC Algebra</a>
+<ul>
+<li><a href="#selection-horizontal-operator">Selection (“Horizontal” Operator)</a></li>
+<li><a href="#projection-vertical-operator">Projection (“Vertical” Operator)</a></li>
+<li><a href="#cross-product-or-cartesian-product">Cross-Product (or Cartesian Product)</a></li>
+<li><a href="#formal-inductive-definition">Formal Inductive Definition</a></li>
+<li><a href="#unsatisifiable-queries">Unsatisifiable Queries</a></li>
+<li><a href="#generalized-spc-algebra">Generalized SPC Algebra</a></li>
+<li><a href="#normal-form-1">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="#the-named-perspective-the-spjr-algebra">The Named Perspective: The SPJR Algebra</a>
+<ul>
+<li><a href="#selection">Selection</a></li>
+<li><a href="#projection">Projection</a></li>
+<li><a href="#natural-join">(Natural) Join</a></li>
+<li><a href="#renaming">Renaming</a></li>
+<li><a href="#formal-inductive-definition-1">Formal Inductive Definition</a></li>
+<li><a href="#normal-form-2">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="#equivalence-theorem">Equivalence Theorem</a></li>
+</ul>
+</li>
+<li><a href="#adding-union">Adding Union</a>
+<ul>
+<li><a href="#nonrecursive-datalog-program">Nonrecursive Datalog Program</a></li>
+<li><a href="#union-and-the-conjunctive-calculus">Union and the Conjunctive Calculus</a></li>
+</ul>
+</li>
+</ul>
 <p>a query (mapping) is <em>from</em> (or <em>over</em>) its input schema and <em>to</em> its output schema.</p>
 <!-- prettier-ignore-start -->
 <ul>
@@ -547,6 +618,265 @@ such that on all input instances \(\dbinst{I}\),
 </li>
 </ul>
 <h2 id="algebraic-perspectives"><a class="header" href="#algebraic-perspectives">Algebraic Perspectives</a></h2>
+<h3 id="the-unnamed-perspective-the-spc-algebra"><a class="header" href="#the-unnamed-perspective-the-spc-algebra">The Unnamed Perspective: The SPC Algebra</a></h3>
+<p>Unnamed conjunctive algebra:</p>
+<ul>
+<li><strong>S</strong>election (\(\sigma\))</li>
+<li><strong>P</strong>rojection (\(\pi\))</li>
+<li><strong>C</strong>ross-Product (or Cartesian Product, \(\times\))</li>
+</ul>
+<!-- prettier-ignore-start -->
+<h4 id="selection-horizontal-operator"><a class="header" href="#selection-horizontal-operator">Selection (“Horizontal” Operator)</a></h4>
+<p>Primitive Forms: \(\sigma_{j=a}\) and \(\sigma_{j=k}\)<br />
+where \(j, k\) are positive integers, and \(a \in \dom\)
+(constants are usually surrounded by quotes).</p>
+<p>\[
+\sigma_{j=a}(I) = \{ t \in I \mid t(j) = a \}
+\]</p>
+<p>\(\sigma_{j=k}\) is sometimes called <em>atomic</em> selection.</p>
+<h4 id="projection-vertical-operator"><a class="header" href="#projection-vertical-operator">Projection (“Vertical” Operator)</a></h4>
+<p>General Form: \(\pi_{j_1, \ldots, j_n}\)<br />
+where \(n \geq 0\) and \(j_1, \ldots, j_n\) are positive integers
+(empty sequence is written \([\;]\)).</p>
+<p>\[
+\pi_{j_1, \ldots, j_n}(I) = \{ \langle t(j_1), \ldots, t(j_n) \rangle \mid t \in I \}
+\]</p>
+<h4 id="cross-product-or-cartesian-product"><a class="header" href="#cross-product-or-cartesian-product">Cross-Product (or Cartesian Product)</a></h4>
+<p>\[
+I \times J = \{ \langle t(1), \ldots, t(n), s(1), \ldots, s(m) \rangle \mid t \in I, s \in J \}
+\]</p>
+<h4 id="formal-inductive-definition"><a class="header" href="#formal-inductive-definition">Formal Inductive Definition</a></h4>
+<p>Let \(\dbschema{R}\) be a relation schema.</p>
+<p>There are two kinds of <em>base SPC (algebra) queries</em>:</p>
+<ol>
+<li><em>Input Relation</em>: Expression \(R\); with arity equal to \(\arity(R)\)</li>
+<li><em>Unary Singleton Constant</em>: Expression \(\{\langle a \rangle \}\),
+where \(a \in \dom\); with arity equal to 1</li>
+</ol>
+<p>The family of <em>SPC (algebra) queries</em> contains all above <em>base SPC queries</em> and,
+for SPC queries \(q_1, q_2\) with arities \(\alpha_1, \alpha_2\), respectively,</p>
+<ul>
+<li><em>Selection</em>: \(\sigma_{j=1}(q_1)\) and \(\sigma_{j=k}(q_1)\),
+whenever \(j, k \leq \alpha_1\) and \(a \in \dom\); these have arity \(\alpha_1\).</li>
+<li><em>Projection</em>: \(\pi_{j_1, \ldots, j_n}(q_1)\),
+where \(j_1, \ldots, j_n \leq \alpha_1\); this has arity \(n\).</li>
+<li><em>Cross-Product</em>: \(q_1 \times q_2\); this has arity \(\alpha_1 + \alpha_2\).</li>
+</ul>
+<h4 id="unsatisifiable-queries"><a class="header" href="#unsatisifiable-queries">Unsatisifiable Queries</a></h4>
+<p>E.g. \(\sigma_{1=a}(\sigma_{1=b}(R))\) where \(\arity(R) \geq 1\) and \(a \neq b\).</p>
+<p>This is equivalent to \(q^\emptyset\).</p>
+<h4 id="generalized-spc-algebra"><a class="header" href="#generalized-spc-algebra">Generalized SPC Algebra</a></h4>
+<ul>
+<li><em>Intersection</em> (\(\cap\)): is easily simulated by selection and cross-product.</li>
+<li><em>Generalized Selection</em> (\(\sigma\)): permits the specification of multiple conditions.
+<ul>
+<li><em>Positive Conjunctive Selection Formula</em>: \(F = \gamma_1 \land \ldots \land \gamma_n (n \geq 1)\) where each \(\gamma_i\) is either \(j = k\) or \(j = a\)</li>
+<li><em>Positive Conjunctive Selection Operator</em>: an expression of the form \(\sigma_F\), where \(F\) is a positive conjunctive selection formula</li>
+<li>can be simulated by a sequence of selections</li>
+</ul>
+</li>
+<li><em>Equi-Join</em> (\(\bowtie\)): a binary operator that combines cross-product and selection
+<ul>
+<li><em>Equi-Join Condition</em>: \(F = \gamma_1 \land \ldots \land \gamma_n (n \geq 1)\) where each \(\gamma_i\) is of the form \(j = k\)</li>
+<li><em>Equi-Join Operator</em>: an expression of the form \(I \bowtie_F J\), where \(F\) is an equi-join condition</li>
+<li>can be simulated by \(\sigma_{F’}(I \times J)\),
+where \(F’\) is obtained from \(F\) by replacing each
+condition \(j = k\) with \(j = \alpha(I) + k\)</li>
+</ul>
+</li>
+</ul>
+<h4 id="normal-form-1"><a class="header" href="#normal-form-1">Normal Form</a></h4>
+<p>\[
+\pi_{j_1, \ldots, j_n}( \{ \langle a_1 \rangle \} \times \ldots \times \{ \langle a_m \rangle \} \times \sigma_F(R_1 \times \ldots \times R_k) )
+\]
+where</p>
+<ul>
+<li>\(n \geq 0; m \geq 0\);</li>
+<li>\(a_1, \ldots, a_m \in \dom\);</li>
+<li>\(\{1, \ldots, m\} \subseteq \{j_1, \ldots, j_n\}\);</li>
+<li>\(R_1, \ldots, R_k\) are relation names (repeats permitted);</li>
+<li>\(F\) is a positive conjunctive selection formula.</li>
+</ul>
+<p>For each (generalized) SPC query, there is an equivalent SPC query in normal form.</p>
+<p>The proof is based on repeated application of the following <em>equivalence-preserving SPC algebra rewrite rules</em> (or <em>transformations</em>):</p>
+<ul>
+<li><em>Merge-Select</em>:
+\[
+\sigma_{F}( \sigma_{F’}(q) ) \equiv \sigma_{F \land F’}(q)
+\]</li>
+<li><em>Merge-Project</em>:
+\[
+\pi_{\boldsymbol{j}}( \pi_{\boldsymbol{k}}(q) ) \equiv \pi_{\boldsymbol{l}}(q), \text{ where } l_i = k_{j_i} \text{ for each term } l_i \text{ in } \boldsymbol{l}
+\]</li>
+<li><em>Push-Select-Though-Project</em>:
+\[
+\sigma_F( \pi_{\boldsymbol{j}}(q) ) \equiv \pi_{\boldsymbol{j}}( \sigma_{F’}(q) ), \text{ where } F’ \text{ is obtained from } F \text{ by replacing each } k \text{ with } j_k
+\]</li>
+<li><em>Push-Select-Though-Singleton</em>:
+\[
+\sigma_{1=j}(\langle a \rangle \times q) \equiv \langle a \rangle \times \sigma_{(j - 1) = a}(q)
+\]</li>
+<li><em>Associate-Cross</em>:
+\[
+(q_1 \times \ldots \times q_n) \times q \equiv q_1 \times \ldots \times q_n \times q
+\]
+\[
+q \times (q_1 \times \ldots \times q_n) \equiv q_1 \times \ldots \times q_n \times q
+\]</li>
+<li><em>Commute-Cross</em>:
+\[
+(q \times q’) \equiv \pi_{\boldsymbol{j} \boldsymbol{j’}} (q’ \times q)
+\]
+where \(\boldsymbol{j’} = [1, \ldots, \arity(q’)]\) and \(\boldsymbol{j} = [\arity(q’) + 1, \ldots, \arity(q’) + \arity(q)]\)</li>
+<li><em>Push-Cross-Though-Select</em>:
+\[
+\sigma_F(q) \times q’ \equiv \sigma_{F}(q \times q’)
+\]
+\[
+q \times \sigma_F(q’) \equiv \sigma_{F’}(q \times q’)
+\]
+where \(F’\) is obtained from \(F\) by replacing each \(j\) with \(\arity(q) + j\)</li>
+<li><em>Push-Cross-Though-Project</em>:
+\[
+\pi_{\boldsymbol{j}}(q) \times q’ \equiv \pi_{\boldsymbol{j}}(q \times q’)
+\]
+\[
+q \times \pi_{\boldsymbol{j}}(q’) \equiv \pi_{\boldsymbol{j’}}(q \times q’)
+\]
+where \(\boldsymbol{j’}\) is obtained from \(\boldsymbol{j}\) by replacing each \(j\) with \(\arity(q) + j\)</li>
+</ul>
+<h5 id="notation-for-rewriting"><a class="header" href="#notation-for-rewriting">Notation for Rewriting</a></h5>
+<p>\[
+\begin{split}
+q &amp;\rightarrow_{\mathcal{S}} q’ \quad \text{or} \\
+\text{simply} \quad q &amp;\rightarrow q’
+\end{split}
+\]</p>
+<ul>
+<li>for a set \(\mathcal{S}\) of rewrite rules and algebra expressions \(q, q’\),</li>
+<li>if \(\mathcal{S}\) is understood from the context,</li>
+<li>if \(q’\) is the result of replacing a subexpression of \(q\)
+according to one of the rules in \(\mathcal{S}\).</li>
+</ul>
+<p>\(\rightarrow^*_S\): the reflexive and transitive closure of \(\rightarrow\).</p>
+<p>A family \(\mathcal{S}\) of rewrite rules is <em>sound</em>
+if \(q \rightarrow_{\mathcal{S}} q’\) implies \(q \equiv q’\).
+If \(\mathcal{S}\) is sound, then \(q \rightarrow^*_{\mathcal{S}} q’\) implies \(q \equiv q’\).</p>
+<h3 id="the-named-perspective-the-spjr-algebra"><a class="header" href="#the-named-perspective-the-spjr-algebra">The Named Perspective: The SPJR Algebra</a></h3>
+<p>Named conjunctive algebra:</p>
+<ul>
+<li><strong>S</strong>election (\(\sigma\))</li>
+<li><strong>P</strong>rojection (\(\pi\)); repeats not permitted</li>
+<li><strong>J</strong>oin (\(\bowtie\)); natural join</li>
+<li><strong>R</strong>enaming (\(\delta\))</li>
+</ul>
+<h4 id="selection"><a class="header" href="#selection">Selection</a></h4>
+<p>\(\sigma_{A=a}, \sigma_{A=B}\) where \(A, B \in \att, a \in \dom\)</p>
+<p>These operators apply to any instance \(I\) with \(A, B \in \sort(I)\).</p>
+<h4 id="projection"><a class="header" href="#projection">Projection</a></h4>
+<p>\(\pi_{A_1, \ldots, A_n}\) where \(n \geq 0\) and \(A_1, \ldots, A_n \in \sort(I)\)</p>
+<h4 id="natural-join"><a class="header" href="#natural-join">(Natural) Join</a></h4>
+<p>\[
+\begin{split}
+I \bowtie J = \{ t \text{ over } V \cup W \vert &amp; \text{ for some } v \in I \text{ and } w \in J, \\
+&amp; \quad t[V] = v \land t[W] = w \}
+\end{split}
+\]
+where \(I\) and \(J\) have sorts \(V\) and \(W\), respectively.</p>
+<ul>
+<li>When \(\sort(I) = \sort(J)\), \(I \bowtie J = I \cap J\).</li>
+<li>When \(\sort(I) \cap \sort(J) = \emptyset\), \(I \bowtie J = I \times J\).</li>
+</ul>
+<h4 id="renaming"><a class="header" href="#renaming">Renaming</a></h4>
+<p>An <em>attribute renaming</em> for a finite set \(U\) of attributes
+is a one-one mapping from \(U\) to \(\att\).</p>
+<p>\[
+\delta_f(I) = \{ v \text{ over } f[U] \vert \text{ for some } u \in I, v(f(A)) = u(A) \text{ for each } A \in U \}
+\]
+where</p>
+<ul>
+<li>input is an instance \(I\) over \(U\)</li>
+<li>\(f\) is an attribute renaming for \(U\)
+<ul>
+<li>which can be described by \((A, f(A))\), where \(f(A) \neq A\)
+<ul>
+<li>usually written as \(A_1 A_2 \ldots A_n \rightarrow B_1 B_2 \ldots B_n\) to indicate that \(f(A_i) = B_i\) for each \(i \in [1, n] (n \geq 0)\)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="formal-inductive-definition-1"><a class="header" href="#formal-inductive-definition-1">Formal Inductive Definition</a></h4>
+<p>The <em>base SPJR algebra queries</em> are:</p>
+<ol>
+<li><em>Input Relation</em>: Expression \(R\); with sort equal to \(\sort(R)\)</li>
+<li><em>Unary Singleton Constant</em>: Expression \(\{ \langle A:a \rangle \}\),
+where \(a \in \dom\); with \(\sort = A\)</li>
+</ol>
+<p>The remainder of the syntax and semantics of the SPJR algebra is defined in analogy to those of the SPC algebra.</p>
+<h4 id="normal-form-2"><a class="header" href="#normal-form-2">Normal Form</a></h4>
+<p>\[
+\pi_{B_1, \ldots, B_m}( \{ \langle A_1:a_1 \rangle \} \bowtie \ldots \bowtie \{ \langle A_m:a_m \rangle \} \bowtie \sigma_F(\delta_{f_1}(R_1) \bowtie \ldots \bowtie \delta_{f_k}(R_k)) )
+\]
+where</p>
+<ul>
+<li>\(n \geq 0; m \geq 0\);</li>
+<li>\(a_1, \ldots, a_m \in \dom\);</li>
+<li>\({A_1, \ldots, A_m}\) occurs in \({B_1, \ldots, B_n}\);</li>
+<li>the \(A_i\)s are distinct;</li>
+<li>\(R_1, \ldots, R_k\) are relation names (repeats permitted);</li>
+<li>\(\delta_{f_i}\) is a renaming operator for \(\sort(R_i)\);</li>
+<li>no \(A_i\) occur in any \(\delta_{f_j}(R_j)\);</li>
+<li>the sorts of \(\delta_{f_1}(R_1), \ldots, \delta_{f_k}(R_k)\) are pairwise disjoint;</li>
+<li>\(F\) is a positive conjunctive selection formula.</li>
+</ul>
+<p>For each SPJR query, there is an equivalent SPJR query in normal form.</p>
+<!-- prettier-ignore-end -->
+<h3 id="equivalence-theorem"><a class="header" href="#equivalence-theorem">Equivalence Theorem</a></h3>
+<ul>
+<li><em>Lemma</em>: The SPC and SPJR algebras are equivalent.</li>
+<li><em>Equivalence Theorem</em>: The rule-based conjunctive queries, tableau queries, conjunctive calculus queries, satisifiable SPC algebra, and satisifiable SPJR algebra are all equivalent.</li>
+</ul>
+<h2 id="adding-union"><a class="header" href="#adding-union">Adding Union</a></h2>
+<p>The following have equivalent expressive power:</p>
+<ul>
+<li>the nonrecursive datalog programs (with single relation target)</li>
+<li>the SPCU queries</li>
+<li>the SPJRU queries
+<ul>
+<li>union can only be applied to expressions having the same sort</li>
+</ul>
+</li>
+</ul>
+<h3 id="nonrecursive-datalog-program"><a class="header" href="#nonrecursive-datalog-program">Nonrecursive Datalog Program</a></h3>
+<p>A <em>nonrecursive datalog program (nr-datalog program)</em> over schema \(\dbschema{R}\) is a set of rules:</p>
+<p>\[
+\begin{split}
+S_1 &amp; \leftarrow \body_1 \\
+S_2 &amp; \leftarrow \body_2 \\
+&amp; \vdots \\
+S_m &amp; \leftarrow \body_m
+\end{split}
+\]
+where</p>
+<ul>
+<li>no relation name in \(\dbschema{R}\) occurs in  a rule head</li>
+<li>the same relation name may appear in more than one rule head</li>
+<li>there is some ordering \(r_1, \ldots, r_m\) of the rules such that
+the relation name in the head of \(r_i\) does not occur in the body of any rule \(r_j\) with \(j \leq i\)</li>
+</ul>
+<h3 id="union-and-the-conjunctive-calculus"><a class="header" href="#union-and-the-conjunctive-calculus">Union and the Conjunctive Calculus</a></h3>
+<p>Simply permitting disjunction (denoted \(\lor\)) in the formula of a conjunctive calculus along with conjunction can have serious consequences.</p>
+<p>E.g.,</p>
+<p>\[
+q = \{ x, y, z \vert R(x, y) \lor R(y, z) \}
+\]</p>
+<p>The answer of \(q\) on nonempty instance \(I\) will be</p>
+<p>\[
+q(I)= (I \times \dom) \cup (\dom \times I)
+\]</p>
+<p>Because \(R(x, y)\) decides that the first two components in \(\langle x, y, z \rangle\) are in \(I\) and \(z\) can be anything in \(\dom\),
+and \(R(y, z)\) decides that the last two components in \(\langle x, y, z \rangle\) are in \(I\) and \(x\) can be anything in \(\dom\).</p>
 
 
                         <footer id="footer" style="margin-top: 8em;">
@@ -559,7 +889,7 @@ such that on all input instances \(\dbinst{I}\),
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -573,7 +903,7 @@ such that on all input instances \(\dbinst{I}\),
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

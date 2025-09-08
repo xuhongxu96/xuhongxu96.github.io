@@ -1727,6 +1727,7 @@ class MultiHeadAttention(nn.Module):
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="notes-for-foundations-of-databases"><a class="header" href="#notes-for-foundations-of-databases">Notes for <em>Foundations of Databases</em></a></h1>
 <p><a href="http://webdam.inria.fr/Alice/">Foundations of Databases (The Alice Book)</a></p>
+<p>I plan to read only the chapters 3 - 6, which should help equip me with the necessary background to understand the material in <a href="notes/cs848/../cs848.html">CS 848</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-relational-model"><a class="header" href="#the-relational-model">The Relational Model</a></h1>
 <!-- prettier-ignore-start -->
 <blockquote>
@@ -1913,6 +1914,9 @@ where \(n = \arity(\rel{R})\) and each <em>term</em> \(e_i \in \dom \cup \varSet
 <li>a <em>ground atom</em> is an atom with no variables, i.e., a <em>fact</em> (see <a href="notes/cs848/foundations/01.the-relation-model.html#logic-programming-perspective">Logic Programming Perspective</a>)</li>
 </ul>
 <!-- prettier-ignore-end -->
+<ul>
+<li><a href="notes/cs848/foundations/01.the-relation-model.html#notations">Notations</a></li>
+</ul>
 <h2 id="notations"><a class="header" href="#notations">Notations</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Object</th><th>Notation</th></tr></thead><tbody>
 <tr><td>Constants</td><td>\(a, b, c\)</td></tr>
@@ -1957,6 +1961,77 @@ You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Commo
 \( \newcommand{\body}{\text{body}} \)</p>
 </blockquote>
 <!-- prettier-ignore-end -->
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#logic-based-perspective">Logic-Based Perspective</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#rule-based-conjunctive-queries">Rule-Based Conjunctive Queries</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#definition">Definition</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#semantics">Semantics</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#properties">Properties</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#tableau-queries">Tableau Queries</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#examples">Examples</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#conjunctive-calculus">Conjunctive Calculus</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#conjunctive-calculus-formula">Conjunctive Calculus Formula</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#conjunctive-calculus-query">Conjunctive Calculus Query</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#semantics-1">Semantics</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#normal-form">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#expressiveness-of-query-languages">Expressiveness of Query Languages</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#incorporating-equality">Incorporating Equality</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#problem-1-infinite-answers">Problem 1: Infinite Answers</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#problem-2-unsatisfiable-queries">Problem 2: Unsatisfiable Queries</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#query-composition-and-views">Query Composition and Views</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#closure-under-composition">Closure under Composition</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#composition-and-user-views">Composition and User Views</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#algebraic-perspectives">Algebraic Perspectives</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#the-unnamed-perspective-the-spc-algebra">The Unnamed Perspective: The SPC Algebra</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#selection-horizontal-operator">Selection (“Horizontal” Operator)</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#projection-vertical-operator">Projection (“Vertical” Operator)</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#cross-product-or-cartesian-product">Cross-Product (or Cartesian Product)</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#formal-inductive-definition">Formal Inductive Definition</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#unsatisifiable-queries">Unsatisifiable Queries</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#generalized-spc-algebra">Generalized SPC Algebra</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#normal-form-1">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#the-named-perspective-the-spjr-algebra">The Named Perspective: The SPJR Algebra</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#selection">Selection</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#projection">Projection</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#natural-join">(Natural) Join</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#renaming">Renaming</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#formal-inductive-definition-1">Formal Inductive Definition</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#normal-form-2">Normal Form</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#equivalence-theorem">Equivalence Theorem</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#adding-union">Adding Union</a>
+<ul>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#nonrecursive-datalog-program">Nonrecursive Datalog Program</a></li>
+<li><a href="notes/cs848/foundations/02.conjunctive-queries.html#union-and-the-conjunctive-calculus">Union and the Conjunctive Calculus</a></li>
+</ul>
+</li>
+</ul>
 <p>a query (mapping) is <em>from</em> (or <em>over</em>) its input schema and <em>to</em> its output schema.</p>
 <!-- prettier-ignore-start -->
 <ul>
@@ -2290,6 +2365,476 @@ such that on all input instances \(\dbinst{I}\),
 </li>
 </ul>
 <h2 id="algebraic-perspectives"><a class="header" href="#algebraic-perspectives">Algebraic Perspectives</a></h2>
+<h3 id="the-unnamed-perspective-the-spc-algebra"><a class="header" href="#the-unnamed-perspective-the-spc-algebra">The Unnamed Perspective: The SPC Algebra</a></h3>
+<p>Unnamed conjunctive algebra:</p>
+<ul>
+<li><strong>S</strong>election (\(\sigma\))</li>
+<li><strong>P</strong>rojection (\(\pi\))</li>
+<li><strong>C</strong>ross-Product (or Cartesian Product, \(\times\))</li>
+</ul>
+<!-- prettier-ignore-start -->
+<h4 id="selection-horizontal-operator"><a class="header" href="#selection-horizontal-operator">Selection (“Horizontal” Operator)</a></h4>
+<p>Primitive Forms: \(\sigma_{j=a}\) and \(\sigma_{j=k}\)<br />
+where \(j, k\) are positive integers, and \(a \in \dom\)
+(constants are usually surrounded by quotes).</p>
+<p>\[
+\sigma_{j=a}(I) = \{ t \in I \mid t(j) = a \}
+\]</p>
+<p>\(\sigma_{j=k}\) is sometimes called <em>atomic</em> selection.</p>
+<h4 id="projection-vertical-operator"><a class="header" href="#projection-vertical-operator">Projection (“Vertical” Operator)</a></h4>
+<p>General Form: \(\pi_{j_1, \ldots, j_n}\)<br />
+where \(n \geq 0\) and \(j_1, \ldots, j_n\) are positive integers
+(empty sequence is written \([\;]\)).</p>
+<p>\[
+\pi_{j_1, \ldots, j_n}(I) = \{ \langle t(j_1), \ldots, t(j_n) \rangle \mid t \in I \}
+\]</p>
+<h4 id="cross-product-or-cartesian-product"><a class="header" href="#cross-product-or-cartesian-product">Cross-Product (or Cartesian Product)</a></h4>
+<p>\[
+I \times J = \{ \langle t(1), \ldots, t(n), s(1), \ldots, s(m) \rangle \mid t \in I, s \in J \}
+\]</p>
+<h4 id="formal-inductive-definition"><a class="header" href="#formal-inductive-definition">Formal Inductive Definition</a></h4>
+<p>Let \(\dbschema{R}\) be a relation schema.</p>
+<p>There are two kinds of <em>base SPC (algebra) queries</em>:</p>
+<ol>
+<li><em>Input Relation</em>: Expression \(R\); with arity equal to \(\arity(R)\)</li>
+<li><em>Unary Singleton Constant</em>: Expression \(\{\langle a \rangle \}\),
+where \(a \in \dom\); with arity equal to 1</li>
+</ol>
+<p>The family of <em>SPC (algebra) queries</em> contains all above <em>base SPC queries</em> and,
+for SPC queries \(q_1, q_2\) with arities \(\alpha_1, \alpha_2\), respectively,</p>
+<ul>
+<li><em>Selection</em>: \(\sigma_{j=1}(q_1)\) and \(\sigma_{j=k}(q_1)\),
+whenever \(j, k \leq \alpha_1\) and \(a \in \dom\); these have arity \(\alpha_1\).</li>
+<li><em>Projection</em>: \(\pi_{j_1, \ldots, j_n}(q_1)\),
+where \(j_1, \ldots, j_n \leq \alpha_1\); this has arity \(n\).</li>
+<li><em>Cross-Product</em>: \(q_1 \times q_2\); this has arity \(\alpha_1 + \alpha_2\).</li>
+</ul>
+<h4 id="unsatisifiable-queries"><a class="header" href="#unsatisifiable-queries">Unsatisifiable Queries</a></h4>
+<p>E.g. \(\sigma_{1=a}(\sigma_{1=b}(R))\) where \(\arity(R) \geq 1\) and \(a \neq b\).</p>
+<p>This is equivalent to \(q^\emptyset\).</p>
+<h4 id="generalized-spc-algebra"><a class="header" href="#generalized-spc-algebra">Generalized SPC Algebra</a></h4>
+<ul>
+<li><em>Intersection</em> (\(\cap\)): is easily simulated by selection and cross-product.</li>
+<li><em>Generalized Selection</em> (\(\sigma\)): permits the specification of multiple conditions.
+<ul>
+<li><em>Positive Conjunctive Selection Formula</em>: \(F = \gamma_1 \land \ldots \land \gamma_n (n \geq 1)\) where each \(\gamma_i\) is either \(j = k\) or \(j = a\)</li>
+<li><em>Positive Conjunctive Selection Operator</em>: an expression of the form \(\sigma_F\), where \(F\) is a positive conjunctive selection formula</li>
+<li>can be simulated by a sequence of selections</li>
+</ul>
+</li>
+<li><em>Equi-Join</em> (\(\bowtie\)): a binary operator that combines cross-product and selection
+<ul>
+<li><em>Equi-Join Condition</em>: \(F = \gamma_1 \land \ldots \land \gamma_n (n \geq 1)\) where each \(\gamma_i\) is of the form \(j = k\)</li>
+<li><em>Equi-Join Operator</em>: an expression of the form \(I \bowtie_F J\), where \(F\) is an equi-join condition</li>
+<li>can be simulated by \(\sigma_{F’}(I \times J)\),
+where \(F’\) is obtained from \(F\) by replacing each
+condition \(j = k\) with \(j = \alpha(I) + k\)</li>
+</ul>
+</li>
+</ul>
+<h4 id="normal-form-1"><a class="header" href="#normal-form-1">Normal Form</a></h4>
+<p>\[
+\pi_{j_1, \ldots, j_n}( \{ \langle a_1 \rangle \} \times \ldots \times \{ \langle a_m \rangle \} \times \sigma_F(R_1 \times \ldots \times R_k) )
+\]
+where</p>
+<ul>
+<li>\(n \geq 0; m \geq 0\);</li>
+<li>\(a_1, \ldots, a_m \in \dom\);</li>
+<li>\(\{1, \ldots, m\} \subseteq \{j_1, \ldots, j_n\}\);</li>
+<li>\(R_1, \ldots, R_k\) are relation names (repeats permitted);</li>
+<li>\(F\) is a positive conjunctive selection formula.</li>
+</ul>
+<p>For each (generalized) SPC query, there is an equivalent SPC query in normal form.</p>
+<p>The proof is based on repeated application of the following <em>equivalence-preserving SPC algebra rewrite rules</em> (or <em>transformations</em>):</p>
+<ul>
+<li><em>Merge-Select</em>:
+\[
+\sigma_{F}( \sigma_{F’}(q) ) \equiv \sigma_{F \land F’}(q)
+\]</li>
+<li><em>Merge-Project</em>:
+\[
+\pi_{\boldsymbol{j}}( \pi_{\boldsymbol{k}}(q) ) \equiv \pi_{\boldsymbol{l}}(q), \text{ where } l_i = k_{j_i} \text{ for each term } l_i \text{ in } \boldsymbol{l}
+\]</li>
+<li><em>Push-Select-Though-Project</em>:
+\[
+\sigma_F( \pi_{\boldsymbol{j}}(q) ) \equiv \pi_{\boldsymbol{j}}( \sigma_{F’}(q) ), \text{ where } F’ \text{ is obtained from } F \text{ by replacing each } k \text{ with } j_k
+\]</li>
+<li><em>Push-Select-Though-Singleton</em>:
+\[
+\sigma_{1=j}(\langle a \rangle \times q) \equiv \langle a \rangle \times \sigma_{(j - 1) = a}(q)
+\]</li>
+<li><em>Associate-Cross</em>:
+\[
+(q_1 \times \ldots \times q_n) \times q \equiv q_1 \times \ldots \times q_n \times q
+\]
+\[
+q \times (q_1 \times \ldots \times q_n) \equiv q_1 \times \ldots \times q_n \times q
+\]</li>
+<li><em>Commute-Cross</em>:
+\[
+(q \times q’) \equiv \pi_{\boldsymbol{j} \boldsymbol{j’}} (q’ \times q)
+\]
+where \(\boldsymbol{j’} = [1, \ldots, \arity(q’)]\) and \(\boldsymbol{j} = [\arity(q’) + 1, \ldots, \arity(q’) + \arity(q)]\)</li>
+<li><em>Push-Cross-Though-Select</em>:
+\[
+\sigma_F(q) \times q’ \equiv \sigma_{F}(q \times q’)
+\]
+\[
+q \times \sigma_F(q’) \equiv \sigma_{F’}(q \times q’)
+\]
+where \(F’\) is obtained from \(F\) by replacing each \(j\) with \(\arity(q) + j\)</li>
+<li><em>Push-Cross-Though-Project</em>:
+\[
+\pi_{\boldsymbol{j}}(q) \times q’ \equiv \pi_{\boldsymbol{j}}(q \times q’)
+\]
+\[
+q \times \pi_{\boldsymbol{j}}(q’) \equiv \pi_{\boldsymbol{j’}}(q \times q’)
+\]
+where \(\boldsymbol{j’}\) is obtained from \(\boldsymbol{j}\) by replacing each \(j\) with \(\arity(q) + j\)</li>
+</ul>
+<h5 id="notation-for-rewriting"><a class="header" href="#notation-for-rewriting">Notation for Rewriting</a></h5>
+<p>\[
+\begin{split}
+q &amp;\rightarrow_{\mathcal{S}} q’ \quad \text{or} \\
+\text{simply} \quad q &amp;\rightarrow q’
+\end{split}
+\]</p>
+<ul>
+<li>for a set \(\mathcal{S}\) of rewrite rules and algebra expressions \(q, q’\),</li>
+<li>if \(\mathcal{S}\) is understood from the context,</li>
+<li>if \(q’\) is the result of replacing a subexpression of \(q\)
+according to one of the rules in \(\mathcal{S}\).</li>
+</ul>
+<p>\(\rightarrow^*_S\): the reflexive and transitive closure of \(\rightarrow\).</p>
+<p>A family \(\mathcal{S}\) of rewrite rules is <em>sound</em>
+if \(q \rightarrow_{\mathcal{S}} q’\) implies \(q \equiv q’\).
+If \(\mathcal{S}\) is sound, then \(q \rightarrow^*_{\mathcal{S}} q’\) implies \(q \equiv q’\).</p>
+<h3 id="the-named-perspective-the-spjr-algebra"><a class="header" href="#the-named-perspective-the-spjr-algebra">The Named Perspective: The SPJR Algebra</a></h3>
+<p>Named conjunctive algebra:</p>
+<ul>
+<li><strong>S</strong>election (\(\sigma\))</li>
+<li><strong>P</strong>rojection (\(\pi\)); repeats not permitted</li>
+<li><strong>J</strong>oin (\(\bowtie\)); natural join</li>
+<li><strong>R</strong>enaming (\(\delta\))</li>
+</ul>
+<h4 id="selection"><a class="header" href="#selection">Selection</a></h4>
+<p>\(\sigma_{A=a}, \sigma_{A=B}\) where \(A, B \in \att, a \in \dom\)</p>
+<p>These operators apply to any instance \(I\) with \(A, B \in \sort(I)\).</p>
+<h4 id="projection"><a class="header" href="#projection">Projection</a></h4>
+<p>\(\pi_{A_1, \ldots, A_n}\) where \(n \geq 0\) and \(A_1, \ldots, A_n \in \sort(I)\)</p>
+<h4 id="natural-join"><a class="header" href="#natural-join">(Natural) Join</a></h4>
+<p>\[
+\begin{split}
+I \bowtie J = \{ t \text{ over } V \cup W \vert &amp; \text{ for some } v \in I \text{ and } w \in J, \\
+&amp; \quad t[V] = v \land t[W] = w \}
+\end{split}
+\]
+where \(I\) and \(J\) have sorts \(V\) and \(W\), respectively.</p>
+<ul>
+<li>When \(\sort(I) = \sort(J)\), \(I \bowtie J = I \cap J\).</li>
+<li>When \(\sort(I) \cap \sort(J) = \emptyset\), \(I \bowtie J = I \times J\).</li>
+</ul>
+<h4 id="renaming"><a class="header" href="#renaming">Renaming</a></h4>
+<p>An <em>attribute renaming</em> for a finite set \(U\) of attributes
+is a one-one mapping from \(U\) to \(\att\).</p>
+<p>\[
+\delta_f(I) = \{ v \text{ over } f[U] \vert \text{ for some } u \in I, v(f(A)) = u(A) \text{ for each } A \in U \}
+\]
+where</p>
+<ul>
+<li>input is an instance \(I\) over \(U\)</li>
+<li>\(f\) is an attribute renaming for \(U\)
+<ul>
+<li>which can be described by \((A, f(A))\), where \(f(A) \neq A\)
+<ul>
+<li>usually written as \(A_1 A_2 \ldots A_n \rightarrow B_1 B_2 \ldots B_n\) to indicate that \(f(A_i) = B_i\) for each \(i \in [1, n] (n \geq 0)\)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="formal-inductive-definition-1"><a class="header" href="#formal-inductive-definition-1">Formal Inductive Definition</a></h4>
+<p>The <em>base SPJR algebra queries</em> are:</p>
+<ol>
+<li><em>Input Relation</em>: Expression \(R\); with sort equal to \(\sort(R)\)</li>
+<li><em>Unary Singleton Constant</em>: Expression \(\{ \langle A:a \rangle \}\),
+where \(a \in \dom\); with \(\sort = A\)</li>
+</ol>
+<p>The remainder of the syntax and semantics of the SPJR algebra is defined in analogy to those of the SPC algebra.</p>
+<h4 id="normal-form-2"><a class="header" href="#normal-form-2">Normal Form</a></h4>
+<p>\[
+\pi_{B_1, \ldots, B_m}( \{ \langle A_1:a_1 \rangle \} \bowtie \ldots \bowtie \{ \langle A_m:a_m \rangle \} \bowtie \sigma_F(\delta_{f_1}(R_1) \bowtie \ldots \bowtie \delta_{f_k}(R_k)) )
+\]
+where</p>
+<ul>
+<li>\(n \geq 0; m \geq 0\);</li>
+<li>\(a_1, \ldots, a_m \in \dom\);</li>
+<li>\({A_1, \ldots, A_m}\) occurs in \({B_1, \ldots, B_n}\);</li>
+<li>the \(A_i\)s are distinct;</li>
+<li>\(R_1, \ldots, R_k\) are relation names (repeats permitted);</li>
+<li>\(\delta_{f_i}\) is a renaming operator for \(\sort(R_i)\);</li>
+<li>no \(A_i\) occur in any \(\delta_{f_j}(R_j)\);</li>
+<li>the sorts of \(\delta_{f_1}(R_1), \ldots, \delta_{f_k}(R_k)\) are pairwise disjoint;</li>
+<li>\(F\) is a positive conjunctive selection formula.</li>
+</ul>
+<p>For each SPJR query, there is an equivalent SPJR query in normal form.</p>
+<!-- prettier-ignore-end -->
+<h3 id="equivalence-theorem"><a class="header" href="#equivalence-theorem">Equivalence Theorem</a></h3>
+<ul>
+<li><em>Lemma</em>: The SPC and SPJR algebras are equivalent.</li>
+<li><em>Equivalence Theorem</em>: The rule-based conjunctive queries, tableau queries, conjunctive calculus queries, satisifiable SPC algebra, and satisifiable SPJR algebra are all equivalent.</li>
+</ul>
+<h2 id="adding-union"><a class="header" href="#adding-union">Adding Union</a></h2>
+<p>The following have equivalent expressive power:</p>
+<ul>
+<li>the nonrecursive datalog programs (with single relation target)</li>
+<li>the SPCU queries</li>
+<li>the SPJRU queries
+<ul>
+<li>union can only be applied to expressions having the same sort</li>
+</ul>
+</li>
+</ul>
+<h3 id="nonrecursive-datalog-program"><a class="header" href="#nonrecursive-datalog-program">Nonrecursive Datalog Program</a></h3>
+<p>A <em>nonrecursive datalog program (nr-datalog program)</em> over schema \(\dbschema{R}\) is a set of rules:</p>
+<p>\[
+\begin{split}
+S_1 &amp; \leftarrow \body_1 \\
+S_2 &amp; \leftarrow \body_2 \\
+&amp; \vdots \\
+S_m &amp; \leftarrow \body_m
+\end{split}
+\]
+where</p>
+<ul>
+<li>no relation name in \(\dbschema{R}\) occurs in  a rule head</li>
+<li>the same relation name may appear in more than one rule head</li>
+<li>there is some ordering \(r_1, \ldots, r_m\) of the rules such that
+the relation name in the head of \(r_i\) does not occur in the body of any rule \(r_j\) with \(j \leq i\)</li>
+</ul>
+<h3 id="union-and-the-conjunctive-calculus"><a class="header" href="#union-and-the-conjunctive-calculus">Union and the Conjunctive Calculus</a></h3>
+<p>Simply permitting disjunction (denoted \(\lor\)) in the formula of a conjunctive calculus along with conjunction can have serious consequences.</p>
+<p>E.g.,</p>
+<p>\[
+q = \{ x, y, z \vert R(x, y) \lor R(y, z) \}
+\]</p>
+<p>The answer of \(q\) on nonempty instance \(I\) will be</p>
+<p>\[
+q(I)= (I \times \dom) \cup (\dom \times I)
+\]</p>
+<p>Because \(R(x, y)\) decides that the first two components in \(\langle x, y, z \rangle\) are in \(I\) and \(z\) can be anything in \(\dom\),
+and \(R(y, z)\) decides that the last two components in \(\langle x, y, z \rangle\) are in \(I\) and \(x\) can be anything in \(\dom\).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="adding-negation-algebra-and-calculus"><a class="header" href="#adding-negation-algebra-and-calculus">Adding Negation: Algebra and Calculus</a></h1>
+<!-- prettier-ignore-start -->
+<blockquote>
+<p><em>Mathjax</em> may have <a href="https://meta.stackexchange.com/questions/384924/i-think-there-is-a-mathjax-bug-for-mathcal-typesetting-on-some-platforms">issues</a> to display math symbols in particular styles, such as \(\mathcal{A}\).<br />
+You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Common HTML</em> (right click on any math expressions):
+<img src="notes/cs848/foundations/../../../mathjax.png" alt="mathjax" />
+\( \newcommand{\att}{\textbf{att}} \)
+\( \newcommand{\attTotalOrder}{\leq_{\att}} \)
+\( \newcommand{\dom}{\textbf{dom}} \)
+\( \newcommand{\Dom}{\textit{Dom}} \)
+\( \newcommand{\relname}{\textbf{relname}} \)
+\( \newcommand{\sort}{\textit{sort}} \)
+\( \newcommand{\arity}{\textit{arity}} \)
+\( \newcommand{\finPowerSet}{\mathcal{P}^{\text{fin}}} \)
+\( \newcommand{\dbschema}[1]{\textbf{#1}} \)
+\( \newcommand{\dbinst}[1]{\textbf{#1}} \)
+\( \newcommand{\rel}[1]{\textit{#1}} \)
+\( \newcommand{\attname}[1]{\textit{#1}} \)
+\( \newcommand{\varSet}{\textbf{var}} \)
+\( \newcommand{\ans}{\textit{ans}} \)
+\( \newcommand{\var}{\textit{var}} \)
+\( \newcommand{\adom}{\textit{adom}} \)
+\( \newcommand{\tableau}{\textbf{T}} \)
+\( \newcommand{\free}{\textit{free}} \)
+\( \newcommand{\body}{\text{body}} \)
+\( \newcommand{\datalogNeg}{\textit{datalog}^\neg} \)</p>
+</blockquote>
+<!-- prettier-ignore-end -->
+<ul>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#the-relational-algebra">The Relational Algebra</a></li>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#nonrecursive-datalog-with-negation">Nonrecursive Datalog with Negation</a>
+<ul>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#semantics">Semantics</a></li>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#example">Example</a>
+<ul>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#a-bad-example">A Bad Example</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#expressive-power">Expressive Power</a></li>
+</ul>
+</li>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#the-relational-calculus">The Relational Calculus</a>
+<ul>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#well-formed-formulas-revisited">Well-Formed Formulas, Revisited</a>
+<ul>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#formal-definition">Formal Definition</a></li>
+<li><a href="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.html#additional-logical-connectives">Additional Logical Connectives</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><em>first-order queries</em> can be expressed in:</p>
+<ul>
+<li>relational algebra</li>
+<li>relational calculus
+<ul>
+<li>relational calculus is essentially first-order predicate calculus without function symbols</li>
+</ul>
+</li>
+<li>nonrecursive datalog with negation</li>
+</ul>
+<h2 id="the-relational-algebra"><a class="header" href="#the-relational-algebra">The Relational Algebra</a></h2>
+<p><em>difference</em> operator (\(-\))<br />
+it can only be applied to expressions that have the same sort/arity.</p>
+<p>The <em>unnamed relational algebra</em> is obtained by adding the difference operator to the SPCU algebra (usually also with <em>intersection</em> operator).
+Because union is present, nonsingleton constant relations may be used.</p>
+<p>The <em>named relational algebra</em> is obtained in an analogous way.</p>
+<p>The unnamed and named relational algebras are equivalent in expressive power.</p>
+<h2 id="nonrecursive-datalog-with-negation"><a class="header" href="#nonrecursive-datalog-with-negation">Nonrecursive Datalog with Negation</a></h2>
+<p>To obtain a rule-based language with expressive power equivalent to
+the relational algebra, we extend <a href="notes/cs848/foundations/./02.conjunctive-queries.html#nonrecursive-datalog-program">nonrecursive datalog programs</a> by
+permitting negative literals in rule bodies.</p>
+<p><em>nonrecursive datalog with negation (nonrecursive \(\datalogNeg\), nr-\(\datalogNeg\))</em> has the rule of the form:</p>
+<p>\[
+q : \quad S(u) \leftarrow L_1, \ldots, L_n
+\]
+where</p>
+<!-- prettier-ignore-start -->
+<ul>
+<li>\(S\) is a relation name</li>
+<li>\(u\) is a free tuple of appropriate arity</li>
+<li>each \(L_i\) is a <em>literal</em>
+<ul>
+<li><em>literal</em> is an expression of the form \(R(v)\) or \(\neg R(v)\), where
+<ul>
+<li>\(R\) is a relation name and</li>
+<li>\(v\) is a tuple of appropriate arity</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>the rule is <em>range restricted</em> if each variable \(x\) occurring in the rule occurs in at least one literal of the form \(R(v)\) in the rule body
+<ul>
+<li>unless otherwise specified, all \(\datalogNeg\) rules are range restricted</li>
+</ul>
+</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h3 id="semantics-2"><a class="header" href="#semantics-2">Semantics</a></h3>
+<p>The <em>image</em> of \(\dbinst{I}\) under \(q\) is</p>
+<p>\[
+\begin{split}
+q(\dbinst{I}) = \{ v(u) \vert &amp; v \text{ is a valuation and for each } i \in [1, n], \\
+&amp; \quad v(u_i) \in \dbinst{I}(R_i), \text{ if } L_i = R_i(u_i), \text{ and } \\
+&amp; \quad v(u_i) \not \in \dbinst{I}(R_i), \text{ if } L_i = \neg R_i(u_i)
+\}
+\end{split}
+\]</p>
+<p>This is image can be expressed as a difference \(q_1 - q_2\),<br />
+where \(q_1\) is an SPC query and \(q_2\) is an SPCU query.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
+<p>Table <em>Movies</em></p>
+<div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
+<tr><td>A</td><td>X</td><td>Y</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p>List those movies for which all actors of the movie have acted under Hitchcock’s direction.</p>
+</blockquote>
+<p>\[
+\begin{split}
+\rel{Hitch-actor}(z) &amp; \leftarrow \rel{Movies}(x, \text{“Hitchcock”}, z) \\
+\rel{not-ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{Hitch-actor}(z) \\
+\rel{ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{not-ans}(x)
+\end{split}
+\]</p>
+<h4 id="a-bad-example"><a class="header" href="#a-bad-example">A Bad Example</a></h4>
+<p>The following program forms a kind of merging of the first two rules of the previous program.</p>
+<p>\[
+\begin{split}
+\rel{bad-not-ans}(x) &amp; \leftarrow \rel{Movies}(x, y, z), \\
+&amp; \qquad \quad \neg \rel{Movies}(x’, \text{“Hitchcock”}, z), \\
+&amp; \qquad \quad \rel{Movies}(x’, \text{“Hitchcock}, z’) \\
+\rel{ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{not-ans}(x)
+\end{split}
+\]</p>
+<p>\(x’\) can be all movies directed by Hitchcock,
+and \(z\) can be all actors.</p>
+<p>Thus, \(\neg \rel{Movies}(x’, \text{“Hitchcock”}, z)\) will
+exclude \(z\) that are actors in all of Hitchcock’s movies.</p>
+<p>Then, \(x\) can be movies that have actors not in all of Hitchcock’s movies.</p>
+<p>So, the final \(ans\) actually answers the following query:</p>
+<blockquote>
+<p>List those movies for which no actor is not in all of Hitchcock’s movies.</p>
+<p>i.e.</p>
+<p>List those movies for which all actors of the movie acted in all of Hitchcock’s movies.</p>
+</blockquote>
+<h3 id="expressive-power"><a class="header" href="#expressive-power">Expressive Power</a></h3>
+<p>The relational algebras and the family of nr-\(\datalogNeg\) programs that have single relation output have equivalent expressive power.</p>
+<h2 id="the-relational-calculus"><a class="header" href="#the-relational-calculus">The Relational Calculus</a></h2>
+<p>The flexibility brings a nontrivial cost:<br />
+If used without restriction, the calculus can easily express queries
+whose answers are infinite.</p>
+<p>The calculus presented in this chapter is sometimes called the <em>domain calculus</em> because the variables range over elements of the underlying domain of values.</p>
+<h3 id="well-formed-formulas-revisited"><a class="header" href="#well-formed-formulas-revisited">Well-Formed Formulas, Revisited</a></h3>
+<p>We obtain the relational calculus by adding negation (\(\neg\)), disjunction (\(\lor\)), and universal quantification (\(\forall\)) to the conjunctive calculus with equality.</p>
+<p>Both disjunction and universal quantification can be viewed as consequences of adding negation:</p>
+<ul>
+<li>\(\varphi \lor \psi \equiv \neg (\neg \varphi \land \neg \psi)\)</li>
+<li>\(\forall x \, \varphi \equiv \neg \exists x \, \neg \varphi\)</li>
+</ul>
+<h4 id="formal-definition"><a class="header" href="#formal-definition">Formal Definition</a></h4>
+<p>For a given input schema \(\dbschema{R}\),</p>
+<p>the <em>base formulas</em> include:</p>
+<ul>
+<li>atoms over \(\dbschema{R}\)</li>
+<li>equality (inequality) atoms of the form \(e = e’ (e \neq e’)\) for terms \(e, e’\)</li>
+</ul>
+<p>the <em>(well-formed) formulas</em> include the base formulas and formulas of the form:</p>
+<ul>
+<li>\(\varphi \land \psi\)
+<ul>
+<li>where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\varphi \lor \psi\)
+<ul>
+<li>where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\neg \varphi\)
+<ul>
+<li>where \(\varphi\) is a formula over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\exists x \, \varphi\)
+<ul>
+<li>where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\forall x \, \varphi\)
+<ul>
+<li>where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\)</li>
+</ul>
+</li>
+</ul>
+<p>\(e \neq e’\) is viewed as an abbreviation of \(\neg (e = e’)\) in some contexts.</p>
+<h4 id="additional-logical-connectives"><a class="header" href="#additional-logical-connectives">Additional Logical Connectives</a></h4>
+<ul>
+<li><em>implies</em> (\(\rightarrow\))
+<ul>
+<li>\(\varphi \rightarrow \psi \equiv \neg \varphi \lor \psi\)</li>
+</ul>
+</li>
+<li><em>is equivalent to</em> (\(\leftrightarrow\))
+<ul>
+<li>\(\varphi \leftrightarrow \psi \equiv (\varphi \land \psi) \lor (\neg \varphi \land \neg \psi)\)</li>
+</ul>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="g1-pain-points"><a class="header" href="#g1-pain-points">G1 Pain Points</a></h1>
 <h2 id="about-alcohol"><a class="header" href="#about-alcohol">About Alcohol</a></h2>
 <ul>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>The Relational Model - Hongxu Xu</title>
+        <title>Adding Negation: Algebra and Calculus - Hongxu Xu</title>
 
 
         <!-- Custom HTML head -->
@@ -19,7 +19,7 @@
         <meta name="description" content="Hongxu Xu&#x27;s personal website">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
-        <meta property="og:title" content="notes/cs848/foundations/01.the-relation-model.md" />
+        <meta property="og:title" content="notes/cs848/foundations/03.adding-negation-algebra-and-calculus.md" />
 
         <link rel="icon" href="../../../favicon.svg">
         <link rel="shortcut icon" href="../../../favicon.png">
@@ -187,7 +187,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="the-relational-model"><a class="header" href="#the-relational-model">The Relational Model</a></h1>
+                        <h1 id="adding-negation-algebra-and-calculus"><a class="header" href="#adding-negation-algebra-and-calculus">Adding Negation: Algebra and Calculus</a></h1>
 <!-- prettier-ignore-start -->
 <blockquote>
 <p><em>Mathjax</em> may have <a href="https://meta.stackexchange.com/questions/384924/i-think-there-is-a-mathjax-bug-for-mathcal-typesetting-on-some-platforms">issues</a> to display math symbols in particular styles, such as \(\mathcal{A}\).<br />
@@ -205,195 +205,200 @@ You can try to mitigate this by changing the <em>Math Renderer</em> to <em>Commo
 \( \newcommand{\dbinst}[1]{\textbf{#1}} \)
 \( \newcommand{\rel}[1]{\textit{#1}} \)
 \( \newcommand{\attname}[1]{\textit{#1}} \)
-\( \newcommand{\varSet}{\textbf{var}} \)</p>
+\( \newcommand{\varSet}{\textbf{var}} \)
+\( \newcommand{\ans}{\textit{ans}} \)
+\( \newcommand{\var}{\textit{var}} \)
+\( \newcommand{\adom}{\textit{adom}} \)
+\( \newcommand{\tableau}{\textbf{T}} \)
+\( \newcommand{\free}{\textit{free}} \)
+\( \newcommand{\body}{\text{body}} \)
+\( \newcommand{\datalogNeg}{\textit{datalog}^\neg} \)</p>
 </blockquote>
 <!-- prettier-ignore-end -->
-<h2 id="informal-terminology"><a class="header" href="#informal-terminology">Informal Terminology</a></h2>
 <ul>
-<li><em>Relation</em>: table
+<li><a href="#the-relational-algebra">The Relational Algebra</a></li>
+<li><a href="#nonrecursive-datalog-with-negation">Nonrecursive Datalog with Negation</a>
 <ul>
-<li><em>Relation Name</em>: name of the table</li>
+<li><a href="#semantics">Semantics</a></li>
+<li><a href="#example">Example</a>
+<ul>
+<li><a href="#a-bad-example">A Bad Example</a></li>
 </ul>
 </li>
-<li><em>Attribute</em>: column name</li>
-<li><em>Tuple/Record</em>: line in the table</li>
-<li><em>Domain</em>: set of constants that entries of tuples can take</li>
-<li><em>Database Schema</em>: specifying the structure of the database</li>
-<li><em>Database Instance</em>: specifying the actual content in the database</li>
-</ul>
-<h2 id="formal-definitions"><a class="header" href="#formal-definitions">Formal Definitions</a></h2>
-<ul>
-<li>\(\att\): a countably infinite set of <em>attributes</em>
-<ul>
-<li>assume \(\att\) is fixed</li>
+<li><a href="#expressive-power">Expressive Power</a></li>
 </ul>
 </li>
-<li>\(\attTotalOrder\): a total order on \(\att\)
+<li><a href="#the-relational-calculus">The Relational Calculus</a>
 <ul>
-<li>the elements of a set of attributes \(U\) are written according to \(\attTotalOrder\) unless otherwise specified</li>
-</ul>
-</li>
-<li>\(\dom\): a countably infinite set of <em>domains</em> (disjoint from \(\att\))
+<li><a href="#well-formed-formulas-revisited">Well-Formed Formulas, Revisited</a>
 <ul>
-<li>assume \(\dom\) is fixed</li>
-<li>a <em>constant</em> is an element of \(\dom\)</li>
-<li>for most cases, the same domain of values is used for all attributes;
-<ul>
-<li>otherwise, assume a mapping \(\Dom\) on \(\att\), where \(\Dom(A)\) is a set called the domain of attribute \(A\)</li>
+<li><a href="#formal-definition">Formal Definition</a></li>
+<li><a href="#additional-logical-connectives">Additional Logical Connectives</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li>\(\relname\): a countably infinite set of <em>relation names</em> (disjoint from \(\att\) and \(\dom\))</li>
-<li>\(\sort\): a function from \(\relname\) to \(\finPowerSet(\att)\) (the finitary powerset of \(\att\))
+</ul>
+<p><em>first-order queries</em> can be expressed in:</p>
 <ul>
-<li>\(\sort^{-1}(U)\) is inifinite for each (possibly empty) finite set of attributes \(U\)
+<li>relational algebra</li>
+<li>relational calculus
 <ul>
-<li>which allows multiple relations to have the same set of attributes</li>
+<li>relational calculus is essentially first-order predicate calculus without function symbols</li>
 </ul>
 </li>
-<li>\(\sort(R)\) is called the \(\sort\) of a relation name \(R\)</li>
-<li>\(\arity(R) = |\sort(R)|\): the \(\arity\) of relation name \(R\)</li>
+<li>nonrecursive datalog with negation</li>
 </ul>
-</li>
-<li>\(R\): a relation name or a <em>relation schema</em>
+<h2 id="the-relational-algebra"><a class="header" href="#the-relational-algebra">The Relational Algebra</a></h2>
+<p><em>difference</em> operator (\(-\))<br />
+it can only be applied to expressions that have the same sort/arity.</p>
+<p>The <em>unnamed relational algebra</em> is obtained by adding the difference operator to the SPCU algebra (usually also with <em>intersection</em> operator).
+Because union is present, nonsingleton constant relations may be used.</p>
+<p>The <em>named relational algebra</em> is obtained in an analogous way.</p>
+<p>The unnamed and named relational algebras are equivalent in expressive power.</p>
+<h2 id="nonrecursive-datalog-with-negation"><a class="header" href="#nonrecursive-datalog-with-negation">Nonrecursive Datalog with Negation</a></h2>
+<p>To obtain a rule-based language with expressive power equivalent to
+the relational algebra, we extend <a href="./02.conjunctive-queries.html#nonrecursive-datalog-program">nonrecursive datalog programs</a> by
+permitting negative literals in rule bodies.</p>
+<p><em>nonrecursive datalog with negation (nonrecursive \(\datalogNeg\), nr-\(\datalogNeg\))</em> has the rule of the form:</p>
+<p>\[
+q : \quad S(u) \leftarrow L_1, \ldots, L_n
+\]
+where</p>
+<!-- prettier-ignore-start -->
 <ul>
-<li>Alternative notations:
+<li>\(S\) is a relation name</li>
+<li>\(u\) is a free tuple of appropriate arity</li>
+<li>each \(L_i\) is a <em>literal</em>
 <ul>
-<li>\(R[U]\): indicating \(\sort(R) = U\)</li>
-<li>\(R[n]\): indicating \(\arity(R) = n\)</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>\(\dbschema{R}\): a <em>database schema</em>
+<li><em>literal</em> is an expression of the form \(R(v)\) or \(\neg R(v)\), where
 <ul>
-<li>a nonempty finite set of relation names</li>
-<li>might be written as \(\dbschema{R} = \{R_1[U_1], \ldots, R_n[U_n]\}\)</li>
+<li>\(R\) is a relation name and</li>
+<li>\(v\) is a tuple of appropriate arity</li>
 </ul>
 </li>
 </ul>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+</li>
+<li>the rule is <em>range restricted</em> if each variable \(x\) occurring in the rule occurs in at least one literal of the form \(R(v)\) in the rule body
+<ul>
+<li>unless otherwise specified, all \(\datalogNeg\) rules are range restricted</li>
+</ul>
+</li>
+</ul>
+<!-- prettier-ignore-end -->
+<h3 id="semantics"><a class="header" href="#semantics">Semantics</a></h3>
+<p>The <em>image</em> of \(\dbinst{I}\) under \(q\) is</p>
+<p>\[
+\begin{split}
+q(\dbinst{I}) = \{ v(u) \vert &amp; v \text{ is a valuation and for each } i \in [1, n], \\
+&amp; \quad v(u_i) \in \dbinst{I}(R_i), \text{ if } L_i = R_i(u_i), \text{ and } \\
+&amp; \quad v(u_i) \not \in \dbinst{I}(R_i), \text{ if } L_i = \neg R_i(u_i)
+\}
+\end{split}
+\]</p>
+<p>This is image can be expressed as a difference \(q_1 - q_2\),<br />
+where \(q_1\) is an SPC query and \(q_2\) is an SPCU query.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
 <p>Table <em>Movies</em></p>
 <div class="table-wrapper"><table><thead><tr><th>Title</th><th>Director</th><th>Actor</th></tr></thead><tbody>
 <tr><td>A</td><td>X</td><td>Y</td></tr>
 </tbody></table>
 </div>
-<p>Table <em>Location</em></p>
-<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Address</th><th>Phone</th></tr></thead><tbody>
-<tr><td>T1</td><td>Addr1</td><td>P1</td></tr>
-</tbody></table>
-</div>
-<p>Table <em>Pariscope</em></p>
-<div class="table-wrapper"><table><thead><tr><th>Theater</th><th>Title</th><th>Schedule</th></tr></thead><tbody>
-<tr><td>T1</td><td>A</td><td>9:00</td></tr>
-</tbody></table>
-</div>
+<blockquote>
+<p>List those movies for which all actors of the movie have acted under Hitchcock’s direction.</p>
+</blockquote>
+<p>\[
+\begin{split}
+\rel{Hitch-actor}(z) &amp; \leftarrow \rel{Movies}(x, \text{“Hitchcock”}, z) \\
+\rel{not-ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{Hitch-actor}(z) \\
+\rel{ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{not-ans}(x)
+\end{split}
+\]</p>
+<h4 id="a-bad-example"><a class="header" href="#a-bad-example">A Bad Example</a></h4>
+<p>The following program forms a kind of merging of the first two rules of the previous program.</p>
+<p>\[
+\begin{split}
+\rel{bad-not-ans}(x) &amp; \leftarrow \rel{Movies}(x, y, z), \\
+&amp; \qquad \quad \neg \rel{Movies}(x’, \text{“Hitchcock”}, z), \\
+&amp; \qquad \quad \rel{Movies}(x’, \text{“Hitchcock}, z’) \\
+\rel{ans}(x) &amp; \leftarrow \rel{Movie}(x, y, z), \neg \rel{not-ans}(x)
+\end{split}
+\]</p>
+<p>\(x’\) can be all movies directed by Hitchcock,
+and \(z\) can be all actors.</p>
+<p>Thus, \(\neg \rel{Movies}(x’, \text{“Hitchcock”}, z)\) will
+exclude \(z\) that are actors in all of Hitchcock’s movies.</p>
+<p>Then, \(x\) can be movies that have actors not in all of Hitchcock’s movies.</p>
+<p>So, the final \(ans\) actually answers the following query:</p>
+<blockquote>
+<p>List those movies for which no actor is not in all of Hitchcock’s movies.</p>
+<p>i.e.</p>
+<p>List those movies for which all actors of the movie acted in all of Hitchcock’s movies.</p>
+</blockquote>
+<h3 id="expressive-power"><a class="header" href="#expressive-power">Expressive Power</a></h3>
+<p>The relational algebras and the family of nr-\(\datalogNeg\) programs that have single relation output have equivalent expressive power.</p>
+<h2 id="the-relational-calculus"><a class="header" href="#the-relational-calculus">The Relational Calculus</a></h2>
+<p>The flexibility brings a nontrivial cost:<br />
+If used without restriction, the calculus can easily express queries
+whose answers are infinite.</p>
+<p>The calculus presented in this chapter is sometimes called the <em>domain calculus</em> because the variables range over elements of the underlying domain of values.</p>
+<h3 id="well-formed-formulas-revisited"><a class="header" href="#well-formed-formulas-revisited">Well-Formed Formulas, Revisited</a></h3>
+<p>We obtain the relational calculus by adding negation (\(\neg\)), disjunction (\(\lor\)), and universal quantification (\(\forall\)) to the conjunctive calculus with equality.</p>
+<p>Both disjunction and universal quantification can be viewed as consequences of adding negation:</p>
 <ul>
-<li>The database schema \(\dbschema{CINEMA} = \{ \rel{Movies}, \rel{Location}, \rel{Pariscope} \}\)</li>
-<li>The sorts of the relation names
+<li>\(\varphi \lor \psi \equiv \neg (\neg \varphi \land \neg \psi)\)</li>
+<li>\(\forall x \, \varphi \equiv \neg \exists x \, \neg \varphi\)</li>
+</ul>
+<h4 id="formal-definition"><a class="header" href="#formal-definition">Formal Definition</a></h4>
+<p>For a given input schema \(\dbschema{R}\),</p>
+<p>the <em>base formulas</em> include:</p>
 <ul>
-<li>\(\sort(\rel{Movies}) = \{ \attname{Title}, \attname{Director}, \attname{Actor} \}\)</li>
-<li>\(\sort(\rel{Location}) = \{ \attname{Theater}, \attname{Address}, \attname{Phone} \}\)</li>
-<li>\(\sort(\rel{Pariscope}) = \{ \attname{Theater}, \attname{Title}, \attname{Schedule} \}\)</li>
+<li>atoms over \(\dbschema{R}\)</li>
+<li>equality (inequality) atoms of the form \(e = e’ (e \neq e’)\) for terms \(e, e’\)</li>
+</ul>
+<p>the <em>(well-formed) formulas</em> include the base formulas and formulas of the form:</p>
+<ul>
+<li>\(\varphi \land \psi\)
+<ul>
+<li>where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\varphi \lor \psi\)
+<ul>
+<li>where \(\varphi\) and \(\psi\) are formulas over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\neg \varphi\)
+<ul>
+<li>where \(\varphi\) is a formula over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\exists x \, \varphi\)
+<ul>
+<li>where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\)</li>
+</ul>
+</li>
+<li>\(\forall x \, \varphi\)
+<ul>
+<li>where \(x\) is a variable and \(\varphi\) is a formula over \(\dbschema{R}\)</li>
 </ul>
 </li>
 </ul>
-<h2 id="named-vs-unnamed-attributestuples"><a class="header" href="#named-vs-unnamed-attributestuples">Named v.s. Unnamed Attributes/Tuples</a></h2>
-<h3 id="named-perspective"><a class="header" href="#named-perspective">Named Perspective</a></h3>
-<p>E.g. \( \langle A:5, B:3 \rangle \)</p>
-<p>a <em>tuple</em> over a finite set of attributes \(U\) (or over a relation schema \(R[U]\))
-is a total mapping (viewed as a function) \(u\) from \(U\) to \(\dom\).</p>
+<p>\(e \neq e’\) is viewed as an abbreviation of \(\neg (e = e’)\) in some contexts.</p>
+<h4 id="additional-logical-connectives"><a class="header" href="#additional-logical-connectives">Additional Logical Connectives</a></h4>
 <ul>
-<li>\(u(U)\): \(u\) is a tuple over \(U\)</li>
-<li>\(u(A)\): the value of \(u\) on an attribute \(A\) in \(U\) (\(A \in U\))</li>
-<li>\(u[V] = u \vert_V\): the restriction of \(u\) to a subset \(V \subseteq U\), i.e.,
-\(u[V]\) denotes the tuple \(v\) over \(V\) such that \(v(A) = u(A)\) for all \(A \in V\)</li>
-</ul>
-<h3 id="unnamed-perspective"><a class="header" href="#unnamed-perspective">Unnamed Perspective</a></h3>
-<p>E.g. \( \langle 5, 3 \rangle \)</p>
-<p>a <em>tuple</em> is an ordered <em>n</em>-tuple (\(n \geq 0\)) of constants (i.e., an element of the Cartesian product \(\dom^n\))</p>
+<li><em>implies</em> (\(\rightarrow\))
 <ul>
-<li>\(u(i)\): the \(i\)-th coordinate of \(u\)</li>
+<li>\(\varphi \rightarrow \psi \equiv \neg \varphi \lor \psi\)</li>
 </ul>
-<h3 id="correspondence"><a class="header" href="#correspondence">Correspondence</a></h3>
-<p>Because of the total order \(\attTotalOrder\), a tuple \(\langle A_1:a_1, A_2:a_2 \rangle\) (defined as a function)
-can be viewed as an ordered tuple with \((A_1:a_1)\) as a first component and \((A_2:a_2)\) as a second component.
-Ignoring the names, this tuple can be viewed as the ordered tuple \(\langle a_1, a_2 \rangle\).</p>
-<p>Conversely, the ordered tuple \(t = \langle a_1, a_2 \rangle\) can be viewed as a function over the set of integers \(\{1, 2\}\)
-with \(t(i) = a_i\) for each \(i\).</p>
-<h2 id="conventional-vs-logic-programming-relational-model"><a class="header" href="#conventional-vs-logic-programming-relational-model">Conventional v.s. Logic Programming Relational Model</a></h2>
-<h3 id="conventional-perspective"><a class="header" href="#conventional-perspective">Conventional Perspective</a></h3>
-<p>a <em>relation (instance)</em> over a relation schema \(\rel{R}[U]\) is a finite set of tuples \(I\) with sort \(U\).</p>
-<p>a <em>database instance</em> of database schema \(\dbschema{R}\) is a mapping \(\dbinst{I}\) with domain \(\dbschema{R}\),
-such that \(\dbinst{I}(\rel{R})\) is a relation over \(\rel{R}\) for each \(\rel{R} \in \dbschema{R}\).</p>
-<h3 id="logic-programming-perspective"><a class="header" href="#logic-programming-perspective">Logic Programming Perspective</a></h3>
-<p>This perspective is used primarily with the ordered-tuple perspective on tuples.</p>
-<p>A <em>fact</em> over \(\rel{R}\) is an expression of the form \(\rel{R}(a_1, \ldots, a_n)\),
-where \(a_i \in \dom\) for \(i \in [1, n]\).<br />
-If \(u = \langle a_1, \ldots, a_n \rangle\), we sometimes write \(\rel{R}(u)\) for \(\rel{R}(a_1, \ldots, a_n)\).</p>
-<p>a <em>relation (instance)</em> over a relation schema \(\rel{R}\) is a finite set of facts over \(\rel{R}\).</p>
-<p>a <em>database instance</em> of database schema \(\dbschema{R}\) is a finite set \(\dbinst{I}\) that is
-the union of relation instances over \(\rel{R}\) for all \(\rel{R} \in \dbschema{R}\).</p>
-<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
-<p>Assume \(\sort(R) = AB, \sort(S) = A\).</p>
-<h4 id="named-and-conventional"><a class="header" href="#named-and-conventional">Named and Conventional</a></h4>
-<p>\[
-\begin{split}
-I(R) = \{ f_1, f_2, f_3 \} \quad &amp;&amp; \\
-&amp; f_1(A) = a &amp;\quad f_1(B) = b \\
-&amp; f_2(A) = c &amp;\quad f_2(B) = b \\
-&amp; f_3(A) = a &amp;\quad f_3(B) = a \\
-I(S) = \{g\} \quad &amp;&amp; \\
-&amp; g(A) = d &amp;
-\end{split}
-\]</p>
-<h4 id="unnamed-and-conventional"><a class="header" href="#unnamed-and-conventional">Unnamed and Conventional</a></h4>
-<p>\[
-\begin{split}
-I(R) = \{ \langle a, b \rangle, \langle c, b \rangle, \langle a, a \rangle \} \quad &amp;&amp; \\
-I(S) = \{ \langle d \rangle \} \quad &amp;&amp;
-\end{split}
-\]</p>
-<h4 id="named-and-logic-programming"><a class="header" href="#named-and-logic-programming">Named and Logic Programming</a></h4>
-<p>\[
-\{ R(A:a, B:b), R(A:c, B:b), R(A:a, B:a), S(A:d) \}
-\]</p>
-<h4 id="unnamed-and-logic-programming"><a class="header" href="#unnamed-and-logic-programming">Unnamed and Logic Programming</a></h4>
-<p>\[
-\{ R(a, b), R(c, b), R(a, a), S(d) \}
-\]</p>
-<h2 id="variables"><a class="header" href="#variables">Variables</a></h2>
-<p>an infinite set of <em>variables</em> \(\varSet\) will be used to range over elements of \(\dom\).</p>
-<!-- prettier-ignore-start -->
+</li>
+<li><em>is equivalent to</em> (\(\leftrightarrow\))
 <ul>
-<li>a <em>free tuple</em> over \(U\) or \(\rel{R}(U)\) is a function \(u\) from \(U\) to \(\dom \cup \varSet\)</li>
-<li>an <em>atom</em> over \(\rel{R}\) is an expression of the form \(\rel{R}(e_1, \ldots, e_n)\),
-where \(n = \arity(\rel{R})\) and each <em>term</em> \(e_i \in \dom \cup \varSet\)</li>
-<li>a <em>ground atom</em> is an atom with no variables, i.e., a <em>fact</em> (see <a href="#logic-programming-perspective">Logic Programming Perspective</a>)</li>
+<li>\(\varphi \leftrightarrow \psi \equiv (\varphi \land \psi) \lor (\neg \varphi \land \neg \psi)\)</li>
 </ul>
-<!-- prettier-ignore-end -->
-<ul>
-<li><a href="#notations">Notations</a></li>
+</li>
 </ul>
-<h2 id="notations"><a class="header" href="#notations">Notations</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Object</th><th>Notation</th></tr></thead><tbody>
-<tr><td>Constants</td><td>\(a, b, c\)</td></tr>
-<tr><td>Variables</td><td>\(x, y\)</td></tr>
-<tr><td>Sets of Variables</td><td>\(X, Y\)</td></tr>
-<tr><td>Terms</td><td>\(e\)</td></tr>
-<tr><td>Attributes</td><td>\(A, B, C\)</td></tr>
-<tr><td>Sets of Attributes</td><td>\(U, V, W\)</td></tr>
-<tr><td>Relation Names</td><td>\(\rel{R}, \rel{S}; \rel{R}[U], \rel{S}[V] \)</td></tr>
-<tr><td>Database Schemas</td><td>\(\dbschema{R}, \dbschema{S} \)</td></tr>
-<tr><td>Tuples</td><td>\(t, s\)</td></tr>
-<tr><td>Free Tuples</td><td>\(u, v, w\)</td></tr>
-<tr><td>Facts</td><td>\(\rel{R}(a_1, \ldots, a_n), R(t)\)</td></tr>
-<tr><td>Atoms</td><td>\(\rel{R}(e_1, \ldots, e_n), R(u)\)</td></tr>
-<tr><td>Relation Instances</td><td>\(I, J\)</td></tr>
-<tr><td>Database Instances</td><td>\(\dbinst{I}, \dbinst{J} \)</td></tr>
-</tbody></table>
-</div>
+
 
                         <footer id="footer" style="margin-top: 8em;">
                         </footer>
@@ -401,11 +406,11 @@ where \(n = \arity(\rel{R})\) and each <em>term</em> \(e_i \in \dom \cup \varSet
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../notes/cs848/foundations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../notes/cs848/foundations/02.conjunctive-queries.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../notes/cs848/foundations/02.conjunctive-queries.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -415,11 +420,11 @@ where \(n = \arity(\rel{R})\) and each <em>term</em> \(e_i \in \dom \cup \varSet
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../notes/cs848/foundations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../notes/cs848/foundations/02.conjunctive-queries.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../notes/cs848/foundations/02.conjunctive-queries.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../notes/g1-pain-points.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

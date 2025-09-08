@@ -13,3 +13,8 @@ mathjax-support = true
 smart-punctuation = true
 cname = "xuhongxu.com"
 additional-css = ["style.css"]
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+max-level = 4

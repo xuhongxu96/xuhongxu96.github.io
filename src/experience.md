@@ -45,7 +45,7 @@ MSAI Team
 
 MSAI Team  
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca)  
-Beijing, China (Transferred to Suzhou, Jiangsu, China in May 2019)
+Beijing, China (Relocated to Suzhou, Jiangsu, China in May 2019)
 
 *Worked on 20-year-old Microsoft WordBreaker.*
 
@@ -59,7 +59,7 @@ Beijing, China (Transferred to Suzhou, Jiangsu, China in May 2019)
 
 ### Short-Term Contributor (Nov 2020 -- Jan 2021)
 
-Windows APS Team (work on a secondment)  
+Windows APS Team (temporary assignment)  
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China
 
 *Contributed to the formation of the new team, and Windows 11 application development.*

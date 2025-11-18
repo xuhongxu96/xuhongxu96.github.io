@@ -29,7 +29,7 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 - Collaborated with research teams to engineer and deploy
   state-of-the-art speech AI models based on large language models. -->
 
-## SDE-2 (Jan 2021 -- Sep 2022)
+## SDE-2 (Aug 2021 -- Sep 2022)
 
 MSAI Team  
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China

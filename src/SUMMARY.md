@@ -17,7 +17,6 @@
   - [Foundations of Databases](notes/cs848/foundations.md)
     - [The Relational Model](notes/cs848/foundations/01.the-relation-model.md)
     - [Conjunctive Queries](notes/cs848/foundations/02.conjunctive-queries.md)
-    - [Adding Negation: Algebra and Calculus](notes/cs848/foundations/03.adding-negation-algebra-and-calculus.md)
 
 # Life Notes
 

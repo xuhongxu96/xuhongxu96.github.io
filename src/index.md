@@ -19,13 +19,20 @@ without a focus yet...
 
 ## Socials
 
-<img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
 
 - GitHub: [https://github.com/xuhongxu96](https://github.com/xuhongxu96)
 - LinkedIn: [https://www.linkedin.com/in/xuhongxu/](https://www.linkedin.com/in/xuhongxu/)
 - Email: h4️⃣4️⃣5️⃣xu 🌀 uwaterloo.ca
-- 微信公众号: xuhongxu_it  
-  (**Chinese only**. *Scan the QR code to follow my WeChat Official Account*.)
+
+If you'd like to hear more about my thoughts and life, consider following me on:
+
+<img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
+
+- Substack: [https://hongxuxu.substack.com/](https://hongxuxu.substack.com/) (**English only**)  
+  *Subscribe to my newsletter on Substack to get my latest updates.*
+
+- 微信公众号: xuhongxu_it (**Chinese only**).  
+  *__Scan the QR code on the right__ to follow my WeChat Official Account*.
 
 ## Misc.
 

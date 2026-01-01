@@ -6,6 +6,7 @@
 - [Experience](experience.md)
 - [Awards](awards.md)
 - [Teaching](teaching.md)
+- [My Thoughts and Life](life.md)
 
 ---
 
@@ -17,7 +18,3 @@
   - [Foundations of Databases](notes/cs848/foundations.md)
     - [The Relational Model](notes/cs848/foundations/01.the-relation-model.md)
     - [Conjunctive Queries](notes/cs848/foundations/02.conjunctive-queries.md)
-
-# Life Notes
-
-- [G1 Pain Points](notes/g1-pain-points.md)

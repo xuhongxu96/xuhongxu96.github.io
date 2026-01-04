@@ -7,3 +7,5 @@ I recommend to read the first two chapters to get familiar with the notations us
 
 That said, the book is not required.
 In fact, paying real attention to the first several lectures should be sufficient to survive the course, and it turns out to be interesting.
+
+In this section, I summarize some key concepts from the first two chapters of the Alice Book.

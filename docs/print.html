@@ -46,10 +46,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1713f914.js";
+            window.path_to_searchindex_js = "searchindex-dc51255a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-fb0fd048.js"></script>
+        <script src="toc-1dedd78f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -299,9 +299,14 @@
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="my-thoughts-and-life"><a class="header" href="#my-thoughts-and-life">My Thoughts and Life</a></h1>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>I share technical content on this website, including course notes, projects, and research.</p>
+<p>For more personal thoughts and life updates, please check out my Substack newsletter and WeChat Official Account below.</p>
+</blockquote>
 <blockquote class="blockquote-tag blockquote-tag-tip">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
-<p>If you’d like to hear more about my thoughts and life, consider following me on:</p>
+<p>Follow me on Substack and WeChat!</p>
 <img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
 <ul>
 <li>
@@ -313,11 +318,13 @@
 </ul>
 </blockquote>
 <h2 id="selected-substack-posts"><a class="header" href="#selected-substack-posts">Selected Substack Posts</a></h2>
+<h3 id="my-2025"><a class="header" href="#my-2025">My 2025</a></h3>
 <div class="substack-post-embed">
 <p lang="en">My 2025 by Hongxu Xu</p>
 <p></p>
 <a data-post-link="" href="https://hongxuxu.substack.com/p/my-2025">Read on Substack</a></div>
 <script async="" src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>
+<h3 id="g1-pain-points"><a class="header" href="#g1-pain-points">G1 Pain Points</a></h3>
 <div class="substack-post-embed">
 <p lang="en">G1 Pain Points by Hongxu Xu</p>
 <p>Ontario Drive Test</p>
@@ -1751,12 +1758,812 @@ class MultiHeadAttention(nn.Module):
 </blockquote>
 <p>https://cs.uwaterloo.ca/~xiaohu/courses/CS848/CS848-F25.html</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="my-notes"><a class="header" href="#my-notes">My Notes</a></h1>
+<p>My course on database theory, specifically regarding <strong>Query Processing algorithms</strong>, is coming to an end soon. It has been very rewarding, so I’m writing this down to record what I’ve learned.</p>
+<p>I originally chose this course as a challenge because I couldn’t understand a single paper mentioned in the syllabus—I didn’t even know what problems they were trying to solve. After a semester of struggling to grasp just the surface, I discovered that this is actually quite an interesting—albeit still very difficult—field.</p>
+<p>I am writing this note to document the relatively simple and fundamental parts. I also want to organize the logical thread—what is the problem, how is it solved, what new problems arise from that solution, and how are those solved? I hope this will help me pick it up quickly if I need it in the future, and also serve as a simple introduction for readers.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>These notes were originally written in Chinese, and translated by Gemini.<br>Therefore, some expressions may seem a bit unnatural in English. I will gradually refine them over time.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="from-pairwise-join-to-global-perspective"><a class="header" href="#from-pairwise-join-to-global-perspective">From Pairwise Join to Global Perspective</a></h1>
+<h2 id="motivating-example-different-orders-of-pairwise-joins"><a class="header" href="#motivating-example-different-orders-of-pairwise-joins">Motivating Example: Different Orders of Pairwise JOINs</a></h2>
+<p><strong>Table 1: Student_Teacher</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Student</th><th>Teacher</th></tr>
+</thead>
+<tbody>
+<tr><td>S0</td><td>T0</td></tr>
+<tr><td>S0</td><td>T1</td></tr>
+<tr><td>S1</td><td>T2</td></tr>
+<tr><td>S2</td><td>T2</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Table 2: Teacher_Lab</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Teacher</th><th>Lab</th></tr>
+</thead>
+<tbody>
+<tr><td>T0</td><td>L0</td></tr>
+<tr><td>T0</td><td>L1</td></tr>
+<tr><td>T1</td><td>L0</td></tr>
+<tr><td>T1</td><td>L1</td></tr>
+<tr><td>T2</td><td>L2</td></tr>
+<tr><td>T3</td><td>L3</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Table 3: Lab_Device</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Lab</th><th>Device</th></tr>
+</thead>
+<tbody>
+<tr><td>L2</td><td>GPU0</td></tr>
+<tr><td>L3</td><td>GPU0</td></tr>
+<tr><td>L3</td><td>GPU1</td></tr>
+</tbody>
+</table>
+</div>
+<p>Assume we have the 3 tables above in a database. We allow the same student to have multiple teachers, and the same teacher to guide multiple students, etc.
+Now, we want to see <strong>which devices each student can access via the laboratories their teachers belong to</strong>.</p>
+<p>Any reader who has used SQL should know how to query this (the SQL below is simplified for demonstration and is not standard syntax):</p>
+<pre><code class="language-sql">SELECT * FROM Student_Teacher
+    INNER JOIN Teacher_Lab ON Teacher
+    INNER JOIN Lab_Device ON Lab
+
+</code></pre>
+<p>So, how do we obtain the execution results of this SQL statement in the database?</p>
+<p>Since this involves three data tables, it is easy to see that we can perform <strong>Pairwise Joins</strong>. There are several options for the order:</p>
+<p><strong>Order 1 (Join Table 1 and Table 2 first)</strong></p>
+<pre><code class="language-sql">Intermediate_Result = SELECT * FROM Student_Teacher INNER JOIN Teacher_Lab ON Teacher
+Final_Result = SELECT * FROM Intermediate_Result INNER JOIN Lab_Device ON Lab
+
+</code></pre>
+<p><strong>Order 2 (Join Table 2 and Table 3 first)</strong></p>
+<pre><code class="language-sql">Intermediate_Result = SELECT * FROM Teacher_Lab INNER JOIN Lab_Device ON Lab
+Final_Result = SELECT * FROM Student_Teacher INNER JOIN Intermediate_Result ON Teacher
+
+</code></pre>
+<p><strong>Order 3 (Join Table 1 and Table 3 first)</strong></p>
+<pre><code class="language-sql">Intermediate_Result = SELECT * FROM Student_Teacher CROSS JOIN Lab_Device
+Final_Result = SELECT * FROM Intermediate_Result INNER JOIN Teacher_Lab ON Teacher, Lab
+
+</code></pre>
+<pre class="mermaid">graph BT
+    subgraph "Order 3"
+        direction BT
+        T3_A[("Student_Teacher")]:::table
+        T3_C[("Lab_Device")]:::table
+        T3_B[("Teacher_Lab")]:::table
+
+        J3_1{{"CROSS JOIN (Cartesian)"}}:::op
+        Res3["_Final Result_&lt;br&gt;JOIN ON Teacher &amp; Lab"]:::result
+
+        %% Cross join first
+        T3_A --&gt; J3_1
+        T3_C --&gt; J3_1
+        
+        %% Then join with the middle table
+        J3_1 --&gt; Res3
+        T3_B --&gt; Res3
+    end
+
+    subgraph "Order 2"
+        direction BT
+        T2_A[("Student_Teacher")]:::table
+        T2_B[("Teacher_Lab")]:::table
+        T2_C[("Lab_Device")]:::table
+
+        J2_1{{"JOIN ON Lab"}}:::op
+        Res2["_Final Result_&lt;br&gt;JOIN ON Teacher"]:::result
+
+        T2_B --&gt; J2_1
+        T2_C --&gt; J2_1
+        
+        T2_A --&gt; Res2
+        J2_1 --&gt; Res2
+    end
+    
+    subgraph "Order 1"
+        direction BT
+        T1_A[("Student_Teacher")]:::table
+        T1_B[("Teacher_Lab")]:::table
+        T1_C[("Lab_Device")]:::table
+        
+        J1_1{{"JOIN ON Teacher"}}:::op
+        Res1["_Final Result_&lt;br&gt;JOIN ON Lab"]:::result
+
+        T1_A --&gt; J1_1
+        T1_B --&gt; J1_1
+        
+        J1_1 --&gt; Res1
+        T1_C --&gt; Res1
+        
+        %% Labeling the final join edge for clarity
+        linkStyle 2 stroke-width:2px,fill:none,stroke:green;
+        linkStyle 3 stroke-width:2px,fill:none,stroke:green;
+    end
+
+</pre>
+
+<p>Which one is better? <strong>Order 3</strong> involves a <code>CROSS JOIN</code> (Cartesian product), so it can basically be ruled out immediately.</p>
+<p>For any execution order, the input data (database/tables) is the same, and the output final result must also be the same. The only place where differences can occur is in the <strong>intermediate results</strong>. Let’s simulate the execution process.</p>
+<p>The intermediate result for <strong>Order 1</strong> is as follows, with a total of <strong>6 rows</strong>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Student</th><th>Teacher</th><th>Lab</th></tr>
+</thead>
+<tbody>
+<tr><td>S0</td><td>T0</td><td>L0</td></tr>
+<tr><td>S0</td><td>T1</td><td>L1</td></tr>
+<tr><td>S0</td><td>T0</td><td>L0</td></tr>
+<tr><td>S0</td><td>T1</td><td>L1</td></tr>
+<tr><td>S1</td><td>T2</td><td>L2</td></tr>
+<tr><td>S2</td><td>T2</td><td>L2</td></tr>
+</tbody>
+</table>
+</div>
+<p>The intermediate result for <strong>Order 2</strong> is as follows, with a total of <strong>3 rows</strong>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Teacher</th><th>Lab</th><th>Device</th></tr>
+</thead>
+<tbody>
+<tr><td>T2</td><td>L2</td><td>GPU0</td></tr>
+<tr><td>T3</td><td>L3</td><td>GPU0</td></tr>
+<tr><td>T3</td><td>L3</td><td>GPU1</td></tr>
+</tbody>
+</table>
+</div>
+<p>Regardless of the order, the <strong>final result</strong> is as follows, with a total of <strong>2 rows</strong>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Student</th><th>Teacher</th><th>Lab</th><th>Device</th></tr>
+</thead>
+<tbody>
+<tr><td>S1</td><td>T2</td><td>L2</td><td>GPU0</td></tr>
+<tr><td>S2</td><td>T2</td><td>L2</td><td>GPU0</td></tr>
+</tbody>
+</table>
+</div>
+<p>It is evident that <strong>Order 2 is superior</strong> because it outputs fewer intermediate results. These intermediate results not only take up memory but also participate in subsequent JOIN calculations, so obviously, the fewer the better.</p>
+<p>This is exactly what modern Database Management Systems (DBMS) usually do: use Pairwise JOINs while selecting a potentially optimal JOIN order based on statistics and rules.</p>
+<h2 id="a-more-intuitive-view"><a class="header" href="#a-more-intuitive-view">A More Intuitive View</a></h2>
+<p>We can represent this database as the path graph below, where each edge represents a row of data in a table:</p>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+    end
+
+    S0 --- T0
+    S0 --- T1
+    S1 --- T2
+    S2 --- T2
+    
+    T0 --- L0
+    T0 --- L1
+    T1 --- L0
+    T1 --- L1
+    T2 --- L2
+    T3 --- L3
+    
+    L2 --- GPU0
+    L3 --- GPU0
+    L3 --- GPU1
+
+    %% Apply styling
+    class S0,S1,S2,T0,T1,T2,T3,L0,L1,L2,L3,GPU0,GPU1 dot;
+
+</pre>
+
+<p>Consider <strong>Order 1</strong>, which looks for paths that can traverse all fields completely from <strong>Left to Right</strong>:</p>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+    classDef thick-line stroke-width:10px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+    end
+
+    S0 === T0
+    S0 === T1
+    S1 === T2
+    S2 === T2
+    
+    T0 === L0
+    T0 === L1
+    T1 === L0
+    T1 === L1
+    T2 === L2
+    T3 --- L3
+    
+    L2 === GPU0
+    L3 --- GPU0
+    L3 --- GPU1
+
+    %% Apply styling
+    class S0,S1,S2,T0,T1,T2,T3,L0,L1,L2,L3,GPU0,GPU1 dot;
+
+</pre>
+
+<p>The intermediate result of Order 1 contains three fields: “Student”, “Teacher”, and “Lab”. There are a total of 6 paths that can go from “Student” to “Lab” (Left to Right), which is exactly the number of rows in the intermediate result.</p>
+<p>Similarly, consider <strong>Order 2</strong>, looking for paths from <strong>Right to Left</strong>:</p>
+<pre class="mermaid">graph RL
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+    classDef thick-line stroke-width:10px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+    end
+    
+    T0 --- S0
+    T1 --- S0
+    T2 === S1
+    T2 === S2
+
+    L0 --- T0
+    L1 --- T0
+    L0 --- T1
+    L1 --- T1
+    L2 === T2
+    L3 === T3
+    
+    GPU0 === L2
+    GPU0 === L3
+    GPU1 === L3
+
+    %% Apply styling
+    class S0,S1,S2,T0,T1,T2,T3,L0,L1,L2,L3,GPU0,GPU1 dot;
+
+</pre>
+
+<p>The number of rows in the intermediate result for Order 2 is also equal to the number of paths from the “Device” field to the “Teacher” field.</p>
+<p>In fact, whether choosing Left-to-Right or Right-to-Left, both orders produce some <strong>waste</strong> in the intermediate results:</p>
+<ul>
+<li>When going Left-to-Right, reaching L0 and L1 is a dead end (cannot reach a Device).</li>
+<li>When going Right-to-Left, reaching T3 is a dead end (cannot reach a Student).</li>
+</ul>
+<h2 id="taking-it-to-the-extreme"><a class="header" href="#taking-it-to-the-extreme">Taking it to the Extreme</a></h2>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+    classDef thick-line stroke-width:4px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+        S3(( S3 ))
+        S4(( S4 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+        GPU2(( GPU2 ))
+        GPU3(( GPU3 ))
+        GPU4(( GPU4 ))
+    end
+
+    S0 --- T0
+    S1 --- T0
+    S2 --- T0
+    S3 --- T0
+
+    T0 --- L0
+    T0 --- L1
+    
+    T1 --- L2
+    T2 --- L2
+    
+    L2 --- GPU0
+    L2 --- GPU1
+    L2 --- GPU2
+    L2 --- GPU3
+    
+    S4 --- T3 --- L3 --- GPU4
+
+    %% Apply styling
+    class S0,S1,S2,S3,S4,T0,T1,T2,T3,L0,L1,L2,L3,GPU0,GPU1,GPU2,GPU3,GPU4 dot;
+
+</pre>
+
+<p>The example shown above is very extreme: almost all students (S0-S3) chose the same teacher (T0), and almost all devices (GPU0-GPU3) are concentrated in the same lab (L2). However, the most popular teacher (T0) belongs to labs (L0/L1) that <strong>don’t have a single machine</strong>…</p>
+<p>Assuming this is reality, it is easy to see that after performing the same JOIN query on this database instance, the result should contain only one row:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Student</th><th>Teacher</th><th>Lab</th><th>Device</th></tr>
+</thead>
+<tbody>
+<tr><td>S4</td><td>T3</td><td>L3</td><td>GPU4</td></tr>
+</tbody>
+</table>
+</div>
+<p>However, if we adopt the “Pairwise JOIN” scheme, regardless of which JOIN order is chosen, the intermediate results will have 9 rows (interactions between T0’s students and L2’s devices or similar paths). When the data volume is larger and similar <strong>Data Skew</strong> exists, the waste of computing resources can be immense.</p>
+<p>What should we do?</p>
+<h2 id="global-perspective"><a class="header" href="#global-perspective">Global Perspective</a></h2>
+<p>Let’s continue to observe this extreme example. What causes the waste in intermediate results are those <strong>dead-end paths</strong>.
+So, is it possible to filter out these dead ends <em>before</em> generating intermediate results?</p>
+<p>Yes, but the Pairwise JOIN method obviously won’t work; we need a <strong>Global Perspective</strong>.</p>
+<p>The cause of data expansion is that data rows joining on the same field value in two tables create a Cartesian product. Therefore, we need to avoid performing a JOIN (or strictly speaking, avoid performing an INNER JOIN) before completing the filtering.</p>
+<p>Why speak strictly? Because we actually still have to JOIN, but it is a special kind of JOIN: <strong>SEMI JOIN</strong>. It is perfectly suited for this filtering task.</p>
+<h3 id="first-pass-left-to-right"><a class="header" href="#first-pass-left-to-right">First Pass: Left to Right</a></h3>
+<p>To filter out rows in the right table that cannot JOIN.</p>
+<pre><code class="language-sql">Teacher_Lab_1 = SELECT * FROM Teacher_Lab WHERE EXISTS(
+    SELECT * FROM Student_Teacher WHERE (Student_Teacher.Teacher = Teacher_Lab.Teacher)
+)
+
+Lab_Device_1 = SELECT * FROM Lab_Device WHERE EXISTS(
+    SELECT * FROM Teacher_Lab_1 WHERE (Teacher_Lab_1.Lab = Lab_Device.Lab)
+)
+
+</code></pre>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+    classDef dotrm fill:#aaa,stroke:#666,stroke-width:2px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+        S3(( S3 ))
+        S4(( S4 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+        GPU2(( GPU2 ))
+        GPU3(( GPU3 ))
+        GPU4(( GPU4 ))
+    end
+
+    S0 --- T0
+    S1 --- T0
+    S2 --- T0
+    S3 --- T0
+
+    T0 --- L0
+    T0 --- L1
+    
+    T1 ~~~ L2
+    T2 ~~~ L2
+    
+    L2 ~~~ GPU0
+    L2 ~~~ GPU1
+    L2 ~~~ GPU2
+    L2 ~~~ GPU3
+    
+    S4 --- T3 --- L3 --- GPU4
+
+    %% Apply styling
+    class S0,S1,S2,S3,S4,T0,T3,L0,L1,L3,GPU4 dot;
+    class T1,T2,L2,GPU0,GPU1,GPU2,GPU3 dotrm;
+
+</pre>
+
+<p>We guarantee that the filtered data in the right-side table can definitely JOIN with all data tables to its left (including non-adjacent ones).
+Therefore, after completing the first pass of filtering, the data remaining in the <strong>right-most table</strong> is guaranteed to participate in the final result.</p>
+<h3 id="second-pass-right-to-left"><a class="header" href="#second-pass-right-to-left">Second Pass: Right to Left</a></h3>
+<p>To filter out rows in the left table that cannot JOIN.</p>
+<pre><code class="language-sql">Teacher_Lab_2 = SELECT * FROM Teacher_Lab_1 WHERE EXISTS(
+    SELECT * FROM Lab_Device_1 WHERE (Teacher_Lab_1.Lab = Lab_Device_1.Lab)
+)
+
+Student_Teacher_1 = SELECT * FROM Student_Teacher WHERE EXISTS(
+    SELECT * FROM Teacher_Lab_2 WHERE (Student_Teacher.Teacher = Teacher_Lab_2.Teacher)
+)
+
+</code></pre>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+    classDef dotrm fill:#aaa,stroke:#666,stroke-width:2px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+        S3(( S3 ))
+        S4(( S4 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+        GPU2(( GPU2 ))
+        GPU3(( GPU3 ))
+        GPU4(( GPU4 ))
+    end
+
+    S0 ~~~ T0
+    S1 ~~~ T0
+    S2 ~~~ T0
+    S3 ~~~ T0
+
+    T0 ~~~ L0
+    T0 ~~~ L1
+    
+    T1 ~~~ L2
+    T2 ~~~ L2
+    
+    L2 ~~~ GPU0
+    L2 ~~~ GPU1
+    L2 ~~~ GPU2
+    L2 ~~~ GPU3
+    
+    S4 --- T3 --- L3 --- GPU4
+
+    %% Apply styling
+    class S4,T3,L3,GPU4 dot;
+    class S0,S1,S2,S3,T0,L0,L1 dotrm;
+    class T1,T2,L2,GPU0,GPU1,GPU2,GPU3 dotrm;
+
+</pre>
+
+<p>We guarantee that the filtered data in the left-side table can definitely JOIN with all data tables to its right (including non-adjacent ones).
+Since the first pass guaranteed the right-most data participates in the final result, the second pass ensures that <strong>the remaining data in ALL tables</strong> will participate in the final result.</p>
+<h3 id="third-pass-left-to-right"><a class="header" href="#third-pass-left-to-right">Third Pass: Left to Right</a></h3>
+<p>To complete the JOIN.</p>
+<p>At this point, all paths that do not participate in the final JOIN result have been cleared away. We can now safely perform Pairwise JOINs.</p>
+<h2 id="summary-yannakakis-algorithm-simplified"><a class="header" href="#summary-yannakakis-algorithm-simplified">Summary: Yannakakis Algorithm (Simplified)</a></h2>
+<p>What is introduced here is the <strong>Yannakakis Algorithm</strong> specialized for linear JOIN queries. Compared to Pairwise JOIN, its advantage lies in being <strong>sensitive to the result size</strong>.</p>
+<p>The complexity of Pairwise JOIN is independent of the JOIN result size. Therefore, even if the final result is actually very small, it may produce a massive amount of intermediate results. For the database instance mentioned above, the time complexity of Pairwise JOIN is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>, whereas the time complexity of the Yannakakis algorithm shown here is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span>, where <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span> is the data size and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span> is the size of the JOIN result.</p>
+<p>The worst-case time complexity for both is consistent.
+Assuming there are <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span></span></span> data tables with no common attributes, equivalent to doing a full Cartesian product: Pairwise JOIN time complexity is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0913em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>, and Yannakakis time complexity is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span>, where <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8413em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span></span></span></span>.</p>
+<p>JOIN algorithms with <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span> complexity are also known as <strong>Output-Optimal</strong> algorithms. Regardless of the JOIN algorithm, one must read all the data (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span>) and output all the results (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span>), so <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span> is already optimal for a specific output size.</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="graphical-representation-of-joins"><a class="header" href="#graphical-representation-of-joins">Graphical Representation of Joins</a></h1>
+<p>In the previous note, we discussed the specialized version of the Yannakakis algorithm for linear JOIN queries. However, queries in practice go far beyond just linear structures. So, how do we generalize the Yannakakis algorithm to various types of JOIN queries?</p>
+<h2 id="graphical-representation"><a class="header" href="#graphical-representation">Graphical Representation</a></h2>
+<h3 id="recap-path-graph-of-a-database-instance"><a class="header" href="#recap-path-graph-of-a-database-instance">Recap: Path Graph of a Database Instance</a></h3>
+<p>Previously, we showed the path graph of a database instance. This represents the specific data content of a database instance (where every edge represents a row of data in a table):</p>
+<pre class="mermaid">graph LR
+    %% Define styling to match the handwritten dot style
+    classDef dot stroke-width:2px;
+
+    %% Layer definitions for alignment
+    subgraph Students
+        S0(( S0 ))
+        S1(( S1 ))
+        S2(( S2 ))
+    end
+
+    subgraph Teachers
+        T0(( T0 ))
+        T1(( T1 ))
+        T2(( T2 ))
+        T3(( T3 ))
+    end
+
+    subgraph Labs
+        L0(( L0 ))
+        L1(( L1 ))
+        L2(( L2 ))
+        L3(( L3 ))
+    end
+
+    subgraph Devices
+        GPU0(( GPU0 ))
+        GPU1(( GPU1 ))
+    end
+
+    S0 --- T0
+    S0 --- T1
+    S1 --- T2
+    S2 --- T2
+    
+    T0 --- L0
+    T0 --- L1
+    T1 --- L0
+    T1 --- L1
+    T2 --- L2
+    T3 --- L3
+    
+    L2 --- GPU0
+    L3 --- GPU0
+    L3 --- GPU1
+
+    %% Apply styling
+    class S0,S1,S2,T0,T1,T2,T3,L0,L1,L2,L3,GPU0,GPU1 dot;
+
+</pre>
+
+<p>But now, we want to represent the structure of the JOIN query itself graphically, without involving specific database instances—in other words, in a data-independent way.</p>
+<h3 id="graphical-representation-of-query-plans"><a class="header" href="#graphical-representation-of-query-plans">Graphical Representation of Query Plans</a></h3>
+<p>Now, disregarding data content, the path graph above transforms into paths between data tables. Considering the Left-to-Right and Right-to-Left orders, we can draw the following two charts:</p>
+<pre class="mermaid">flowchart TD
+    subgraph Order 2
+    direction BT
+    A2["Student_Teacher (Student, Teacher)"]
+    B2["Teacher_Lab (Teacher, Lab)"]
+    C2["Lab_Device (Lab, Device)"]
+    C2 --&gt; B2 --&gt; A2
+    end
+    subgraph Order 1
+    direction BT
+    A["Student_Teacher (Student, Teacher)"]
+    B["Teacher_Lab (Teacher, Lab)"]
+    C["Lab_Device (Lab, Device)"]
+    A --&gt; B --&gt; C
+    end
+
+</pre>
+
+<p>In a path graph, paths can only be linked if adjacent tables share common attributes. We can mark these common attributes on the edges of the graph. Additionally, if we view this as an undirected graph, we don’t need to distinguish between the two orders.</p>
+<pre class="mermaid">flowchart BT
+    A["Student_Teacher (Student, Teacher)"]
+    B["Teacher_Lab (Teacher, Lab)"]
+    C["Lab_Device (Lab, Device)"]
+    A--Teacher---B 
+    B--Lab---C
+
+</pre>
+
+<p>Now, let’s consider a slightly more complex example.</p>
+<h3 id="graphical-representation-of-star-join-queries"><a class="header" href="#graphical-representation-of-star-join-queries">Graphical Representation of Star JOIN Queries</a></h3>
+<p>Star JOIN query structures are very common in practice, primarily existing in scenarios using foreign keys.
+Assume we have the following data tables:</p>
+<ol>
+<li><strong>Orders</strong> (Order_ID, Warehouse_ID, Product_ID, Buyer_ID)</li>
+<li><strong>Warehouses</strong> (Warehouse_ID, Warehouse_Address)</li>
+<li><strong>Products</strong> (Product_ID, Product_Name)</li>
+<li><strong>Buyers</strong> (Buyer_ID, Buyer_Name, Buyer_Address)</li>
+</ol>
+<p>We want to retrieve all order details:</p>
+<pre><code class="language-sql">SELECT * FROM Orders
+    JOIN Warehouses ON Warehouse_ID
+    JOIN Products ON Product_ID
+    JOIN Buyers ON Buyer_ID
+
+</code></pre>
+<p>The graphical representation of this query is as follows:</p>
+<pre class="mermaid">flowchart TB
+    B[Warehouses]
+    A[Orders]
+    C[Products]
+    D[Buyers]
+    
+    A --Warehouse_ID --- B
+    A --Product_ID --- C
+    D --Buyer_ID --- A
+
+</pre>
+
+<p>At first glance, this graph might not seem “star-shaped”; it looks more like a tree.
+However, if the Orders table had more foreign keys, I believe the reader would understand why this category of queries is called a Star Query.</p>
+<p>Additionally, calling it a tree is also correct; a star structure is essentially a tree.
+In fact, the graphical representation of a JOIN query is called a <strong>Join Tree</strong>.</p>
+<h2 id="hypergraphs-and-join-trees"><a class="header" href="#hypergraphs-and-join-trees">Hypergraphs and Join Trees</a></h2>
+<p>We have gained a superficial understanding of Join Trees, but we have not yet provided a formal definition because we are missing a tool—the <strong>Hypergraph</strong>. Hypergraphs can also be used to visually display JOIN queries; the difference is that Hypergraphs merely represent the structure of the JOIN query, while Join Trees imply information about the query execution plan.</p>
+<h3 id="hypergraph"><a class="header" href="#hypergraph">Hypergraph</a></h3>
+<p>A Hypergraph <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mclose">)</span></span></span></span> consists of a finite number of vertices and a set of hyperedges, where <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span> represents the finite set of vertices and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span></span></span></span> represents the set of hyperedges.</p>
+<p>Unlike edges in a standard Graph which can only connect two endpoints, a Hyperedge <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span></span></span></span> can connect multiple vertices simultaneously, represented as a subset of vertices in the hypergraph, i.e., <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7719em;vertical-align:-0.136em;"></span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊆</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>.</p>
+<p>Hypergraphs map very naturally to JOIN queries:</p>
+<ul>
+<li>Each <strong>vertex</strong> represents a <strong>column (attribute)</strong> in the data tables.</li>
+<li>Each <strong>hyperedge</strong> contains multiple vertices, thus representing a <strong>data table</strong>.</li>
+</ul>
+<p>Using the Star Query mentioned earlier as an example:</p>
+<p><img src="notes/cs848/notes/02.hypergraph.png" alt="hypergraph"></p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>In this hypergraph, a “circle” is actually a hyperedge, corresponding to a data table (the table name is connected by a dashed line); each word inside the circle is a vertex, corresponding to a column.</p>
+<p>It took me some time to get used to the graphical representation of hypergraphs—after all, the “edges” in the graphs we usually encounter are represented by thin lines, unlike these “hyperedges” which actually have area.</p>
+</blockquote>
+<h3 id="join-tree"><a class="header" href="#join-tree">Join Tree</a></h3>
+<p>The formal definition of a Join Tree corresponds to that of a hypergraph.</p>
+<p>Given a hypergraph <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mclose">)</span></span></span></span>, its corresponding Join Tree is a tree <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span> that satisfies the following two conditions:</p>
+<ol>
+<li>The nodes of tree <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span> correspond one-to-one with the hyperedges (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span></span></span></span>) of hypergraph <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>.</li>
+<li>For any hypergraph vertex <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>, the set of tree nodes in <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span> corresponding to the hyperedges containing <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span></span></span></span> forms a connected subgraph. (This is often called the <a href="https://en.wikipedia.org/wiki/Tree_decomposition#:~:text=running%20intersection%20property"><strong>Running Intersection Property</strong></a>).</li>
+</ol>
+<p>Let’s stick with the previous example. The hypergraph has 4 hyperedges, corresponding to 4 data tables: Buyers, Orders, Warehouses, Products.</p>
+<p>Its corresponding Join Tree is as follows. We can see that the Join Tree has 4 nodes, corresponding one-to-one with the 4 hyperedges, thus satisfying the first condition.</p>
+<pre class="mermaid">flowchart TB
+    B["Warehouses(Warehouse_ID, Address)"]
+    A["Orders(Order_ID, Warehouse_ID, Product_ID, Buyer_ID)"]
+    C["Products(Product_ID, Name)"]
+    D["Buyers(Buyer_ID, Name, Address)"]
+    
+    A --Warehouse_ID --- B
+    A --Product_ID --- C
+    D --Buyer_ID --- A
+
+</pre>
+
+<p>The phrasing of the second condition is slightly more complex, but understanding it is quite easy:</p>
+<ul>
+<li><em>“Hyperedges containing a common vertex <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>”</em> simply means data tables that share a common field (e.g., “Buyers” and “Orders” share the “Buyer_ID” field).</li>
+<li><em>“Corresponding nodes in tree <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span>”</em> refers to finding the tree nodes corresponding to these data tables in the Join Tree (since condition 1 requires a one-to-one mapping).</li>
+<li><em>“Forms a connected subgraph”</em>: This is a basic graph theory concept. For a tree (an undirected graph), if there is a path between two points, they are connected (the path doesn’t have to be a direct edge; it can pass through multiple edges).</li>
+</ul>
+<p>In the Join Tree above, we can see that the two nodes “Buyers” and “Orders”, which share the common field “Buyer_ID”, are indeed connected. Iterating through every field can prove that this Join Tree satisfies the second condition.</p>
+<h2 id="yannakakis-algorithm-full-version"><a class="header" href="#yannakakis-algorithm-full-version">Yannakakis Algorithm (Full Version)</a></h2>
+<p>With the Join Tree, we can now complete the Yannakakis algorithm introduced earlier on this tree. Unlike before, where we only performed JOINs on a linear sequence of tables, we can now perform JOINs on a tree, thereby supporting more types of queries.</p>
+<h3 id="lets-recap"><a class="header" href="#lets-recap">Let’s Recap</a></h3>
+<p>The <a href="#global-perspective">simplified algorithm flow mentioned in the previous note</a> was:</p>
+<ol>
+<li><strong>First Pass:</strong> Left to Right, filter out rows in the right-side table that cannot JOIN.
+<ul>
+<li>After the first pass, data remaining in the right-most table is guaranteed to participate in the final result.</li>
+</ul>
+</li>
+<li><strong>Second Pass:</strong> Right to Left, filter out rows in the left-side table that cannot JOIN.
+<ul>
+<li>The second pass guarantees that the remaining data in ALL tables will participate in the final result.</li>
+</ul>
+</li>
+<li><strong>Third Pass:</strong> Left to Right, complete the JOIN.</li>
+</ol>
+<h3 id="generalizing-to-join-trees"><a class="header" href="#generalizing-to-join-trees">Generalizing to Join Trees</a></h3>
+<p>The characteristics of the two-pass filtering can easily be generalized to a tree structure.</p>
+<ol>
+<li><strong>First Pass:</strong> <strong>Bottom-Up</strong> (from leaf nodes up to the root), filtering out rows in parent nodes that cannot JOIN with any child node.
+<ul>
+<li>After the first pass, the data remaining in the <strong>root node</strong> is guaranteed to participate in the final result.</li>
+</ul>
+</li>
+<li><strong>Second Pass:</strong> <strong>Top-Down</strong>, filtering out rows in child nodes that cannot JOIN with the parent node.
+<ul>
+<li>The second pass guarantees that the remaining data in <strong>ALL tables</strong> will participate in the final result.</li>
+</ul>
+</li>
+<li><strong>Third Pass:</strong> <strong>Bottom-Up</strong>, complete the JOIN.</li>
+</ol>
+<h3 id="pseudo-code"><a class="header" href="#pseudo-code">Pseudo-code</a></h3>
+<p><strong>Input:</strong> Join Tree <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.25417em;">T</span></span></span></span>, Set of Relations <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal">R</span></span></span></span>, Root Node <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>.
+<strong>Output:</strong> Result of the JOIN <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6824em;vertical-align:-0.1774em;"></span><span class="mrel"><span class="mrel">⋈</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span><span class="mrel mtight">∈</span><span class="mord mathcal mtight" style="margin-right:0.25417em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1774em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>.</p>
+<ol>
+<li><strong>Preprocessing: Determine Parent-Child Relationships</strong><br>For each node <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> in <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.25417em;">T</span></span></span></span>:<br><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">←</span></span></span></span> the parent node of node <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> in tree <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.25417em;">T</span></span></span></span>;</li>
+<li><strong>Bottom-Up Phase</strong><br>Visit node <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.25417em;">T</span></span></span></span> in <strong>Bottom-Up</strong> order (excluding root <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>):<br><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">←</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin amsrm">⋉</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><br><em>// Filter tuples in parent relation that do not match using child relation</em></li>
+<li><strong>Top-Down Phase</strong><br>Visit node <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.25417em;">T</span></span></span></span> in <strong>Top-Down</strong> order (excluding root <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>):<br><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">←</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin amsrm">⋉</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><br><em>// Filter tuples in child relation that do not match using parent relation</em></li>
+<li><strong>Compute and Return JOIN Result</strong><br>At this point, all relations have reached “Global Consistency” (every tuple is guaranteed to appear in the final JOIN result):<br>Return the natural join of all relations: <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6824em;vertical-align:-0.1774em;"></span><span class="mrel"><span class="mrel">⋈</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span><span class="mrel mtight">∈</span><span class="mord mathcal mtight" style="margin-right:0.25417em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1774em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></li>
+</ol>
+<h2 id="new-problem-does-every-query-correspond-to-a-join-tree"><a class="header" href="#new-problem-does-every-query-correspond-to-a-join-tree">New Problem: Does Every Query Correspond to a Join Tree?</a></h2>
+<p>Suppose we have three data tables: <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mopen">(</span><span class="mord mathnormal">b</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">c</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mopen">(</span><span class="mord mathnormal">c</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">a</span><span class="mclose">)</span></span></span></span>.</p>
+<p>Consider the following query:</p>
+<pre><code class="language-sql">SELECT * FROM R, S, T WHERE R.a = T.a AND R.b = S.b AND S.c = T.c
+
+</code></pre>
+<p>Can you find the Join Tree that corresponds to it?</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="notes-for-foundations-of-databases"><a class="header" href="#notes-for-foundations-of-databases">Notes for <em>Foundations of Databases</em></a></h1>
 <p><a href="http://webdam.inria.fr/Alice/">Foundations of Databases (The Alice Book)</a></p>
 <p>The Alice Book is helpful for understanding the basic notations in database theory.
 I recommend to read the first two chapters to get familiar with the notations used in this course.</p>
 <p>That said, the book is not required.
 In fact, paying real attention to the first several lectures should be sufficient to survive the course, and it turns out to be interesting.</p>
+<p>In this section, I summarize some key concepts from the first two chapters of the Alice Book.</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="the-relational-model"><a class="header" href="#the-relational-model">The Relational Model</a></h1>
 <h2 id="informal-terminology"><a class="header" href="#informal-terminology">Informal Terminology</a></h2>

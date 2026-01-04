@@ -1,7 +1,12 @@
 # My Thoughts and Life
 
+> [!NOTE]
+> I share technical content on this website, including course notes, projects, and research.
+> 
+> For more personal thoughts and life updates, please check out my Substack newsletter and WeChat Official Account below.
+
 > [!TIP]
-> If you'd like to hear more about my thoughts and life, consider following me on:
+> Follow me on Substack and WeChat!
 > 
 > <img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
 > 
@@ -13,6 +18,10 @@
 
 ## Selected Substack Posts
 
+### My 2025
+
 <div class="substack-post-embed"><p lang="en">My 2025 by Hongxu Xu</p><p></p><a data-post-link href="https://hongxuxu.substack.com/p/my-2025">Read on Substack</a></div><script async src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>
+
+### G1 Pain Points
 
 <div class="substack-post-embed"><p lang="en">G1 Pain Points by Hongxu Xu</p><p>Ontario Drive Test</p><a data-post-link href="https://hongxuxu.substack.com/p/g1-pain-points">Read on Substack</a></div><script async src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>

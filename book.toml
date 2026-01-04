@@ -11,17 +11,13 @@ build-dir = "docs"
 [output.html]
 smart-punctuation = true
 cname = "xuhongxu.com"
-additional-css = ["style.css"]                        # , "./mdbook-admonish.css"]
+additional-css = ["style.css"]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
 edit-url-template = "https://github.com/xuhongxu96/xuhongxu96.github.io/edit/main/{path}"
 
 [preprocessor.katex]
 after = ["links"]
 macros = "macros.txt"
-
-# [preprocessor.admonish]
-# command = "mdbook-admonish"
-# assets_version = "3.1.0"    # do not edit: managed by `mdbook-admonish install`
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"

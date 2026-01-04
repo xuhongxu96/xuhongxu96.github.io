@@ -38,4 +38,3 @@ If you'd like to hear more about my thoughts and life, consider following me on:
 
 - Chinese Name: 许宏旭
 - Pronunciation: `Hong-shyoo` (IPA: `[xʊŋ ɕy]`)
-

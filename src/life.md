@@ -1,14 +1,15 @@
 # My Thoughts and Life
 
-If you'd like to hear more about my thoughts and life, consider following me on:
-
-<img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
-
-- Substack: [https://hongxuxu.substack.com/](https://hongxuxu.substack.com/) (**English only**)  
-  *Subscribe to my newsletter on Substack to get my latest updates.*
-
-- 微信公众号: xuhongxu_it (**Chinese only**).  
-  *__Scan the QR code on the right__ to follow my WeChat Official Account*.
+> [!TIP]
+> If you'd like to hear more about my thoughts and life, consider following me on:
+> 
+> <img class="right" src="wechat_mp.jpg" alt="WeChat MP" width="160px">
+> 
+> - Substack: [https://hongxuxu.substack.com/](https://hongxuxu.substack.com/) (**English only**)  
+>   *Subscribe to my newsletter on Substack to get my latest updates.*
+> 
+> - 微信公众号: xuhongxu_it (**Chinese only**).  
+>   *__Scan the QR code on the right__ to follow my WeChat Official Account*.
 
 ## Selected Substack Posts
 

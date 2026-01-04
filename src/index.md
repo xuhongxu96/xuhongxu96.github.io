@@ -32,9 +32,11 @@ If you'd like to hear more about my thoughts and life, consider following me on:
   *Subscribe to my newsletter on Substack to get my latest updates.*
 
 - 微信公众号: xuhongxu_it (**Chinese only**).  
-  *__Scan the QR code on the right__ to follow my WeChat Official Account*.
+  *__Scan the QR code on the right__ to follow my WeChat Official Account*.  
+  *__扫描右侧二维码__ 关注我的微信公众号*。
 
 ## Misc.
 
 - Chinese Name: 许宏旭
-- Pronunciation: `Hong-shyoo` (IPA: `[xʊŋ ɕy]`)
+  - Literally means "宏: Great 旭: Rising Sun"
+  - Pronunciation: `Hong-shyoo` (IPA: `[xʊŋ ɕy]`)

@@ -7,15 +7,8 @@
 
 
         <!-- Custom HTML head -->
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PMJ5E1FYG6"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-        
-          gtag('config', 'G-PMJ5E1FYG6');
-        </script>
+        <script data-goatcounter="https://xhx.goatcounter.com/count"
+                async src="//gc.zgo.at/count.js"></script>
         <meta name="description" content="Hongxu Xu&#x27;s personal website">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -285,6 +278,22 @@
             document.getElementById("footer").appendChild(giscusScript);
         </script>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
         <script>

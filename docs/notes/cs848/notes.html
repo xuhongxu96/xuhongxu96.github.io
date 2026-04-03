@@ -38,7 +38,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1f259111.js";
+            window.path_to_searchindex_js = "../../searchindex-280f179b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-1dedd78f.js"></script>
@@ -279,22 +279,6 @@
             document.getElementById("footer").appendChild(giscusScript);
         </script>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
         <script>

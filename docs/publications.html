@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1f259111.js";
+            window.path_to_searchindex_js = "searchindex-280f179b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-1dedd78f.js"></script>
@@ -183,10 +183,15 @@
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="publications"><a class="header" href="#publications">Publications</a></h1>
 <h2 id="papers"><a class="header" href="#papers">Papers</a></h2>
-<p>Nothing yet…</p>
+<ul>
+<li><code>ASPLOS'26</code> <a href="https://dl.acm.org/doi/abs/10.1145/3779212.3790184">LPO: Discovering Missed Peephole Optimizations with Large Language Models</a> <br>
+Zhenyang Xu, <strong>Hongxu Xu (Co-First)</strong>, Yongqiang Tian, Xintong Zhou, Chengnian Sun</li>
+</ul>
 <h2 id="books"><a class="header" href="#books">Books</a></h2>
 <ul>
-<li><code>Feb 2024</code> <a href="https://book.douban.com/subject/36787652/">CMake构建实战：项目开发卷 (CMake Build Practice: Project Development Volume)</a><br>Published by <a href="https://www.ptpress.com.cn/">人民邮电出版社 (Posts &amp; Telecom Press, China)</a><br>Produced by <a href="https://www.epubit.com/">异步图书 (epubit)</a></li>
+<li><code>Feb 2024</code> <a href="https://book.douban.com/subject/36787652/">CMake构建实战：项目开发卷 (CMake Build Practice: Project Development Volume)</a> <br>
+Published by <a href="https://www.ptpress.com.cn/">人民邮电出版社 (Posts &amp; Telecom Press, China)</a> <br>
+Produced by <a href="https://www.epubit.com/">异步图书 (epubit)</a></li>
 </ul>
 
 
@@ -278,22 +283,6 @@
             document.getElementById("footer").appendChild(giscusScript);
         </script>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
         <script>

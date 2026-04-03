@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1f259111.js";
+            window.path_to_searchindex_js = "searchindex-280f179b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-1dedd78f.js"></script>
@@ -184,10 +184,12 @@
 <h1 id="teaching"><a class="header" href="#teaching">Teaching</a></h1>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p><code>IA</code> : Instructional Apprentice<br><code>TA</code> : Teaching Assistant</p>
+<p><code>IA</code> : Instructional Apprentice
+<code>TA</code> : Teaching Assistant</p>
 <p><a href="https://uwaterloo.ca/computer-science-instructional-support-group/teaching-assistant-instructional-apprentice-support/teaching-assistant-and-instructional-apprentice-duty#:~:text=What%27s%20the%20difference%20between%20TAs%20and%20IAs%3F">What’s the difference between TAs and IAs?</a></p>
 </blockquote>
 <ul>
+<li><code>IA</code>, <a href="https://student.cs.uwaterloo.ca/~cs246/S26/index.shtml">CS 246 - Object-Oriented Software Development</a>, Spring 2026</li>
 <li><code>IA</code>, <a href="https://student.cs.uwaterloo.ca/~cs136l/">CS 136L - Tools and Techniques for Software Development</a>, Winter 2026</li>
 <li><code>IA</code>, <a href="https://student.cs.uwaterloo.ca/~cs246/F25/index.shtml">CS 246 - Object-Oriented Software Development</a>, Fall 2025</li>
 <li><code>TA</code>, <a href="https://student.cs.uwaterloo.ca/~cs246/S25/index.shtml">CS 246 - Object-Oriented Software Development</a>, Spring 2025</li>
@@ -282,22 +284,6 @@
             document.getElementById("footer").appendChild(giscusScript);
         </script>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
         <script>

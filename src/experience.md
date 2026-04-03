@@ -4,12 +4,12 @@
 
 Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 
-[Cheriton School of Computer Science](https://cs.uwaterloo.ca/)  
+[Cheriton School of Computer Science](https://cs.uwaterloo.ca/) <br>
 [University of Waterloo](https://uwaterloo.ca/), Canada
 
 ## Senior SDE (Sep 2022 -- Mar 2025)
 
-[Seed/Data Speech Team](https://seed.bytedance.com/en/direction/speech)  
+[Seed/Data Speech Team](https://seed.bytedance.com/en/direction/speech) <br>
 [ByteDance](https://www.bytedance.com/en/), Shanghai, China
 
 *Led the development of the Text-to-Speech engine and contributed to the Doubao AI assistant application.*
@@ -31,27 +31,27 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 
 ## SDE-2 (Aug 2021 -- Sep 2022)
 
-MSAI Team  
+MSAI Team <br>
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China
 
 *Led the development of Microsoft WordBreaker and initiated a modern NLP toolkit for Office 365.*
 
-<!-- - Led the development of Microsoft WordBreaker and initiated a 
+<!-- - Led the development of Microsoft WordBreaker and initiated a
   modern workflow-based NLP toolkit for Office 365.
-- Enhanced Microsoft 365 Search (serving Outlook, Teams, SharePoint, etc.) 
+- Enhanced Microsoft 365 Search (serving Outlook, Teams, SharePoint, etc.)
   in global markets by systematically resolving internationalization issues. -->
 
 ## SDE (Jul 2018 -- Aug 2021)
 
-MSAI Team  
-[Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca)  
+MSAI Team <br>
+[Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca)
 Beijing, China (Relocated to Suzhou, Jiangsu, China in May 2019)
 
-*Worked on 20-year-old Microsoft WordBreaker.*
+*Worked on Microsoft WordBreaker.*
 
-<!-- - Maintained Microsoft WordBreaker, 
+<!-- - Maintained Microsoft WordBreaker,
   multilingual text segmentation tool used in Bing and Office,
-  which has 20 years of history, 
+  which has 20 years of history,
   and includes source code written in both C++98 and C++17.
 - Improved Korean WordBreaker performance by >20% through
   stateless refactoring and replacing regex with an
@@ -59,17 +59,17 @@ Beijing, China (Relocated to Suzhou, Jiangsu, China in May 2019)
 
 ### Short-Term Contributor (Nov 2020 -- Jan 2021)
 
-Windows APS Team (temporary assignment)  
+Windows APS Team (temporary assignment) <br>
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China
 
-*Contributed to the formation of the new team, and Windows 11 application development.*
+*Contributed to the formation of the new team and Windows 11 application development (MS Calculator).*
 
-<!-- - Authored design document templates and established DevOps processes to 
-  facilitate the formation of a new team for Windows 11 application 
+<!-- - Authored design document templates and established DevOps processes to
+  facilitate the formation of a new team for Windows 11 application
   development. Led initial review meetings to ensure effective onboarding.
-- Contributed to the Microsoft Calculator project by encapsulating the 
+- Contributed to the Microsoft Calculator project by encapsulating the
   native rational calculation library as a cross-platform C# package.
-- Assisted in migrating components of the Calculator application from 
+- Assisted in migrating components of the Calculator application from
   C++/CX to C# using ANTLR 4, a parser generator. -->
 
 ## B.Sc. in Computer Science (Sep 2014 -- Jun 2018)
@@ -78,13 +78,13 @@ Windows APS Team (temporary assignment)
 
 ### SDE Intern (Jul 2017 -- Dec 2017)
 
-Bing Search Relevance Team  
+Bing Search Relevance Team <br>
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Beijing, China
 
-*Answer triggering model development for Bing Search.*
+*Worked on answer triggering models for Bing Search.*
 
-<!-- - Created a CFG (Context-Free Grammar) parser 
-  to reduce the complexity of the rules 
+<!-- - Created a CFG (Context-Free Grammar) parser
+  to reduce the complexity of the rules
   for answer triggering models used in Bing by
-  automaton minimization. 
+  automaton minimization.
   Reduced the latency by 20%. -->

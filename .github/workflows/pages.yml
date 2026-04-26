@@ -14,6 +14,11 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  MDBOOK_VERSION: 0.5.2
+  MDBOOK_KATEX_VERSION: 0.10.0-alpha
+  MDBOOK_MERMAID_VERSION: 0.17.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,11 +29,22 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Cache Cargo tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/mdbook
+            ~/.cargo/bin/mdbook-katex
+            ~/.cargo/bin/mdbook-mermaid
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-mdbook-${{ env.MDBOOK_VERSION }}-katex-${{ env.MDBOOK_KATEX_VERSION }}-mermaid-${{ env.MDBOOK_MERMAID_VERSION }}
+
       - name: Install mdBook
         run: |
-          cargo install mdbook --version 0.5.2
-          cargo install mdbook-katex --version 0.10.0-alpha
-          cargo install mdbook-mermaid --version 0.17.0
+          command -v mdbook >/dev/null || cargo install mdbook --version "$MDBOOK_VERSION" --locked
+          command -v mdbook-katex >/dev/null || cargo install mdbook-katex --version "$MDBOOK_KATEX_VERSION" --locked
+          command -v mdbook-mermaid >/dev/null || cargo install mdbook-mermaid --version "$MDBOOK_MERMAID_VERSION" --locked
 
       - name: Build
         run: mdbook build

@@ -1,0 +1,23 @@
+[book]
+authors = ["Hongxu Xu"]
+description = "Hongxu Xu's personal website"
+language = "en"
+src = "src"
+title = "Hongxu Xu"
+
+[build]
+build-dir = "docs"
+
+[output.html]
+smart-punctuation = true
+cname = "xuhongxu.com"
+additional-css = ["style.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+edit-url-template = "https://github.com/xuhongxu96/xuhongxu96.github.io/edit/main/{path}"
+
+[preprocessor.katex]
+after = ["links"]
+macros = "macros.txt"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

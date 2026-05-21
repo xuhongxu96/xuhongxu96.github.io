@@ -78,3 +78,9 @@ define range(i32 0, 7) i32 @src(i32 %0) local_unnamed_addr #0 {
   ret i32 %4
 }
 ```
+
+## Open Source
+
+<https://github.com/xuhongxu96/instcombine-instrumentor>
+
+Welcome contributions! See the README and CLAUDE.md for details.

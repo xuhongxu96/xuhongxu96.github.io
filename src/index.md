@@ -21,6 +21,7 @@ with a focus on compiler optimizations, software testing, and formal verificatio
 
 
 - GitHub: [https://github.com/xuhongxu96](https://github.com/xuhongxu96)
+- Google Scholar: [https://scholar.google.com/citations?user=kmb2dP8AAAAJ](https://scholar.google.com/citations?user=kmb2dP8AAAAJ&hl=en)
 - LinkedIn: [https://www.linkedin.com/in/xuhongxu/](https://www.linkedin.com/in/xuhongxu/)
 - Email: h4️⃣4️⃣5️⃣xu 🌀 uwaterloo.ca
 

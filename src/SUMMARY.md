@@ -10,6 +10,12 @@
 
 ---
 
+# Projects
+
+- [InstCombine Debugger](projects/instcombine-debugger.md)
+
+---
+
 # Course Notes (UWaterloo)
 
 - [CS 452/652: Real-Time Programming](notes/cs652.md)

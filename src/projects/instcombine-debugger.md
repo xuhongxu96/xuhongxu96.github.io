@@ -4,7 +4,7 @@
 
 ## See Every Rewrite InstCombine Makes --- In Your Browser
 
-![InstCombine Debugger](instcombine-debugger.png)
+![InstCombine Debugger](instcombine-debugger/instcombine-debugger.png)
 
 [LLVM's InstCombine](https://llvm.org/doxygen/classllvm_1_1InstCombiner.html) is the workhorse peephole pass: it rewrites IR thousands of times per compile, but when one of those rewrites surprises you,
 finding out which rule fired, why, and on what value usually means a local LLVM build, printf debugging, and a lot of patience.
@@ -53,12 +53,16 @@ The trace pane has two modes:
 > [!TIP]
 > Try a tiny IR snippet first (a couple of adds with a 0 operand will do), flip to the **Structured View**, and watch the rules fire.
 
+[Example 1](https://xuhongxu.com/instcombine-instrumentor/?branch=wasm-pkgs&tag=llvmorg-22.1.6&irz=AduqsFzBIU1juYJqhaZCNdeyxO5DCiBOjwHX4uUKqolctVwA)
+
 ```llvm
 define i32 @f(i32 %x) {
   %a = add i32 %x, 0
   ret i32 %a
 }
 ```
+
+[Example 2](https://xuhongxu.com/instcombine-instrumentor/?branch=wasm-pkgs&tag=llvmorg-22.1.6&irz=AQFWAKn_OyBubyByZXdyaXRlIGluIExMVk0gMjEgzCBlYXJsaWVyCrUgqSBAc3JjKKogJXgpIHsKpsqLyiCqIDSMJXgKpr2LvSCqICXKIHRvIKkKo6kgJb0KfQo)
 
 ```llvm
 ; no rewrite in LLVM 21 and earlier
@@ -68,6 +72,8 @@ define i1 @src(i8 %x) {
   ret i1 %trunc
 }
 ```
+
+[Example 3](https://xuhongxu.com/instcombine-instrumentor/?branch=wasm-pkgs&tag=llvmorg-22.1.6&irz=AVXMMUrEQBSH8X5O8QcJJE2YTQIWyrIHWFvbZUje6oPJG3mZZGXFRsvsAeyFzAm8gLWHshAClh_8-G4gAUon5UhgwX5_f4dqgx-QU8-k5gvq5IHyBHu5LpCwG7TNEzJbwIfW-cMo4nrqDq7rFFcWL2apZpaBNJKnniTitsEz0hZPgYcgb5l9t2ap5-FxPB49TdTGoCvKqst_v-aZNLBwZOf5TGqWZv5I2Hk_9eXfpFTqxpbK73JquK7y9VkX5jMha8yr-QU)
 
 ```llvm
 ; no rewrite in LLVM 21 and earlier

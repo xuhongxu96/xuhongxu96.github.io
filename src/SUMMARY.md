@@ -13,6 +13,7 @@
 # Projects
 
 - [InstCombine Debugger](projects/instcombine-debugger.md)
+  - [User Manual](projects/instcombine-debugger/USER_MANUAL.md)
 
 ---
 

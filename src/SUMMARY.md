@@ -7,6 +7,7 @@
 [Awards](awards.md)
 [Teaching](teaching.md)
 [My Thoughts and Life](life.md)
+[Useful Resources](resources.md)
 
 ---
 

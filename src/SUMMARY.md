@@ -25,6 +25,7 @@
   - [Probabilistic DD](articles/delta-debugging/probdd.md)
   - [Hierarchical DD](articles/delta-debugging/hdd.md)
   - [Weighted DD](articles/delta-debugging/wdd.md)
+  - [Perses](articles/delta-debugging/perses.md)
 
 ---
 

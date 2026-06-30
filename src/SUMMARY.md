@@ -18,6 +18,14 @@
 
 ---
 
+# Articles
+
+- [Delta Debugging](articles/delta-debugging.md)
+  - [DDMin - The Original](articles/delta-debugging/ddmin.md)
+  - [Probabilistic DD](articles/delta-debugging/probdd.md)
+
+---
+
 # Course Notes (UWaterloo)
 
 - [CS 452/652: Real-Time Programming](notes/cs652.md)

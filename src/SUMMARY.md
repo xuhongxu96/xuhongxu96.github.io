@@ -23,6 +23,7 @@
 - [Delta Debugging](articles/delta-debugging.md)
   - [DDMin - The Original](articles/delta-debugging/ddmin.md)
   - [Probabilistic DD](articles/delta-debugging/probdd.md)
+  - [Hierarchical DD](articles/delta-debugging/hdd.md)
 
 ---
 

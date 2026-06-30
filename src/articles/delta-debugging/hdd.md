@@ -87,7 +87,7 @@ The loop stops only when every level is exhausted.
 
 The input is a tiny "program" tree.
 
-```
+```text
 program {
     fn bar {
         stmt;

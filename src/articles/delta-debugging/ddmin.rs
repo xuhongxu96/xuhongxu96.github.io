@@ -50,9 +50,16 @@ fn reduce<P: Policy>(
             }
         }
 
-        match reduced {
-            Some(candidate) => config = candidate, // progress; keep going
-            None => break,                         // fixpoint reached
+        // the policy decides when to stop
+        let keep_going =
+            policy.on_reduced(reduced.as_ref());
+
+        if let Some(candidate) = reduced {
+            config = candidate; // update the current configuration
+        }
+
+        if !keep_going {
+            break;
         }
     }
 
@@ -67,13 +74,29 @@ trait Policy {
         &mut self,
         config: &Configuration,
     ) -> impl Iterator<Item = Delta>;
+
+    /// React to a reduction pass.
+    /// `reduced` is `Some` if the pass removed anything,
+    /// `None` if it made no progress.
+    /// Return `true` to keep going, `false` to stop.
+    /// The default stops at the fixpoint.
+    fn on_reduced(
+        &mut self,
+        reduced: Option<&Configuration>,
+    ) -> bool {
+        reduced.is_some()
+    }
 }
 // ANCHOR_END: policy
 
 // ANCHOR: partition
 /// Split `config` into at most `n` roughly-equal, disjoint subsets.
-fn partition(config: &Configuration, n: usize) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> = config.iter().copied().collect();
+fn partition(
+    config: &Configuration,
+    n: usize,
+) -> Vec<Delta> {
+    let mut items: Vec<AtomicUnit> =
+        config.iter().copied().collect();
     items.sort_unstable(); // deterministic chunks for a reproducible demo
     let len = items.len();
     if n == 0 || len == 0 {
@@ -98,13 +121,19 @@ impl Policy for DDMin {
         let units = config.len();
 
         // Granularities n = 2, 4, 8, ... up to `units`
-        successors(Some(2), move |&n| (n < units).then(|| (2 * n).min(units)))
-            .flat_map(move |n| {
-                let subsets = partition(config, n); // n roughly-equal subsets
-                // First every δ = ∇ᵢ (keep only Δᵢ), then every δ = Δᵢ (drop Δᵢ).
-                let keep_only = subsets.clone().into_iter().map(move |d| config - &d);
-                keep_only.chain(subsets)
-            })
+        successors(Some(2), move |&n| {
+            (n < units).then(|| (2 * n).min(units))
+        })
+        .flat_map(move |n| {
+            let subsets = partition(config, n); // n roughly-equal subsets
+                                                // First every δ = ∇ᵢ (keep only Δᵢ), then every δ = Δᵢ (drop Δᵢ).
+            let keep_only = subsets
+                .clone()
+                .into_iter()
+                .map(move |d| config - &d);
+            keep_only.chain(subsets)
+        })
+        .filter(|delta| !delta.is_empty())
     }
 }
 // ANCHOR_END: ddmin
@@ -115,11 +144,13 @@ fn main() {
 
     let input: Configuration = (1..=8).collect();
 
-    let oracle_calls = std::rc::Rc::new(std::cell::Cell::new(0u32));
+    let oracle_calls =
+        std::rc::Rc::new(std::cell::Cell::new(0u32));
     let counter = oracle_calls.clone();
     let keeps_2_and_7 = move |c: &Configuration| {
         counter.set(counter.get() + 1);
-        let mut probe: Vec<AtomicUnit> = c.iter().copied().collect();
+        let mut probe: Vec<AtomicUnit> =
+            c.iter().copied().collect();
         probe.sort_unstable();
         let verdict = if c.contains(&2) && c.contains(&7) {
             Verdict::Interesting
@@ -135,11 +166,15 @@ fn main() {
         verdict
     };
 
-    let mut result: Vec<_> = reduce(input, &keeps_2_and_7, DDMin)
-        .into_iter()
-        .collect();
+    let mut result: Vec<_> =
+        reduce(input, &keeps_2_and_7, DDMin)
+            .into_iter()
+            .collect();
     result.sort_unstable();
-    println!("=> minimized to {result:?} in {} oracle calls", oracle_calls.get());
+    println!(
+        "=> minimized to {result:?} in {} oracle calls",
+        oracle_calls.get()
+    );
     assert_eq!(result, [2, 7]);
 }
 // ANCHOR_END: main

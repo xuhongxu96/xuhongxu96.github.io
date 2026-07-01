@@ -55,9 +55,16 @@ fn reduce<P: Policy>(
             }
         }
 
-        match reduced {
-            Some(candidate) => config = candidate, // progress; keep going
-            None => break,                         // fixpoint reached
+        // the policy decides when to stop
+        let keep_going =
+            policy.on_reduced(reduced.as_ref());
+
+        if let Some(candidate) = reduced {
+            config = candidate; // update the current configuration
+        }
+
+        if !keep_going {
+            break;
         }
     }
 
@@ -72,13 +79,25 @@ trait Policy {
         &mut self,
         config: &Configuration,
     ) -> impl Iterator<Item = Delta>;
+
+    /// React to a reduction pass.
+    fn on_reduced(
+        &mut self,
+        reduced: Option<&Configuration>,
+    ) -> bool {
+        reduced.is_some()
+    }
 }
 // ANCHOR_END: policy
 
 // ANCHOR: partition
 /// Split `config` into at most `n` roughly-equal, disjoint subsets.
-fn partition(config: &Configuration, n: usize) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> = config.iter().copied().collect();
+fn partition(
+    config: &Configuration,
+    n: usize,
+) -> Vec<Delta> {
+    let mut items: Vec<AtomicUnit> =
+        config.iter().copied().collect();
     items.sort_unstable(); // deterministic chunks for a reproducible demo
     let len = items.len();
     if n == 0 || len == 0 {
@@ -103,14 +122,18 @@ impl Policy for DDMin {
         let units = config.len();
 
         // Granularities n = 2, 4, 8, ... up to `units`
-        successors(Some(2), move |&n| (n < units).then(|| (2 * n).min(units)))
-            .flat_map(move |n| {
-                let subsets = partition(config, n); // n roughly-equal subsets
-                // First every δ = ∇ᵢ (keep only Δᵢ), then every δ = Δᵢ (drop Δᵢ).
-                let keep_only =
-                    subsets.clone().into_iter().map(move |d| config - &d);
-                keep_only.chain(subsets)
-            })
+        successors(Some(2), move |&n| {
+            (n < units).then(|| (2 * n).min(units))
+        })
+        .flat_map(move |n| {
+            let subsets = partition(config, n); // n roughly-equal subsets
+            let keep_only = subsets
+                .clone()
+                .into_iter()
+                .map(move |d| config - &d); // First every δ = ∇ᵢ (keep only Δᵢ), then every δ = Δᵢ (drop Δᵢ).
+            keep_only.chain(subsets)
+        })
+        .filter(|delta| !delta.is_empty())
     }
 }
 // ANCHOR_END: ddmin
@@ -123,7 +146,8 @@ fn weighted_partition(
     n: usize,
     weight: &HashMap<AtomicUnit, u64>,
 ) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> = config.iter().copied().collect();
+    let mut items: Vec<AtomicUnit> =
+        config.iter().copied().collect();
     items.sort_unstable(); // deterministic chunks for a reproducible demo
     let len = items.len();
     if n == 0 || len == 0 {
@@ -131,7 +155,10 @@ fn weighted_partition(
     }
     if n >= len {
         // finest granularity: every element on its own
-        return items.into_iter().map(|u| Delta::from([u])).collect();
+        return items
+            .into_iter()
+            .map(|u| Delta::from([u]))
+            .collect();
     }
     let total: u64 = items.iter().map(|u| weight[u]).sum();
     let share = total as f64 / n as f64; // target weight per chunk
@@ -146,7 +173,8 @@ fn weighted_partition(
         // than it would be if we added this unit.
         if !cur.is_empty()
             && chunks.len() < n - 1
-            && (acc as f64 - share).abs() <= (acc as f64 + w as f64 - share).abs()
+            && (acc as f64 - share).abs()
+                <= (acc as f64 + w as f64 - share).abs()
         {
             // If so, save the current chunk and start a new chunk
             chunks.push(std::mem::take(&mut cur));
@@ -176,13 +204,21 @@ impl Policy for Wdd<'_> {
         let weight = self.weight;
 
         // The same n = 2, 4, 8, ... escalation as DDMin ...
-        successors(Some(2), move |&n| (n < units).then(|| (2 * n).min(units)))
-            .flat_map(move |n| {
-                // ... only the partitioning is weight-aware.
-                let subsets = weighted_partition(config, n, weight);
-                let keep_only = subsets.clone().into_iter().map(move |d| config - &d);
-                keep_only.chain(subsets)
-            })
+        successors(Some(2), move |&n| {
+            (n < units).then(|| (2 * n).min(units))
+        })
+        .flat_map(move |n| {
+            // ... only the partitioning is weight-aware.
+            let subsets =
+                weighted_partition(config, n, weight);
+            let keep_only = subsets
+                .clone()
+                .into_iter()
+                .map(move |d| config - &d);
+            keep_only.chain(subsets)
+        })
+        // a 1-element split's "keep everything" complement is empty; never propose it
+        .filter(|delta| !delta.is_empty())
     }
 }
 // ANCHOR_END: wdd
@@ -196,14 +232,17 @@ struct Node {
 struct Tree {
     nodes: HashMap<AtomicUnit, Node>,
     root: AtomicUnit,
-    depth: HashMap<AtomicUnit, usize>,  // BFS depth of each node
+    depth: HashMap<AtomicUnit, usize>, // BFS depth of each node
     parent: HashMap<AtomicUnit, AtomicUnit>, // each node's parent
     max_depth: usize,
 }
 // ANCHOR_END: tree
 
 impl Tree {
-    fn new(root: AtomicUnit, nodes: HashMap<AtomicUnit, Node>) -> Tree {
+    fn new(
+        root: AtomicUnit,
+        nodes: HashMap<AtomicUnit, Node>,
+    ) -> Tree {
         // BFS from the root to label every node with its depth (= its level)
         // and remember its parent.
         let mut depth = HashMap::new();
@@ -224,13 +263,23 @@ impl Tree {
             frontier = next;
             d += 1;
         }
-        Tree { nodes, root, depth, parent, max_depth }
+        Tree {
+            nodes,
+            root,
+            depth,
+            parent,
+            max_depth,
+        }
     }
 
     // ANCHOR: tree-ops
     /// The present leaves in the subtree rooted at `id` (for a leaf, itself).
     /// This is how a removed node turns into a removal of atomic units.
-    fn leaves_under(&self, id: AtomicUnit, present: &Configuration) -> Delta {
+    fn leaves_under(
+        &self,
+        id: AtomicUnit,
+        present: &Configuration,
+    ) -> Delta {
         let mut out = Delta::new();
         let mut stack = vec![id];
         while let Some(n) = stack.pop() {
@@ -248,7 +297,11 @@ impl Tree {
 
     /// The level-`level` subtrees that still hold a surviving leaf: each present
     /// leaf is represented by its ancestor at that level.
-    fn alive_level_nodes(&self, level: usize, present: &Configuration) -> Configuration {
+    fn alive_level_nodes(
+        &self,
+        level: usize,
+        present: &Configuration,
+    ) -> Configuration {
         present
             .iter()
             .copied()
@@ -258,7 +311,11 @@ impl Tree {
     }
 
     /// Walk up from `id` to its ancestor sitting at `level`.
-    fn ancestor_at(&self, mut id: AtomicUnit, level: usize) -> AtomicUnit {
+    fn ancestor_at(
+        &self,
+        mut id: AtomicUnit,
+        level: usize,
+    ) -> AtomicUnit {
         while self.depth[&id] > level {
             id = self.parent[&id];
         }
@@ -269,12 +326,19 @@ impl Tree {
     // ANCHOR: weight
     /// The weight of every node: how many leaves it ultimately contains.
     fn leaf_counts(&self) -> HashMap<AtomicUnit, u64> {
-        fn go(tree: &Tree, id: AtomicUnit, out: &mut HashMap<AtomicUnit, u64>) -> u64 {
+        fn go(
+            tree: &Tree,
+            id: AtomicUnit,
+            out: &mut HashMap<AtomicUnit, u64>,
+        ) -> u64 {
             let node = &tree.nodes[&id];
             let count = if node.children.is_empty() {
                 1
             } else {
-                node.children.iter().map(|&c| go(tree, c, out)).sum()
+                node.children
+                    .iter()
+                    .map(|&c| go(tree, c, out))
+                    .sum()
             };
             out.insert(id, count);
             count
@@ -292,13 +356,35 @@ impl Tree {
 /// subtrees to drop. The configuration is leaves only, so each proposed subtree
 /// removal is mapped down to the leaves under it. The single `reduce` loop tests
 /// the resulting leaf removals.
-struct Hdd<'t, F> {
+struct Hdd<'t, F, P> {
     tree: &'t Tree,
     new_minimizer: F, // build a fresh list-minimizer for a level, e.g. `|| DDMin`
-    level: usize,     // the shallowest level not yet known to be minimal
+    level: usize, // the shallowest level not yet known to be minimal
+    minimizer: Option<P>, // The inner minimizer for the current level
+    level_subtrees: Configuration, // a field, not a local, so `propose`'s returned iterator can borrow it
 }
 
-impl<'t, F, P> Policy for Hdd<'t, F>
+impl<'t, F, P> Hdd<'t, F, P>
+where
+    F: Fn() -> P,
+    P: Policy,
+{
+    fn new(
+        tree: &'t Tree,
+        level: usize,
+        new_minimizer: F,
+    ) -> Self {
+        Hdd {
+            tree,
+            new_minimizer,
+            level,
+            minimizer: None,
+            level_subtrees: Configuration::new(),
+        }
+    }
+}
+
+impl<'t, F, P> Policy for Hdd<'t, F, P>
 where
     F: Fn() -> P,
     P: Policy,
@@ -308,29 +394,45 @@ where
         config: &Configuration,
     ) -> impl Iterator<Item = Delta> {
         let tree = self.tree;
-        let new_minimizer = &self.new_minimizer;
-        let level = &mut self.level; // resume progress at the last level that was not minimal
-        let start = *level;
-        let max = tree.max_depth;
+        let level = self.level;
+        // Build this level's minimizer on its first pass. `on_reduced` clears it
+        // only when we descend a level, so a stateful inner policy (ProbDD) keeps
+        // learning across a level's passes and is reset only at a level boundary.
+        if self.minimizer.is_none() {
+            self.minimizer = Some((self.new_minimizer)());
+        }
+        // Hand the inner minimizer the level's *subtrees* (not raw leaves), so it
+        // removes whole subtrees and HDD stays hierarchical.
+        self.level_subtrees =
+            tree.alive_level_nodes(level, config);
+        let subtrees = &self.level_subtrees;
+        let minimizer = self.minimizer.as_mut().unwrap();
+        // Lazily: `reduce` stops pulling at the first success, so a stateful
+        // inner policy only ever advances its model over *confirmed* failures.
+        minimizer.propose(subtrees).map(
+            move |drop| -> Delta {
+                // dropping a subtree drops the leaves under it
+                drop.iter()
+                    .flat_map(|&id| {
+                        tree.leaves_under(id, config)
+                    })
+                    .collect()
+            },
+        )
+    }
 
-        // One lazy stream chained across levels: only when the outer loop has
-        // pulled (and failed) every candidate of level L do we advance to L+1.
-        (start..=max).flat_map(move |l| {
-            *level = l; // remember how far the single loop has walked
-            // Hand the inner minimizer the level's *subtrees* (not raw leaves),
-            // so it removes whole subtrees and HDD stays hierarchical.
-            let here = tree.alive_level_nodes(l, config);
-            let mut inner = new_minimizer(); // a fresh minimizer, just for this level
-            inner
-                .propose(&here)
-                .map(|drop| -> Delta {
-                    // dropping a subtree drops the leaves under it
-                    drop.iter().flat_map(|&id| tree.leaves_under(id, config)).collect()
-                })
-                .filter(|delta| !delta.is_empty()) // skip no-op "keep everything" probes
-                .collect::<Vec<Delta>>()
-                .into_iter()
-        })
+    fn on_reduced(
+        &mut self,
+        reduced: Option<&Configuration>,
+    ) -> bool {
+        if reduced.is_some() {
+            return true; // progress at this level; keep going
+        }
+        // A whole `propose` stream failed: this level is minimal, so descend and
+        // rebuild the minimizer for the next one.
+        self.level += 1;
+        self.minimizer = None;
+        self.level <= self.tree.max_depth
     }
 }
 // ANCHOR_END: hdd
@@ -338,15 +440,26 @@ where
 /// Render a configuration (a set of leaves) back into nested source-ish text:
 /// a node is shown iff some leaf under it survives.
 fn render(tree: &Tree, present: &Configuration) -> String {
-    fn alive(tree: &Tree, id: AtomicUnit, present: &Configuration) -> bool {
+    fn alive(
+        tree: &Tree,
+        id: AtomicUnit,
+        present: &Configuration,
+    ) -> bool {
         let node = &tree.nodes[&id];
         if node.children.is_empty() {
             present.contains(&id)
         } else {
-            node.children.iter().any(|&c| alive(tree, c, present))
+            node.children
+                .iter()
+                .any(|&c| alive(tree, c, present))
         }
     }
-    fn go(tree: &Tree, id: AtomicUnit, present: &Configuration, out: &mut String) {
+    fn go(
+        tree: &Tree,
+        id: AtomicUnit,
+        present: &Configuration,
+        out: &mut String,
+    ) {
         let node = &tree.nodes[&id];
         out.push_str(node.label);
         let kids: Vec<AtomicUnit> = node
@@ -404,7 +517,8 @@ fn main() {
         ("HDD + WDD   (partition by weight)", 1u8),
     ] {
         println!("\n==================  {name}  ==================");
-        let calls = std::rc::Rc::new(std::cell::Cell::new(0u32));
+        let calls =
+            std::rc::Rc::new(std::cell::Cell::new(0u32));
         let counter = calls.clone();
         let otree = tree.clone();
         let oracle = move |c: &Configuration| {
@@ -417,34 +531,48 @@ fn main() {
             println!(
                 "  test {:?}  ->  {}",
                 render(&otree, c),
-                if verdict == Verdict::Interesting { "crashes (keep)" } else { "ok (reject)" },
+                if verdict == Verdict::Interesting {
+                    "crashes (keep)"
+                } else {
+                    "ok (reject)"
+                },
             );
             verdict
         };
 
         let result = if run == 0 {
-            reduce(all.clone(), &oracle, Hdd { tree: &*tree, new_minimizer: || DDMin, level: 1 })
+            reduce(
+                all.clone(),
+                &oracle,
+                Hdd::new(&*tree, 1, || DDMin),
+            )
         } else {
             reduce(
                 all.clone(),
                 &oracle,
-                Hdd {
-                    tree: &*tree,
-                    new_minimizer: || Wdd { weight: &weight },
-                    level: 1,
-                },
+                Hdd::new(&*tree, 1, || Wdd {
+                    weight: &weight,
+                }),
             )
         };
 
-        let mut got: Vec<AtomicUnit> = result.iter().copied().collect();
+        let mut got: Vec<AtomicUnit> =
+            result.iter().copied().collect();
         got.sort_unstable();
-        println!("  => minimized to {}  in {} oracle calls", render(&tree, &result), calls.get());
+        println!(
+            "  => minimized to {}  in {} oracle calls",
+            render(&tree, &result),
+            calls.get()
+        );
         assert_eq!(got, expected);
     }
 }
 
 fn example_tree() -> Tree {
-    fn n(label: &'static str, children: Vec<AtomicUnit>) -> Node {
+    fn n(
+        label: &'static str,
+        children: Vec<AtomicUnit>,
+    ) -> Node {
         Node { label, children }
     }
     let nodes: HashMap<AtomicUnit, Node> = HashMap::from([

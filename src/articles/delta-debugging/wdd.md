@@ -61,7 +61,7 @@ Because it's a `Policy`, it drops into [HDD] exactly where DDMin and ProbDD did
 
 ```rust,ignore
 let weight = tree.leaf_counts();
-Hdd { tree: &tree, new_minimizer: || Wdd { weight: &weight }, level: 1 }
+Hdd::new(&tree, 1, || Wdd { weight: &weight })
 ```
 
 > [!NOTE]

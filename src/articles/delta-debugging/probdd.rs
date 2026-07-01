@@ -41,8 +41,6 @@ fn reduce<P: Policy>(
         let mut reduced = None;
 
         for delta in policy.propose(&config) {
-            // an empty delta would be a no-op
-            // that could never make progress.
             assert!(!delta.is_empty());
 
             let candidate = &config - &delta;
@@ -52,9 +50,15 @@ fn reduce<P: Policy>(
             }
         }
 
-        match reduced {
-            Some(candidate) => config = candidate, // progress; keep going
-            None => break,                         // fixpoint reached
+        let keep_going =
+            policy.on_reduced(reduced.as_ref());
+
+        if let Some(candidate) = reduced {
+            config = candidate; // progress; keep going
+        }
+
+        if !keep_going {
+            break; // fixpoint reached
         }
     }
 
@@ -69,6 +73,14 @@ trait Policy {
         &mut self,
         config: &Configuration,
     ) -> impl Iterator<Item = Delta>;
+
+    /// React to a reduction pass.
+    fn on_reduced(
+        &mut self,
+        reduced: Option<&Configuration>,
+    ) -> bool {
+        reduced.is_some()
+    }
 }
 // ANCHOR_END: policy
 
@@ -95,11 +107,17 @@ impl ProbDD {
 
 // ANCHOR: choose
 /// Choose the removal set with the highest *expected gain*.
-fn best_prefix(probs: &HashMap<AtomicUnit, f64>) -> Vec<AtomicUnit> {
-    let mut units: Vec<AtomicUnit> = probs.keys().copied().collect();
+fn best_prefix(
+    probs: &HashMap<AtomicUnit, f64>,
+) -> Vec<AtomicUnit> {
+    let mut units: Vec<AtomicUnit> =
+        probs.keys().copied().collect();
     // ascending by probability; ties by id for a reproducible demo.
     units.sort_by(|a, b| {
-        probs[a].partial_cmp(&probs[b]).unwrap().then(a.cmp(b))
+        probs[a]
+            .partial_cmp(&probs[b])
+            .unwrap()
+            .then(a.cmp(b))
     });
 
     let mut survive = 1.0; // ∏ (1 - p) over the current prefix
@@ -121,8 +139,12 @@ fn best_prefix(probs: &HashMap<AtomicUnit, f64>) -> Vec<AtomicUnit> {
 // ANCHOR: update
 /// A removal of `pre` just failed.
 /// Raise their beliefs by the Bayesian posterior `p / (1 - ∏ (1 - p))`.
-fn bayes_update(probs: &mut HashMap<AtomicUnit, f64>, pre: &[AtomicUnit]) {
-    let survive: f64 = pre.iter().map(|u| 1.0 - probs[u]).product();
+fn bayes_update(
+    probs: &mut HashMap<AtomicUnit, f64>,
+    pre: &[AtomicUnit],
+) {
+    let survive: f64 =
+        pre.iter().map(|u| 1.0 - probs[u]).product();
     let denom = 1.0 - survive;
     if denom <= 0.0 {
         return;
@@ -172,11 +194,13 @@ fn main() {
 
     let input: Configuration = (1..=8).collect();
 
-    let oracle_calls = std::rc::Rc::new(std::cell::Cell::new(0u32));
+    let oracle_calls =
+        std::rc::Rc::new(std::cell::Cell::new(0u32));
     let counter = oracle_calls.clone();
     let keeps_2_and_7 = move |c: &Configuration| {
         counter.set(counter.get() + 1);
-        let mut probe: Vec<AtomicUnit> = c.iter().copied().collect();
+        let mut probe: Vec<AtomicUnit> =
+            c.iter().copied().collect();
         probe.sort_unstable();
         let verdict = if c.contains(&2) && c.contains(&7) {
             Verdict::Interesting
@@ -196,11 +220,15 @@ fn main() {
         probs: HashMap::new(),
         p0: 0.1,
     };
-    let mut result: Vec<_> = reduce(input, &keeps_2_and_7, model)
-        .into_iter()
-        .collect();
+    let mut result: Vec<_> =
+        reduce(input, &keeps_2_and_7, model)
+            .into_iter()
+            .collect();
     result.sort_unstable();
-    println!("=> minimized to {result:?} in {} oracle calls", oracle_calls.get());
+    println!(
+        "=> minimized to {result:?} in {} oracle calls",
+        oracle_calls.get()
+    );
     assert_eq!(result, [2, 7]);
 }
 // ANCHOR_END: main

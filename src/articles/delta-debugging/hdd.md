@@ -41,21 +41,22 @@ HDD needs just two operations on the tree:
 **HDD is just another [`Policy`](./ddmin.md)**.
 It plugs into the same `reduce` loop as DDMin and ProbDD.
 
-Recall the one and only loop of delta debugging:
+Recall the loop of delta debugging:
 
 ```rust,ignore
 {{#include hdd.rs:loop}}
 ```
 
-A [`Policy`](./ddmin.md) just streams candidate removals:
+A [`Policy`](./ddmin.md) streams candidate removals, and reacts to each pass via
+`on_reduced` to decide whether the run continues:
 
 ```rust,ignore
 {{#include hdd.rs:policy}}
 ```
 
 HDD implements this trait. Its state is the tree, a factory that builds a
-fresh list-minimizer (DDMin, ProbDD, etc.), and a cursor for the shallowest level not yet known to be
-minimal:
+list-minimizer (DDMin, ProbDD, etc.), a cursor for the shallowest level not yet
+known to be minimal, and the minimizer it is currently using for that level:
 
 ```rust,ignore
 {{#rustdoc_include hdd.rs:hdd}}
@@ -63,19 +64,21 @@ minimal:
 
 For the current level
 it names the live subtrees with `alive_level_nodes`
-and lets a **fresh inner policy**
+and lets an **inner policy**
 (`DDMin`, `ProbDD`, ...) choose which to drop.
 Notice that the inner policy chooses among *subtrees*, not raw leaves.
 However, the configuration is leaves,
 so each chosen subtree is mapped down
 through `leaves_under` to the atomic units it removes.
 
-The levels are chained into *one* stream.
-The outer loop iterates through the levels, and the inner policy iterates through the subtrees at that level.
-A success iteration of [`reduce` loop](#hdd-is-a-policy-loop) restarts `propose`,
-so we have to store the current level in the state,
-and resume at `self.level`.
-The loop stops only when every level is exhausted.
+Pulling the next candidate from `propose` is itself the signal that the
+previous one failed, so we can't `collect` the inner policy's candidates in one
+batch. A stateful policy like ProbDD updates its model (each unit's probability
+of being *essential*) on every failure, and because `self.minimizer` is reused
+across a level's passes, it carries that learning from one pass to the next.
+Since the candidates are streamed *lazily*, the inner policy advances only as
+the oracle consumes them, so the model learns only from the failures that
+actually happen.
 
 > [!NOTE]
 > Because HDD only ever removes whole subtrees, every candidate it hands the
@@ -138,7 +141,7 @@ and nothing else changes. The demo above already runs both and prints each
 count.
 
 > [!NOTE]
-> ProbDD reaches the same result---but in **20** calls, *more* than DDMin's 11.
+> ProbDD reaches the same result---but in **15** calls, *more* than DDMin's 11.
 >
 > That is not a bug. HDD hands the inner policy a fresh, tiny
 > list at every level and rebuilds it from scratch each round, so ProbDD's

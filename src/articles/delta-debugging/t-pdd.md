@@ -200,7 +200,7 @@ We compare **HDD**, **HDD+ProbDD**, **Perses**, and **T-PDD**.
 
 ```text
 HDD        => 32 calls
-HDD+ProbDD => 17 calls
+HDD+ProbDD => 9 calls
 Perses     => 32 calls
 T-PDD      => 6 calls
 ```
@@ -214,9 +214,11 @@ T-PDD      => 6 calls
 > before, between, and after `crash`/`setup`, most batches contain both an
 > essential and a removable element, making the batch fail.
 >
-> HDD+ProbDD (17) splits the difference---probability-guided batching beats
-> blind bisection---but it still tests multiple units per call and raises
-> all of their beliefs together on failure.
+> HDD+ProbDD (9) lands much closer to T-PDD---probability-guided batching beats
+> blind bisection.
+> It still trails T-PDD because it throws that model away
+> at each level boundary and tests multiple units per call,
+> raising all of their beliefs together on failure.
 
 ## No Node Replacement
 

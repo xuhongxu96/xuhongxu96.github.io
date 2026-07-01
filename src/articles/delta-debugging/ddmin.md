@@ -40,7 +40,9 @@ Given a configuration, the oracle returns a **Verdict**, i.e., whether it still 
 
 ## The Loop
 
-The main loop of delta debugging is very simple:
+The main loop of delta debugging is very simple: propose removals, keep the
+first one the oracle still finds interesting, and repeat until the policy
+says to stop (usually at the fixpoint, i.e., when no more progress can be made).
 
 ```rust,ignore
 {{#include ddmin.rs:loop}}
@@ -53,6 +55,10 @@ Everything algorithm-specific lives in the **Policy**:
 ```rust,ignore
 {{#include ddmin.rs:policy}}
 ```
+
+For many delta debugging algorithms, including [DDMin],
+the default implementation of `on_reduced` is enough:
+keep going only if the pass made progress.
 
 ## DDMin Policy
 

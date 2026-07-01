@@ -26,6 +26,7 @@
   - [Hierarchical DD](articles/delta-debugging/hdd.md)
   - [Weighted DD](articles/delta-debugging/wdd.md)
   - [Perses](articles/delta-debugging/perses.md)
+  - [T-PDD](articles/delta-debugging/t-pdd.md)
 
 ---
 

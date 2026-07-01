@@ -4,10 +4,11 @@ If you've spent time minimizing failing test cases,
 you've probably met a small zoo of algorithms:
 
 - **[DDMin]**, the original delta debugging minimizer;
-- **[ProbDD]**, probabilistic delta debugging, which puts a probability model over what to remove; and
+- **[ProbDD]**, probabilistic delta debugging, which puts a probability model over what to remove;
 - **[HDD]**, hierarchical delta debugging, which runs DDMin over a parse tree;
-- **[WDD]**, weighted delta debugging, which weights elements by size so that partitioning treats a big chunk differently from a tiny one.
+- **[WDD]**, weighted delta debugging, which weights elements by size so that partitioning treats a big chunk differently from a tiny one;
 - **[Perses]**, which exploits the grammar more aggressively;
+- **[T-PDD]**, which constructs a probabilistic model over the parse tree, and uses it to guide the search for a minimal tree.
 
 This series builds each of them from scratch in Rust.
 
@@ -56,3 +57,4 @@ Just this, and nothing else—right here, it fails.
 [Perses]: https://dl.acm.org/doi/10.1145/3180155.3180236
 [WDD]: https://dl.acm.org/doi/10.1109/ICSE55347.2025.00071
 [ProbDD]: https://dl.acm.org/doi/10.1145/3468264.3468625
+[T-PDD]: https://ieeexplore.ieee.org/document/10299940

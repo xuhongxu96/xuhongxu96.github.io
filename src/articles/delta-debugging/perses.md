@@ -83,6 +83,12 @@ If `n` is a `List` element, `d` can be any statement; if `n` is a fixed child, `
 {{#include perses.rs:subsume}}
 ```
 
+> [!NOTE]
+> See the next subsection,
+> ["Tracking Node Existence"](#tracking-node-existence),
+> for what a live node is, why we need to check it, and
+> how Perses determines whether a node is live or not (`self.live(n, config)`).
+
 As our *configuration* is a set of leaves,
 the *delta* is just the leaves under `n` minus the leaves under `d`---the
 surrounding wrapper:
@@ -336,3 +342,4 @@ int main() { crash(); }
 
 [HDD]: https://dl.acm.org/doi/10.1145/1134285.1134307
 [Perses]: https://dl.acm.org/doi/10.1145/3180155.3180236
+[T-PDD]: https://ieeexplore.ieee.org/document/10299940

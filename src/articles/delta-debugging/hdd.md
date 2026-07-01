@@ -140,15 +140,14 @@ count.
 > [!NOTE]
 > ProbDD reaches the same result---but in **20** calls, *more* than DDMin's 11.
 >
-> That is not a bug; it is the point. HDD hands the inner policy a fresh, tiny
+> That is not a bug. HDD hands the inner policy a fresh, tiny
 > list at every level and rebuilds it from scratch each round, so ProbDD's
 > probability model---its whole advantage---never has room to learn, and never
 > carries information from one level of the tree to the next.
 >
-> The hierarchy and the statistics never talk. Making them talk---lifting the
-> tree *and* the probability model into a single level so a smarter policy can
-> reason across the whole tree at once---is what the rest of this series is
-> about.
+> The hierarchy and the statistics never talk. Closing that gap would
+> need a policy that reasons across the whole tree at once,
+> a different problem than the one explored here.
 
 ## On Minimality
 

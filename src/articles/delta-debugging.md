@@ -1,37 +1,20 @@
-# Delta Debugging: A Unified Perspective
-
-> [!WARNING]
-> This series is still a work in progress.
+# Hands-On Delta Debugging in Rust
 
 If you've spent time minimizing failing test cases,
 you've probably met a small zoo of algorithms:
 
 - **[DDMin]**, the original delta debugging minimizer;
-- **[HDD]**, hierarchical delta debugging, which runs DDMin over a parse tree;
-- **[Perses]**, which exploits the grammar more aggressively;
 - **[ProbDD]**, probabilistic delta debugging, which puts a probability model over what to remove; and
+- **[HDD]**, hierarchical delta debugging, which runs DDMin over a parse tree;
 - **[WDD]**, weighted delta debugging, which weights elements by size so that partitioning treats a big chunk differently from a tiny one.
+- **[Perses]**, which exploits the grammar more aggressively;
 
-Based on how the papers themselves position these algorithms,
-they do not sit at the same level.
+This series builds each of them from scratch in Rust.
 
-- _DDMin_, _ProbDD_, and _WDD_ are **list-minimizers**---they take a flat
-  list and remove the irrelevant elements; - _ProbDD_ and _WDD_ are refinements of DDMin that partition more cleverly, but still only ever see a list.
-- _HDD_ and _Perses_ are **tree-drivers**---they walk a parse tree and,
-  at each level or group of repeatable nodes, hand a list of children
-  down to a **list-minimizer**.
-  - _DDMin_ is a component that _HDD_ and _Perses_ call;
-  - _ProbDD_ and _WDD_ are drop-in replacements for this component.
-
-This layering has a cost.
-Because the probability model in ProbDD and the weighting in WDD are only applied to the list-minimizer,
-they can only inform decisions within one flat list---they
-cannot reach across the tree.
-The hierarchy and the statistics never talk.
-
-In this series, I want to argue that this split is an accident of
-how these algorithms were built, not something fundamental.
-We can make all five algorithms become pluggable components at a single level.
+Rather than unrelated implementations, they turn out to share one shape:
+a single `reduce` loop that repeatedly proposes a deletion and tests it
+against an oracle, plus a swappable `Policy` that decides what to propose
+next.
 
 > [!NOTE]
 > This series mainly focuses on _program reduction_,

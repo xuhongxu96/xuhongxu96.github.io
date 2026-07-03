@@ -8,12 +8,17 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+// ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-type AtomicUnit = u32;
+/// Different inputs have different atomic units, so the framework fixes
+/// no concrete type: anything copyable, hashable, and orderable serves.
+trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+// ANCHOR_END: atomic-unit
 
 // ANCHOR: configuration
 /// The units we keep. Reduction shrinks this set.
-type Configuration = HashSet<AtomicUnit>;
+type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
 // ANCHOR: oracle
@@ -23,24 +28,26 @@ enum Verdict {
     NotInteresting, // does not trigger the bug or is invalid
 }
 
-type Oracle = dyn Fn(&Configuration) -> Verdict;
+type Oracle<U> = dyn Fn(&Configuration<U>) -> Verdict;
 // ANCHOR_END: oracle
 
 // ANCHOR: loop
 /// A candidate removal set
-type Delta = HashSet<AtomicUnit>;
+type Delta<U> = HashSet<U>;
 
 /// The main loop of delta debugging
-fn reduce<P: Policy>(
-    units: Configuration,
-    oracle: &Oracle,
+fn reduce<U: AtomicUnit, P: Policy<U>>(
+    units: Configuration<U>,
+    oracle: &Oracle<U>,
     mut policy: P,
-) -> Configuration {
+) -> Configuration<U> {
     let mut config = units;
     loop {
         let mut reduced = None;
 
         for delta in policy.propose(&config) {
+            // an empty delta would be a no-op
+            // that could never make progress.
             assert!(!delta.is_empty());
 
             let candidate = &config - &delta;
@@ -50,15 +57,16 @@ fn reduce<P: Policy>(
             }
         }
 
+        // the policy decides when to stop
         let keep_going =
             policy.on_reduced(reduced.as_ref());
 
         if let Some(candidate) = reduced {
-            config = candidate; // progress; keep going
+            config = candidate; // update the current configuration
         }
 
         if !keep_going {
-            break; // fixpoint reached
+            break;
         }
     }
 
@@ -67,17 +75,21 @@ fn reduce<P: Policy>(
 // ANCHOR_END: loop
 
 // ANCHOR: policy
-trait Policy {
+trait Policy<U: AtomicUnit> {
     /// Generate candidate removal sets *lazily*.
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta>;
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>>;
 
     /// React to a reduction pass.
+    /// `reduced` is `Some` if the pass removed anything,
+    /// `None` if it made no progress.
+    /// Return `true` to keep going, `false` to stop.
+    /// The default stops at the fixpoint.
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<U>>,
     ) -> bool {
         reduced.is_some()
     }
@@ -85,21 +97,21 @@ trait Policy {
 // ANCHOR_END: policy
 
 // ANCHOR: model
-struct ProbDD {
-    /// `probs[u]` is the model's belief that `u` is *essential*,
+struct ProbDD<U: AtomicUnit> {
+    /// `unit2prob[u]` is the model's belief that `u` is *essential*,
     /// i.e. that it survives into the minimized result.
-    probs: HashMap<AtomicUnit, f64>,
+    unit2prob: HashMap<U, f64>,
     /// The prior probability for a unit we haven't seen before.
     p0: f64,
 }
 
-impl ProbDD {
+impl<U: AtomicUnit> ProbDD<U> {
     /// Keep the model in step with the configuration: forget units that are
     /// gone, and give freshly seen units the prior `p0`.
-    fn sync(&mut self, config: &Configuration) {
-        self.probs.retain(|u, _| config.contains(u));
+    fn sync(&mut self, config: &Configuration<U>) {
+        self.unit2prob.retain(|u, _| config.contains(u));
         for &u in config {
-            self.probs.entry(u).or_insert(self.p0);
+            self.unit2prob.entry(u).or_insert(self.p0);
         }
     }
 }
@@ -107,15 +119,15 @@ impl ProbDD {
 
 // ANCHOR: choose
 /// Choose the removal set with the highest *expected gain*.
-fn best_prefix(
-    probs: &HashMap<AtomicUnit, f64>,
-) -> Vec<AtomicUnit> {
-    let mut units: Vec<AtomicUnit> =
-        probs.keys().copied().collect();
+fn best_prefix<U: AtomicUnit>(
+    unit2prob: &HashMap<U, f64>,
+) -> Vec<U> {
+    let mut units: Vec<U> =
+        unit2prob.keys().copied().collect();
     // ascending by probability; ties by id for a reproducible demo.
     units.sort_by(|a, b| {
-        probs[a]
-            .partial_cmp(&probs[b])
+        unit2prob[a]
+            .partial_cmp(&unit2prob[b])
             .unwrap()
             .then(a.cmp(b))
     });
@@ -123,7 +135,7 @@ fn best_prefix(
     let mut survive = 1.0; // ∏ (1 - p) over the current prefix
     let (mut best_k, mut best_gain) = (0, 0.0);
     for (i, u) in units.iter().enumerate() {
-        survive *= 1.0 - probs[u];
+        survive *= 1.0 - unit2prob[u];
         // The gain is the number of units we expect to remove: k · ∏(1 - p)
         let gain = (i + 1) as f64 * survive;
         if gain > best_gain {
@@ -139,45 +151,45 @@ fn best_prefix(
 // ANCHOR: update
 /// A removal of `pre` just failed.
 /// Raise their beliefs by the Bayesian posterior `p / (1 - ∏ (1 - p))`.
-fn bayes_update(
-    probs: &mut HashMap<AtomicUnit, f64>,
-    pre: &[AtomicUnit],
+fn bayes_update<U: AtomicUnit>(
+    unit2prob: &mut HashMap<U, f64>,
+    pre: &[U],
 ) {
     let survive: f64 =
-        pre.iter().map(|u| 1.0 - probs[u]).product();
+        pre.iter().map(|u| 1.0 - unit2prob[u]).product();
     let denom = 1.0 - survive;
     if denom <= 0.0 {
         return;
     }
     for u in pre {
-        let p = probs[u];
-        probs.insert(*u, (p / denom).min(1.0));
+        let p = unit2prob[u];
+        unit2prob.insert(*u, (p / denom).min(1.0));
     }
 }
 // ANCHOR_END: update
 
 // ANCHOR: probdd
-impl Policy for ProbDD {
+impl<U: AtomicUnit> Policy<U> for ProbDD<U> {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>> {
         self.sync(config);
-        let probs = &mut self.probs;
+        let unit2prob = &mut self.unit2prob;
 
         // The loop only pulls the *next* delta when the previous one failed,
         // so each iteration after the first means "that removal failed".
-        let mut last: Option<Vec<AtomicUnit>> = None;
+        let mut last: Option<Vec<U>> = None;
         std::iter::from_fn(move || {
             if let Some(pre) = &last {
                 // if the previous removal failed, update the model
-                bayes_update(probs, pre);
+                bayes_update(unit2prob, pre);
             }
             // Done once every survivor is believed essential (p = 1).
-            if probs.values().all(|&p| p >= 1.0) {
+            if unit2prob.values().all(|&p| p >= 1.0) {
                 return None;
             }
-            let pre = best_prefix(probs);
+            let pre = best_prefix(unit2prob);
             if pre.is_empty() {
                 return None;
             }
@@ -192,14 +204,14 @@ impl Policy for ProbDD {
 fn main() {
     println!("minimizing the set 1..=8; interesting iff it keeps 2 and 7");
 
-    let input: Configuration = (1..=8).collect();
+    let input: Configuration<u32> = (1..=8).collect();
 
     let oracle_calls =
         std::rc::Rc::new(std::cell::Cell::new(0u32));
     let counter = oracle_calls.clone();
-    let keeps_2_and_7 = move |c: &Configuration| {
+    let keeps_2_and_7 = move |c: &Configuration<u32>| {
         counter.set(counter.get() + 1);
-        let mut probe: Vec<AtomicUnit> =
+        let mut probe: Vec<u32> =
             c.iter().copied().collect();
         probe.sort_unstable();
         let verdict = if c.contains(&2) && c.contains(&7) {
@@ -217,7 +229,7 @@ fn main() {
     };
 
     let model = ProbDD {
-        probs: HashMap::new(),
+        unit2prob: HashMap::new(),
         p0: 0.1,
     };
     let mut result: Vec<_> =
@@ -230,6 +242,7 @@ fn main() {
         oracle_calls.get()
     );
     assert_eq!(result, [2, 7]);
+    assert_eq!(oracle_calls.get(), 12);
 }
 // ANCHOR_END: main
 // ANCHOR_END: all

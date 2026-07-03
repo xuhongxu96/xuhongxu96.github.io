@@ -12,11 +12,16 @@ characters, tokens, lines, etc.
 ### Atomic Unit
 
 **Atomic Unit** is the smallest piece of the input that can be removed.
+Different inputs have different atomic units---characters for one input,
+tokens or lines for another---so the framework fixes no concrete type; it
+only asks that a unit be cheap to copy, compare, and hash:
 
 ```rust,ignore
-/// An indivisible piece of the input: a char, token, line, etc.
-type AtomicUnit = ...;
+{{#include ddmin.rs:atomic-unit}}
 ```
+
+The demo at the end of this chapter minimizes a set of plain numbers, so
+its atomic unit is simply `u32`.
 
 ### Configuration
 
@@ -50,7 +55,7 @@ says to stop (usually at the fixpoint, i.e., when no more progress can be made).
 
 A **Delta** is a candidate removal set, i.e., a subset of the current configuration that we propose to remove.
 
-Everything algorithm-specific lives in the **Policy**:
+Everything algorithm-specific lives in the **Policy**.
 
 ```rust,ignore
 {{#include ddmin.rs:policy}}
@@ -77,18 +82,19 @@ The `partition` function is a utility that splits a configuration into `n` chunk
 
 ```rust,edition2024
 # use std::collections::HashSet;
-# type AtomicUnit = u32;
-# type Configuration = HashSet<AtomicUnit>;
-# type Delta = HashSet<AtomicUnit>;
+# trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+# impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+# type Configuration<U> = HashSet<U>;
+# type Delta<U> = HashSet<U>;
 {{#include ddmin.rs:partition}}
 #
 # fn main() {
-#     let config: Configuration = (1..=8).collect();
+#     let config: Configuration<u32> = (1..=8).collect();
 #     for n in [2, 3, 4] {
-#         let chunks: Vec<Vec<AtomicUnit>> = partition(&config, n)
+#         let chunks: Vec<Vec<u32>> = partition(&config, n)
 #             .iter()
 #             .map(|s| {
-#                 let mut v: Vec<AtomicUnit> = s.iter().copied().collect();
+#                 let mut v: Vec<u32> = s.iter().copied().collect();
 #                 v.sort_unstable();
 #                 v
 #             })

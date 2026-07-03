@@ -11,74 +11,144 @@ level's nodes to drop. Dropping a node drops its whole subtree, so one
 test high in the tree can delete a huge, irrelevant region at once---and every
 candidate it produces is still a syntactically valid tree.
 
-## A Tree of Units
+## Two Spaces: Nodes and Units
 
-The atomic units---the things minimization actually removes---are the
-**leaves**. A configuration is the set of surviving leaves; internal nodes never
-sit in it.
+If the input is now a tree, what should the *configuration*---the set that
+reduction shrinks---contain?
 
-A node is a label plus its children; the whole tree is those nodes
-indexed by id, with each node's BFS depth (its **level**) and parent precomputed.
+Not tree nodes. The atomic units are still exactly what they were in
+[DDMin]: the indivisible pieces of the **input**. For a program those are
+its tokens, and we identify each token by its position in source order:
+
+```rust,ignore
+{{#include hdd.rs:unit}}
+```
+
+The tree is a separate, static map *over* those units, so its nodes get
+their own id type. An internal node like `fn bar` spans many tokens,
+but it is not itself an input---it is a *name for a region* of the
+input---so it must never be confused with one of the input's tokens.
+Only the leaves touch the input: each leaf
+node corresponds to one token,
+recorded in the `leaf2token` map (and its inverse, `token2leaf`):
 
 ```rust,ignore
 {{#include hdd.rs:tree}}
 ```
 
-HDD needs just two operations on the tree:
+In the demo tree used below, the tokens number like this:
 
-1. Given a level-`L` *subtree* (named by
-    its root node), `leaves_under` collects the surviving leaves beneath it---this is
-    how dropping a subtree becomes a removal of atomic units; and
-2. `alive_level_nodes` names the subtrees at a level that still hold a leaf,
-    by walking each surviving leaf up to its level-`L` ancestor.
+```text
+program
+├─ fn bar                    (the bug)
+│  ├─ stmt b1        unit 0
+│  ├─ if guard
+│  │  ├─ stmt g      unit 1
+│  │  └─ crash()     unit 2
+│  └─ stmt b2        unit 3
+├─ fn f2 { stmt; stmt; }     units 4, 5
+├─ fn f3 { stmt; stmt; }     units 6, 7
+├─ fn f4 { stmt; stmt; }     units 8, 9
+├─ fn f5 { stmt; stmt; }     units 10, 11
+└─ fn f6 { stmt; stmt; }     units 12, 13
+```
+
+The starting configuration is simply every token: `{0, 1, ..., 13}`. The
+tree never shrinks; only the configuration does. That split means HDD keeps
+working in two spaces at once---nodes to *decide*, units to *test*---and it
+needs one bridge in each direction.
+
+**Node space → unit space.** When HDD decides to try dropping the subtree
+`fn f2`, the `reduce` loop can't test a node: a `Delta` is a set of units.
+`leaves_under` translates the decision into a testable delta by collecting
+the surviving units inside the subtree---dropping `fn f2` means the delta
+`{4, 5}`:
 
 ```rust,ignore
-{{#include hdd.rs:tree-ops}}
+{{#include hdd.rs:leaves-under}}
 ```
+
+**Unit space → node space.** Going the other way, HDD must ask which
+level-`L` subtrees still *exist*: a node whose tokens have all been deleted
+is gone, even though the static tree still has it. Rather than store
+liveness separately (state that could drift out of sync), we recover it
+from the configuration itself: walk each surviving unit's leaf up to its
+ancestor at level `L`. If units `{0,...,5}` survive, level 1 holds
+`{fn bar, fn f2}`; delete units 4 and 5 and it holds only `{fn bar}`:
+
+```rust,ignore
+{{#include hdd.rs:alive-level}}
+```
+
+## A Policy Over Subtrees
+
+HDD's plan is to reuse a plain list-minimizer at every level: hand it the
+set of live level-`L` subtrees and let it discover which of them are
+removable. And nothing stands in the way, because an *atomic unit is
+relative to the reduction problem*. For the inner minimizer's
+problem---shrink this level's list of subtrees---the indivisible pieces
+are the subtrees themselves, so `NodeId` serves as its atomic unit: the
+inner minimizer runs as a `Policy<NodeId>`, and `DDMin`/`ProbDD` satisfy
+it unchanged.
+
+HDD itself is a `Policy<Token>` toward the `reduce` loop: whatever the
+inner policy decides in node space is expanded through `leaves_under`
+into a token-delta before the oracle ever sees it.
 
 ## HDD Is a Policy {#hdd-is-a-policy-loop}
 
-**HDD is just another [`Policy`](./ddmin.md)**.
-It plugs into the same `reduce` loop as DDMin and ProbDD.
-
-Recall the loop of delta debugging:
-
-```rust,ignore
-{{#include hdd.rs:loop}}
-```
-
-A [`Policy`](./ddmin.md) streams candidate removals, and reacts to each pass via
-`on_reduced` to decide whether the run continues:
+**HDD is itself just another `Policy`**---to the `reduce` loop it looks
+exactly like DDMin: a stream of unit-deltas. All the hierarchy hides behind
+`propose`. Its state is the tree, a factory that builds a fresh inner
+minimizer, a cursor for the shallowest level not yet known to be minimal,
+and the minimizer currently working that level:
 
 ```rust,ignore
-{{#include hdd.rs:policy}}
+{{#include hdd.rs:hdd-struct}}
 ```
 
-HDD implements this trait. Its state is the tree, a factory that builds a
-list-minimizer (DDMin, ProbDD, etc.), a cursor for the shallowest level not yet
-known to be minimal, and the minimizer it is currently using for that level:
+`propose` is the delegation step. For the current level it names the live
+subtrees with `alive_level_nodes`, lets the inner policy (`DDMin`,
+`ProbDD`, ...) choose which *nodes* to drop, and maps each choice down
+through `leaves_under` into the unit-delta the loop can test:
 
 ```rust,ignore
-{{#rustdoc_include hdd.rs:hdd}}
+{{#include hdd.rs:hdd-propose}}
 ```
 
-For the current level
-it names the live subtrees with `alive_level_nodes`
-and lets an **inner policy**
-(`DDMin`, `ProbDD`, ...) choose which to drop.
-Notice that the inner policy chooses among *subtrees*, not raw leaves.
-However, the configuration is leaves,
-so each chosen subtree is mapped down
-through `leaves_under` to the atomic units it removes.
+Why stream instead of `collect`ing the inner policy's candidates in one
+batch? Pulling the next candidate from `propose` is itself the signal that
+the previous one failed. A stateful policy like ProbDD updates its model on
+every failure, and because `self.minimizer` is reused across a level's
+passes, it carries that learning from one pass to the next. Streaming
+*lazily* means the inner policy advances only as the oracle consumes
+candidates, so the model learns only from failures that actually happened.
 
-Pulling the next candidate from `propose` is itself the signal that the
-previous one failed, so we can't `collect` the inner policy's candidates in one
-batch. A stateful policy like ProbDD updates its model (each unit's probability
-of being *essential*) on every failure, and because `self.minimizer` is reused
-across a level's passes, it carries that learning from one pass to the next.
-Since the candidates are streamed *lazily*, the inner policy advances only as
-the oracle consumes them, so the model learns only from the failures that
-actually happen.
+Deciding when to descend is delegated the same way. When a pass ends, HDD
+forwards the outcome to the inner policy's own `on_reduced`---translated
+into the inner policy's space, this level's live subtrees---and descends
+only when the inner policy declares *itself* minimal:
+
+```rust,ignore
+{{#include hdd.rs:hdd-on-reduced}}
+```
+
+HDD never hard-codes the stop test, so any list-minimizer---stateless or
+learning---drives the descent.
+
+To make the delegation concrete, here is the first pass on the demo tree.
+The level-1 live subtrees are all six functions; the inner DDMin's first
+candidate keeps the half `{fn bar, fn f2, fn f3}`, i.e. proposes dropping
+the node-set `{fn f4, fn f5, fn f6}`; `leaves_under` turns that into the
+unit-delta `{8, ..., 13}`; the oracle still sees `crash()` (unit 2), so
+half the noise disappears in a single test.
+
+```text
+level 1 subtrees   {fn bar, f2, f3, f4, f5, f6}
+inner DDMin drops  {f4, f5, f6}            (node space)
+leaves_under       {8, 9, 10, 11, 12, 13}  (unit space)
+oracle             still crashes  =>  reduced
+```
 
 > [!NOTE]
 > Because HDD only ever removes whole subtrees, every candidate it hands the
@@ -86,47 +156,34 @@ actually happen.
 > token list would spend most of its tests on inputs that don't even parse;
 > HDD never wastes a test on a parse error.
 
+> [!NOTE]
+> The demos start HDD at **level 1**, not level 0. Level 0 holds only the
+> root, and deleting the whole program can never stay interesting, so a
+> level-0 pass is guaranteed wasted work. ([Perses](./perses.md) will make
+> level 0 harmless in a different way: a grammar-driven filter on what may
+> be deleted at all.)
+
 ## Run It
 
-The input is a tiny "program" tree.
-
-```text
-program {
-    fn bar {
-        stmt;
-        if guard {
-            stmt;
-            crash();
-        }
-        stmt;
-    }
-    fn f2 { stmt; stmt; }
-    fn f3 { stmt; stmt; }
-    fn f4 { stmt; stmt; }
-    fn f5 { stmt; stmt; }
-    fn f6 { stmt; stmt; }
-}
-```
-
-`fn bar` holds the bug---an `if` whose body
+The input is the tree above: `fn bar` holds the bug---an `if` whose body
 calls `crash()`---and the other five functions are noise.
 
-Keeping that node keeps its whole ancestor chain, so the answer must be
-`program → fn bar → if → crash()`.
+Keeping the `crash()` token keeps its whole ancestor chain, so the answer
+must be `program → fn bar → if → crash()`.
 
 > [!TIP]
-> Press play. Watch the first few tests delete whole functions at the top level
-> (one test each), then watch HDD descend into `fn bar` and trim it down,
-> coarse-to-fine.
+> Press play. Watch the first few tests delete whole functions at the top
+> level (one test each), then watch HDD descend into `fn bar` and trim it
+> down, coarse-to-fine.
 
 ```rust,edition2024
 {{#rustdoc_include hdd.rs:main}}
 ```
 
-The top level goes first: `fn f4`, `fn f5`, and `fn f6`, then `fn f3`, then `fn f2` are
-dropped---each whole function subtree gone in a single test. Only then does HDD
-step inside the surviving `fn bar`, drop its stray statements, and finally, one
-level deeper, drop the `if`'s body.
+The top level goes first: `fn f4`, `fn f5`, and `fn f6`, then `fn f3`, then
+`fn f2` are dropped---each whole function subtree gone in a single test.
+Only then does HDD step inside the surviving `fn bar`, drop its stray
+statements, and finally, one level deeper, drop the `if`'s body.
 Rendered back into the tree it came from, that is:
 
 ```text
@@ -141,7 +198,8 @@ and nothing else changes. The demo above already runs both and prints each
 count.
 
 > [!NOTE]
-> ProbDD reaches the same result---but in **15** calls, *more* than DDMin's 11.
+> ProbDD reaches the same result---but in **15** calls, *more* than DDMin's
+> 11. <!-- kept in sync with the asserts in hdd.rs main -->
 >
 > That is not a bug. HDD hands the inner policy a fresh, tiny
 > list at every level and rebuilds it from scratch each round, so ProbDD's

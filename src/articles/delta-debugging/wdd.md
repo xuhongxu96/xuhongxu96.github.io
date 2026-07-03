@@ -18,8 +18,11 @@ tests trying to remove it in a bundle.
 
 ## Weight Is Just Size
 
-Inside HDD the elements are subtrees, and the natural size of a subtree is how
-many leaves (atomic units) it contains. Precompute that once for every node:
+Inside HDD the elements a minimizer sees are subtrees---`NodeId`s, not
+atomic units---and the natural size of a subtree is how many tokens it
+contains. So weights live in node space, `HashMap<NodeId, u64>`, keyed by
+the very things the inner `Policy<NodeId>` picks among. Precompute them
+once for every node:
 
 ```rust,ignore
 {{#include wdd.rs:weight}}
@@ -56,12 +59,14 @@ Same `Policy` trait, same `n = 2, 4, 8, ...` escalation:
 {{#rustdoc_include wdd.rs:wdd}}
 ```
 
-Because it's a `Policy`, it drops into [HDD] exactly where DDMin and ProbDD did
-(see the [HDD page](./hdd.md)).
+Because it implements `Policy<NodeId>`, it drops into [HDD] exactly where
+DDMin and ProbDD did. `Hdd::new(tree, start_level, minimizer_factory)` is
+the constructor from the [HDD chapter](./hdd.md); WDD simply slots in as
+the minimizer factory:
 
 ```rust,ignore
-let weight = tree.leaf_counts();
-Hdd::new(&tree, 1, || Wdd { weight: &weight })
+let unit2weight = tree.leaf_counts();
+Hdd::new(&tree, 1, || Wdd { unit2weight: &unit2weight })
 ```
 
 > [!NOTE]
@@ -112,7 +117,7 @@ program { fn big { block { if { crash() } } } }
 > [!NOTE]
 > How many oracle calls did each take?
 >
-> 13 (DDMin) vs 8 (WDD).
+> 13 (DDMin) vs 8 (WDD). <!-- kept in sync with the asserts in wdd.rs main -->
 
 The gap comes entirely from weight-balanced
 partitioning isolating the heavy, bug-holding subtree early.

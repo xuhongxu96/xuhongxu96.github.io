@@ -10,12 +10,21 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::iter::successors;
 
-/// An indivisible piece of the input: here, a node of the parse tree.
-type AtomicUnit = u32;
+// ANCHOR: atomic-unit
+/// An indivisible piece of the input: a char, token, line, etc.
+/// Different inputs have different atomic units, so the framework fixes
+/// no concrete type: anything copyable, hashable, and orderable serves.
+trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+// ANCHOR_END: atomic-unit
+
+/// This chapter's atomic unit: a token of the program, identified by
+/// its position in source order (0, 1, 2, ...).
+type Token = u32;
 
 // ANCHOR: configuration
 /// The units we keep. Reduction shrinks this set.
-type Configuration = HashSet<AtomicUnit>;
+type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
 // ANCHOR: oracle
@@ -25,19 +34,19 @@ enum Verdict {
     NotInteresting, // does not trigger the bug or is invalid
 }
 
-type Oracle = dyn Fn(&Configuration) -> Verdict;
+type Oracle<U> = dyn Fn(&Configuration<U>) -> Verdict;
 // ANCHOR_END: oracle
 
 // ANCHOR: loop
 /// A candidate removal set
-type Delta = HashSet<AtomicUnit>;
+type Delta<U> = HashSet<U>;
 
 /// The main loop of delta debugging
-fn reduce<P: Policy>(
-    units: Configuration,
-    oracle: &Oracle,
+fn reduce<U: AtomicUnit, P: Policy<U>>(
+    units: Configuration<U>,
+    oracle: &Oracle<U>,
     mut policy: P,
-) -> Configuration {
+) -> Configuration<U> {
     let mut config = units;
     loop {
         let mut reduced = None;
@@ -72,17 +81,21 @@ fn reduce<P: Policy>(
 // ANCHOR_END: loop
 
 // ANCHOR: policy
-trait Policy {
+trait Policy<U: AtomicUnit> {
     /// Generate candidate removal sets *lazily*.
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta>;
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>>;
 
     /// React to a reduction pass.
+    /// `reduced` is `Some` if the pass removed anything,
+    /// `None` if it made no progress.
+    /// Return `true` to keep going, `false` to stop.
+    /// The default stops at the fixpoint.
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<U>>,
     ) -> bool {
         reduced.is_some()
     }
@@ -91,11 +104,11 @@ trait Policy {
 
 // ANCHOR: partition
 /// Split `config` into at most `n` roughly-equal, disjoint subsets.
-fn partition(
-    config: &Configuration,
+fn partition<U: AtomicUnit>(
+    config: &Configuration<U>,
     n: usize,
-) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> =
+) -> Vec<Delta<U>> {
+    let mut items: Vec<U> =
         config.iter().copied().collect();
     items.sort_unstable();
     let len = items.len();
@@ -113,11 +126,11 @@ fn partition(
 // ANCHOR: ddmin
 struct DDMin;
 
-impl Policy for DDMin {
+impl<U: AtomicUnit> Policy<U> for DDMin {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>> {
         let units = config.len();
         successors(Some(2), move |&n| {
             (n < units).then(|| (2 * n).min(units))
@@ -156,67 +169,97 @@ fn is_stmt(kind: Kind) -> bool {
     matches!(kind, Kind::IfStmt | Kind::Block | Kind::Call)
 }
 
+/// Identifies a node of the parse tree. *Not* an atomic unit: internal
+/// nodes never appear in a Configuration. A leaf (token) node corresponds
+/// to exactly one atomic unit: its source-order index, `tree.leaf2token[&id]`.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
+struct NodeId(u32);
+
 struct Node {
     kind: Kind,
     label: &'static str, // the source text, for a `Token` leaf
-    children: Vec<AtomicUnit>,
+    children: Vec<NodeId>,
 }
 
 struct Tree {
-    nodes: HashMap<AtomicUnit, Node>,
-    root: AtomicUnit,
-    depth: HashMap<AtomicUnit, usize>,
-    parent: HashMap<AtomicUnit, AtomicUnit>,
+    id2node: HashMap<NodeId, Node>,
+    root: NodeId,
+    node2depth: HashMap<NodeId, usize>,
+    node2parent: HashMap<NodeId, NodeId>,
     max_depth: usize,
+    leaf2token: HashMap<NodeId, Token>, // a leaf's token is its source-order index
+    token2leaf: HashMap<Token, NodeId>, // inverse of `leaf2token`
 }
 // ANCHOR_END: cst
 
 impl Tree {
     fn new(
-        root: AtomicUnit,
-        nodes: HashMap<AtomicUnit, Node>,
+        root: NodeId,
+        id2node: HashMap<NodeId, Node>,
     ) -> Tree {
-        let mut depth = HashMap::new();
-        let mut parent = HashMap::new();
+        let mut node2depth = HashMap::new();
+        let mut node2parent = HashMap::new();
         let mut max_depth = 0;
         let mut frontier = vec![root];
         let mut d = 0;
         while !frontier.is_empty() {
             let mut next = Vec::new();
             for &id in &frontier {
-                depth.insert(id, d);
+                node2depth.insert(id, d);
                 max_depth = d;
-                for &c in &nodes[&id].children {
-                    parent.insert(c, id);
+                for &c in &id2node[&id].children {
+                    node2parent.insert(c, id);
                     next.push(c);
                 }
             }
             frontier = next;
             d += 1;
         }
+        // DFS in child order (= source order): the k-th leaf from the left
+        // is the token with source-order index k, i.e. atomic unit k.
+        let mut leaf2token = HashMap::new();
+        let mut token2leaf = HashMap::new();
+        let mut stack = vec![root];
+        while let Some(id) = stack.pop() {
+            let node = &id2node[&id];
+            if node.children.is_empty() {
+                let u = token2leaf.len() as Token;
+                leaf2token.insert(id, u);
+                token2leaf.insert(u, id);
+            } else {
+                // push in reverse so children pop left-to-right
+                stack.extend(
+                    node.children.iter().rev().copied(),
+                );
+            }
+        }
         Tree {
-            nodes,
+            id2node,
             root,
-            depth,
-            parent,
+            node2depth,
+            node2parent,
             max_depth,
+            leaf2token,
+            token2leaf,
         }
     }
 
-    // ANCHOR: tree-ops
-    /// The present leaves in the subtree rooted at `id` (for a leaf, itself).
+    // ANCHOR: leaves-under
+    /// Node space -> unit space: the surviving atomic units in the subtree
+    /// rooted at `id` (for a leaf, its own token if kept).
     fn leaves_under(
         &self,
-        id: AtomicUnit,
-        present: &Configuration,
-    ) -> Delta {
+        id: NodeId,
+        present: &Configuration<Token>,
+    ) -> Delta<Token> {
         let mut out = Delta::new();
         let mut stack = vec![id];
         while let Some(n) = stack.pop() {
-            let node = &self.nodes[&n];
+            let node = &self.id2node[&n];
             if node.children.is_empty() {
-                if present.contains(&n) {
-                    out.insert(n);
+                let u = self.leaf2token[&n];
+                if present.contains(&u) {
+                    out.insert(u);
                 }
             } else {
                 stack.extend(node.children.iter().copied());
@@ -225,23 +268,25 @@ impl Tree {
         out
     }
 
-    /// Does any leaf under `id` survive?
+    /// Does any token under `id` survive?
     fn present(
         &self,
-        id: AtomicUnit,
-        config: &Configuration,
+        id: NodeId,
+        config: &Configuration<Token>,
     ) -> bool {
         !self.leaves_under(id, config).is_empty()
     }
+    // ANCHOR_END: leaves-under
 
+    // ANCHOR: descendants
     /// Every present proper descendant of `id`.
     fn descendants(
         &self,
-        id: AtomicUnit,
-        config: &Configuration,
-    ) -> Vec<AtomicUnit> {
+        id: NodeId,
+        config: &Configuration<Token>,
+    ) -> Vec<NodeId> {
         let mut out = Vec::new();
-        let mut stack: Vec<AtomicUnit> = self.nodes[&id]
+        let mut stack: Vec<NodeId> = self.id2node[&id]
             .children
             .iter()
             .copied()
@@ -252,25 +297,26 @@ impl Tree {
             }
             out.push(n);
             stack.extend(
-                self.nodes[&n].children.iter().copied(),
+                self.id2node[&n].children.iter().copied(),
             );
         }
         out
     }
+    // ANCHOR_END: descendants
 
     // ANCHOR: alive
-    /// The level-`level` subtrees still holding a leaf -- the candidates HDD may
-    /// delete at this level. Each surviving leaf contributes its level-`L`
-    /// ancestor; we keep only the `deletable` ones.
+    /// The level-`level` subtrees still holding a token -- the candidates HDD
+    /// may delete at this level. Each surviving unit's leaf contributes its
+    /// level-`L` ancestor; we keep only the `deletable` ones.
     fn alive_level_nodes(
         &self,
         level: usize,
-        present: &Configuration,
-    ) -> Configuration {
+        present: &Configuration<Token>,
+    ) -> Configuration<NodeId> {
         present
             .iter()
-            .copied()
-            .filter(|leaf| self.depth[leaf] >= level)
+            .map(|&u| self.token2leaf[&u])
+            .filter(|leaf| self.node2depth[leaf] >= level)
             .map(|leaf| self.ancestor_at(leaf, level))
             .filter(|&node| self.deletable(node))
             .collect()
@@ -279,75 +325,43 @@ impl Tree {
 
     // ANCHOR: deletable
     /// A node may be deleted only when it is an element of a `List` (Kleene).
-    fn deletable(&self, id: AtomicUnit) -> bool {
-        self.parent.get(&id).is_some_and(|p| {
-            self.nodes[p].kind == Kind::List
+    fn deletable(&self, id: NodeId) -> bool {
+        self.node2parent.get(&id).is_some_and(|p| {
+            self.id2node[p].kind == Kind::List
         })
     }
     // ANCHOR_END: deletable
 
     fn ancestor_at(
         &self,
-        mut id: AtomicUnit,
+        mut id: NodeId,
         level: usize,
-    ) -> AtomicUnit {
-        while self.depth[&id] > level {
-            id = self.parent[&id];
+    ) -> NodeId {
+        while self.node2depth[&id] > level {
+            id = self.node2parent[&id];
         }
         id
     }
-    // ANCHOR_END: tree-ops
 
-    // ANCHOR: subsume
-    /// Can `d` replace `n`? Its kind must fit the slot `n` is *effectively*
-    /// filling: a list element accepts any statement; a fixed child only its
-    /// own kind (a `Block` only a `Block`).
-    fn can_replace(
-        &self,
-        n: AtomicUnit,
-        d: AtomicUnit,
-        config: &Configuration,
-    ) -> bool {
-        if n == d {
-            return false;
-        }
-        // `n`'s own parent may no longer be *live*.
-        // Walk up through that dead chain to the ancestor `n`
-        // is actually filling in for: the first
-        // node whose own parent is live (or the root).
-        let mut anchor = n;
-        while let Some(&p) = self.parent.get(&anchor) {
-            if p == self.root || self.live(p, config) {
-                break;
-            }
-            anchor = p;
-        }
-        let d_kind = self.nodes[&d].kind;
-        match self.parent.get(&anchor) {
-            Some(p) if self.nodes[p].kind == Kind::List => {
-                is_stmt(d_kind)
-            }
-            Some(_) => d_kind == self.nodes[&anchor].kind,
-            None => false,
-        }
-    }
-    // ANCHOR_END: subsume
 
     // ANCHOR: live
-    /// Does this node still exist in the reduced program? The configuration tracks
-    /// only which leaves survive, so an internal node's presence is recovered here.
+    /// Does this node still exist in the reduced program? The configuration
+    /// tracks only which tokens survive, so an internal node's presence is
+    /// recovered here.
     fn live(
         &self,
-        id: AtomicUnit,
-        config: &Configuration,
+        id: NodeId,
+        config: &Configuration<Token>,
     ) -> bool {
-        let node = &self.nodes[&id];
+        let node = &self.id2node[&id];
         match node.kind {
             // a token exists iff it is kept
-            Kind::Token => config.contains(&id),
+            Kind::Token => {
+                config.contains(&self.leaf2token[&id])
+            }
             // a list has no tokens of its own -> it exists iff its block does
             Kind::List => self
-                .parent
+                .node2parent
                 .get(&id)
                 .is_some_and(|&p| self.live(p, config)),
             // a regular node exists iff its mandatory (non-list) children do
@@ -355,41 +369,136 @@ impl Tree {
                 .children
                 .iter()
                 .filter(|&&c| {
-                    self.nodes[&c].kind != Kind::List
+                    self.id2node[&c].kind != Kind::List
                 })
                 .all(|&c| self.live(c, config)),
         }
     }
     // ANCHOR_END: live
+
+    // ANCHOR: anchor-of
+    /// The node whose grammar slot `n` is *effectively* filling. After an
+    /// earlier replacement, `n`'s own parent may be dead -- `n` was promoted
+    /// into some ancestor's place. Walk up through the dead chain to the
+    /// first node whose own parent is live (or the root): that ancestor's
+    /// slot is the one `n` occupies now.
+    fn anchor_of(
+        &self,
+        n: NodeId,
+        config: &Configuration<Token>,
+    ) -> NodeId {
+        let mut anchor = n;
+        while let Some(&p) = self.node2parent.get(&anchor) {
+            if p == self.root || self.live(p, config) {
+                break;
+            }
+            anchor = p;
+        }
+        anchor
+    }
+    // ANCHOR_END: anchor-of
+
+    // ANCHOR: can-replace
+    /// Can `d` replace `n`? `d`'s kind must fit the slot `n` is effectively
+    /// filling: a `List` element's slot accepts any statement; a fixed slot
+    /// accepts only its own kind (a `Block` only a `Block`).
+    fn can_replace(
+        &self,
+        n: NodeId,
+        d: NodeId,
+        config: &Configuration<Token>,
+    ) -> bool {
+        if n == d {
+            return false;
+        }
+        let anchor = self.anchor_of(n, config);
+        let d_kind = self.id2node[&d].kind;
+        match self.node2parent.get(&anchor) {
+            Some(p) if self.id2node[p].kind == Kind::List => {
+                is_stmt(d_kind)
+            }
+            Some(_) => d_kind == self.id2node[&anchor].kind,
+            None => false, // the root fills no slot
+        }
+    }
+    // ANCHOR_END: can-replace
+
+    // ANCHOR: sizes
+    /// How many surviving tokens each node's subtree still holds -- the
+    /// payoff of removing or replacing it. Recomputed per pass, since the
+    /// payoffs shrink as the program does.
+    fn subtree_sizes(
+        &self,
+        config: &Configuration<Token>,
+    ) -> HashMap<NodeId, usize> {
+        self.id2node
+            .keys()
+            .map(|&id| {
+                (id, self.leaves_under(id, config).len())
+            })
+            .collect()
+    }
+    // ANCHOR_END: sizes
+
+    // ANCHOR: live-nodes
+    /// The live internal nodes, largest subtree first (ties by id for a
+    /// reproducible demo) -- the order in which Perses spends its tests.
+    fn live_internal_largest_first(
+        &self,
+        config: &Configuration<Token>,
+        node2size: &HashMap<NodeId, usize>,
+    ) -> Vec<NodeId> {
+        let mut nodes: Vec<NodeId> = self
+            .id2node
+            .keys()
+            .copied()
+            .filter(|&id| {
+                !self.id2node[&id].children.is_empty()
+                    && self.live(id, config)
+            })
+            .collect();
+        nodes.sort_by(|&a, &b| {
+            node2size[&b]
+                .cmp(&node2size[&a])
+                .then(a.cmp(&b))
+        });
+        nodes
+    }
+    // ANCHOR_END: live-nodes
+
+    // ANCHOR: elems-of
+    /// The still-present elements (children) of a `List` node -- the
+    /// things a deletion minimizer may remove from it.
+    fn elems_of(
+        &self,
+        list: NodeId,
+        config: &Configuration<Token>,
+    ) -> Configuration<NodeId> {
+        self.id2node[&list]
+            .children
+            .iter()
+            .copied()
+            .filter(|&c| self.present(c, config))
+            .collect()
+    }
+    // ANCHOR_END: elems-of
 }
 
 // ANCHOR: render
-/// Render a configuration by concatenating the surviving leaf tokens in source
-/// order -- for a parse tree, that *is* the program.
-fn render(tree: &Tree, present: &Configuration) -> String {
-    fn go(
-        tree: &Tree,
-        id: AtomicUnit,
-        present: &Configuration,
-        out: &mut String,
-    ) {
-        let node = &tree.nodes[&id];
-        if node.children.is_empty() {
-            if present.contains(&id) {
-                if !out.is_empty() {
-                    out.push(' ');
-                }
-                out.push_str(node.label);
-            }
-        } else {
-            for &c in &node.children {
-                go(tree, c, present, out);
-            }
-        }
-    }
-    let mut out = String::new();
-    go(tree, tree.root, present, &mut out);
-    out
+/// Render a configuration by concatenating the surviving tokens in source
+/// order -- for a parse tree, that *is* the program. Because a unit is its
+/// token's source-order index, "in source order" is just ascending units.
+fn render(tree: &Tree, present: &Configuration<Token>) -> String {
+    let mut units: Vec<Token> =
+        present.iter().copied().collect();
+    units.sort_unstable();
+    units
+        .iter()
+        .map(|&u| {
+            tree.id2node[&tree.token2leaf[&u]].label
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 // ANCHOR_END: render
 
@@ -401,13 +510,13 @@ struct Hdd<'t, F, P> {
     new_minimizer: F,
     level: usize,
     minimizer: Option<P>, // The inner minimizer for the current level
-    level_subtrees: Configuration, // a field, not a local, so `propose`'s returned iterator can borrow it
+    level_subtrees: Configuration<NodeId>, // a field, not a local, so `propose`'s returned iterator can borrow it
 }
 
 impl<'t, F, P> Hdd<'t, F, P>
 where
     F: Fn() -> P,
-    P: Policy,
+    P: Policy<NodeId>,
 {
     fn new(
         tree: &'t Tree,
@@ -424,15 +533,15 @@ where
     }
 }
 
-impl<'t, F, P> Policy for Hdd<'t, F, P>
+impl<'t, F, P> Policy<Token> for Hdd<'t, F, P>
 where
     F: Fn() -> P,
-    P: Policy,
+    P: Policy<NodeId>,
 {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<Token>,
+    ) -> impl Iterator<Item = Delta<Token>> {
         let tree = self.tree;
         let level = self.level;
         // Build this level's minimizer on its first pass. `on_reduced` clears it
@@ -448,7 +557,7 @@ where
         // Lazily: `reduce` stops pulling at the first success, so a stateful
         // inner policy only ever advances its model over *confirmed* failures.
         minimizer.propose(subtrees).map(
-            move |drop| -> Delta {
+            move |drop| -> Delta<Token> {
                 drop.iter()
                     .flat_map(|&id| {
                         tree.leaves_under(id, config)
@@ -460,71 +569,97 @@ where
 
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<Token>>,
     ) -> bool {
-        if reduced.is_some() {
-            return true; // progress at this level; keep going
+        let (tree, level) = (self.tree, self.level);
+        // Report the pass outcome to the inner minimizer
+        // in its own space: this level's still-live
+        // subtrees, or `None` when nothing was found.
+        // Driving the inner policy through its full
+        // protocol keeps HDD agnostic to the inner policy.
+        let subtrees = reduced
+            .map(|c| tree.alive_level_nodes(level, c));
+        let inner = self.minimizer.as_mut().unwrap();
+        if inner.on_reduced(subtrees.as_ref()) {
+            return true; // inner isn't minimal here yet
         }
-        // A whole `propose` stream failed: this level is minimal, so descend and
-        // rebuild the minimizer for the next one.
+        // The inner policy is minimal: descend and rebuild.
         self.level += 1;
         self.minimizer = None;
-        self.level <= self.tree.max_depth
+        self.level <= tree.max_depth
     }
 }
 // ANCHOR_END: hdd
 
-// ANCHOR: perses
-/// Perses is a Policy. Largest node first, it proposes HDD's deletion (drop
-/// `List` elements, via the same inner minimizer) plus **node replacement**: drop
-/// everything under `n` except a compatible descendant `d`'s leaves.
-struct Perses<'t, F> {
+// ANCHOR: perses-struct
+/// Perses is a Policy. Largest node first, it proposes **node
+/// replacement** (drop everything under `n` except a compatible
+/// descendant `d`'s tokens) plus, for `List` nodes, HDD's
+/// deletion.
+struct Perses<'t, F, P> {
     tree: &'t Tree,
     new_minimizer: F,
+    // the active `List` node
+    active: Option<NodeId>,
+    // the active node's minimizer, rebuilt when `active` changes
+    minimizer: Option<P>,
+    // the active node's present elements, in a field so the
+    // returned iterator can borrow them (as HDD does per level)
+    active_elems: Configuration<NodeId>,
+    done: HashSet<NodeId>, // `List` nodes exhausted since a reduction
 }
+// ANCHOR_END: perses-struct
 
-impl<F, P> Policy for Perses<'_, F>
+impl<'t, F, P> Perses<'t, F, P>
 where
     F: Fn() -> P,
-    P: Policy,
+    P: Policy<NodeId>,
 {
-    fn propose(
-        &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+    fn new(tree: &'t Tree, new_minimizer: F) -> Self {
+        Perses {
+            tree,
+            new_minimizer,
+            active: None,
+            minimizer: None,
+            active_elems: Configuration::new(),
+            done: HashSet::new(),
+        }
+    }
+
+    // ANCHOR: perses-active
+    /// Pick the *active* `List`: the largest live one not yet retired.
+    /// Recomputed every pass, so a collapse that kills a node never
+    /// strands the driver on it. Switching away from a node discards
+    /// its minimizer.
+    fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
-        let size: HashMap<AtomicUnit, usize> = tree
-            .nodes
-            .keys()
-            .map(|&id| {
-                (id, tree.leaves_under(id, config).len())
-            })
-            .collect();
-
-        // ANCHOR: perses-nodes
-        // the present, *live* internal nodes, largest subtree first
-        let mut nodes: Vec<AtomicUnit> = tree
-            .nodes
-            .keys()
-            .copied()
-            .filter(|&id| {
-                !tree.nodes[&id].children.is_empty()
-                    && tree.live(id, config)
-            })
-            .collect();
-        nodes.sort_by(|&a, &b| {
-            size[&b].cmp(&size[&a]).then(a.cmp(&b))
+        let active = nodes.iter().copied().find(|&id| {
+            tree.id2node[&id].kind == Kind::List
+                && !self.done.contains(&id)
         });
+        if active != self.active {
+            self.active = active;
+            self.minimizer = None;
+        }
+    }
+    // ANCHOR_END: perses-active
 
-        let mut cands: Vec<Delta> = Vec::new();
-        for n in nodes {
-            // for each live internal node sorted by size
-            // ANCHOR_END: perses-nodes
-            // ANCHOR: perses-replace
+    // ANCHOR: perses-replace
+    /// Replacement candidates, biggest payoff first: for each live node
+    /// `n` (largest first), try its compatible live descendants `d`,
+    /// smallest first -- the biggest jump that still parses. The delta
+    /// is the wrapper: `n`'s tokens minus `d`'s.
+    fn replacements(
+        &self,
+        nodes: &[NodeId],
+        node2size: &HashMap<NodeId, usize>,
+        config: &Configuration<Token>,
+    ) -> Vec<Delta<Token>> {
+        let tree = self.tree;
+        let mut reps: Vec<Delta<Token>> = Vec::new();
+        for &n in nodes {
             let n_leaves = tree.leaves_under(n, config);
-
-            // replace n with a compatible, live descendant -- smallest one first
-            let mut ds: Vec<AtomicUnit> = tree
+            let mut ds: Vec<NodeId> = tree
                 .descendants(n, config)
                 .into_iter()
                 .filter(|&d| {
@@ -533,50 +668,119 @@ where
                 })
                 .collect();
             ds.sort_by(|&a, &b| {
-                size[&a].cmp(&size[&b]).then(a.cmp(&b))
+                node2size[&a]
+                    .cmp(&node2size[&b])
+                    .then(a.cmp(&b))
             });
             for d in ds {
-                let delta: Delta = n_leaves
+                let delta: Delta<Token> = n_leaves
                     .difference(
                         &tree.leaves_under(d, config),
                     )
                     .copied()
                     .collect();
                 if !delta.is_empty() {
-                    cands.push(delta);
+                    reps.push(delta);
                 }
             }
-            // ANCHOR_END: perses-replace
-
-            // ANCHOR: perses-delete
-            // or, for a list, the deletion HDD also has -- handed to a fresh inner
-            // minimizer over the present elements, exactly as HDD does per level
-            if tree.nodes[&n].kind == Kind::List {
-                let elems: Configuration = tree.nodes[&n]
-                    .children
-                    .iter()
-                    .copied()
-                    .filter(|&c| tree.present(c, config))
-                    .collect();
-                let mut minimizer = (self.new_minimizer)();
-                for drop in minimizer.propose(&elems) {
-                    cands.push(
-                        drop.iter()
-                            .flat_map(|&id| {
-                                tree.leaves_under(
-                                    id, config,
-                                )
-                            })
-                            .collect(),
-                    );
-                }
-            }
-        } // end of `for n in nodes`
-        cands.into_iter()
-        // ANCHOR_END: perses-delete
+        }
+        reps
     }
+    // ANCHOR_END: perses-replace
+
+    // ANCHOR: perses-delete
+    /// Deletion candidates: drive the active `List`'s persisted
+    /// minimizer lazily, exactly as HDD drives one level's. Its present
+    /// elements go in a field so the returned iterator can borrow them;
+    /// `reduce` stops at the first success, so a stateful inner policy
+    /// advances only over confirmed failures.
+    fn deletions(
+        &mut self,
+        config: &Configuration<Token>,
+    ) -> impl Iterator<Item = Delta<Token>> {
+        let tree = self.tree;
+        self.active_elems = match self.active {
+            Some(a) => tree.elems_of(a, config),
+            None => Configuration::new(),
+        };
+        if self.minimizer.is_none() {
+            self.minimizer = Some((self.new_minimizer)());
+        }
+        let elems = &self.active_elems;
+        let minimizer = self.minimizer.as_mut().unwrap();
+        minimizer.propose(elems).map(
+            move |drop| -> Delta<Token> {
+                // dropping a subtree drops the tokens under it
+                drop.iter()
+                    .flat_map(|&id| {
+                        tree.leaves_under(id, config)
+                    })
+                    .collect()
+            },
+        )
+    }
+    // ANCHOR_END: perses-delete
 }
-// ANCHOR_END: perses
+
+impl<'t, F, P> Policy<Token> for Perses<'t, F, P>
+where
+    F: Fn() -> P,
+    P: Policy<NodeId>,
+{
+    // ANCHOR: perses-propose
+    fn propose(
+        &mut self,
+        config: &Configuration<Token>,
+    ) -> impl Iterator<Item = Delta<Token>> {
+        // biggest payoff first: order the live nodes by surviving size
+        let node2size = self.tree.subtree_sizes(config);
+        let nodes = self
+            .tree
+            .live_internal_largest_first(config, &node2size);
+        // one List at a time gets a persisted deletion minimizer
+        self.pick_active(&nodes);
+        // replacements first, then the active List's deletions
+        let reps =
+            self.replacements(&nodes, &node2size, config);
+        reps.into_iter().chain(self.deletions(config))
+    }
+    // ANCHOR_END: perses-propose
+
+    // ANCHOR: perses-on-reduced
+    fn on_reduced(
+        &mut self,
+        reduced: Option<&Configuration<Token>>,
+    ) -> bool {
+        let tree = self.tree;
+        match self.active {
+            Some(a) => {
+                // Forward the outcome to the active minimizer in
+                // its own space: the List's still-present elements.
+                let elems =
+                    reduced.map(|c| tree.elems_of(a, c));
+                let inner =
+                    self.minimizer.as_mut().unwrap();
+                let keep = inner.on_reduced(elems.as_ref());
+                if reduced.is_some() {
+                    // a reduction can expose deletions anywhere:
+                    // re-open every retired `List`
+                    self.done.clear();
+                    true
+                } else if keep {
+                    true // the inner policy isn't minimal yet
+                } else {
+                    // exhausted: retire it and move to the next.
+                    // Once every list is retired, `active` is None
+                    // and the next all-failing pass ends the run.
+                    self.done.insert(a);
+                    true
+                }
+            }
+            None => reduced.is_some(), // replacements-only pass
+        }
+    }
+    // ANCHOR_END: perses-on-reduced
+}
 
 // ANCHOR: valid
 /// Does the surviving program still parse against the grammar? Once *any* node is
@@ -669,18 +873,16 @@ fn parses(src: &str) -> bool {
 fn main() {
     // nested `if`s, with crash() at the bottom and noise() statements throughout
     let tree = std::rc::Rc::new(example_tree());
-    let all: Configuration = tree
-        .nodes
-        .iter()
-        .filter(|(_, n)| n.children.is_empty())
-        .map(|(&id, _)| id)
-        .collect();
+    // The configuration is every token of the program: units 0..n in
+    // source order. Tree nodes are bookkeeping; they never sit in it.
+    let all: Configuration<Token> =
+        (0..tree.token2leaf.len() as Token).collect();
 
-    let crash = tree
-        .nodes
+    let crash: Token = tree
+        .id2node
         .iter()
         .find(|(_, n)| n.label == "crash")
-        .map(|(&id, _)| id)
+        .map(|(id, _)| tree.leaf2token[id])
         .unwrap();
 
     // ANCHOR: make-oracle
@@ -691,7 +893,7 @@ fn main() {
             std::rc::Rc::new(std::cell::Cell::new(0u32));
         let counter = calls.clone();
         let otree = tree.clone();
-        let oracle = move |c: &Configuration| {
+        let oracle = move |c: &Configuration<Token>| {
             counter.set(counter.get() + 1);
             let src = render(&otree, c);
             let ok = c.contains(&crash) && parses(&src);
@@ -713,6 +915,9 @@ fn main() {
     };
     // ANCHOR_END: make-oracle
 
+    // Level 0 is safe here, unlike the HDD chapter's demo: `deletable`
+    // filters what HDD may delete, and the root is no List element, so a
+    // level-0 pass simply proposes nothing.
     let (hdd_oracle, hdd_calls) = make_oracle();
     let hdd = reduce(
         all.clone(),
@@ -729,10 +934,7 @@ fn main() {
     let perses = reduce(
         all.clone(),
         &perses_oracle,
-        Perses {
-            tree: &*tree,
-            new_minimizer: || DDMin,
-        },
+        Perses::new(&*tree, || DDMin),
     );
     println!(
         "Perses            => {:?}  in {} calls\n",
@@ -749,18 +951,20 @@ fn main() {
         render(&tree, &perses),
         "int main ( ) { crash ( ) ; }"
     );
+    assert_eq!(hdd_calls.get(), 9);
+    assert_eq!(perses_calls.get(), 3);
 }
 // ANCHOR_END: main
 
 /// A tiny builder so the nested example reads top-down instead of as a giant map.
 struct Builder {
-    nodes: HashMap<AtomicUnit, Node>,
-    next: AtomicUnit,
+    id2node: HashMap<NodeId, Node>,
+    next: u32,
 }
 impl Builder {
     fn new() -> Builder {
         Builder {
-            nodes: HashMap::new(),
+            id2node: HashMap::new(),
             next: 0,
         }
     }
@@ -768,11 +972,11 @@ impl Builder {
         &mut self,
         kind: Kind,
         label: &'static str,
-        children: Vec<AtomicUnit>,
-    ) -> AtomicUnit {
-        let id = self.next;
+        children: Vec<NodeId>,
+    ) -> NodeId {
+        let id = NodeId(self.next);
         self.next += 1;
-        self.nodes.insert(
+        self.id2node.insert(
             id,
             Node {
                 kind,
@@ -782,25 +986,22 @@ impl Builder {
         );
         id
     }
-    fn tok(&mut self, s: &'static str) -> AtomicUnit {
+    fn tok(&mut self, s: &'static str) -> NodeId {
         self.add(Kind::Token, s, vec![])
     }
     /// `name ( ) ;`  -- an expression statement.
-    fn call(&mut self, name: &'static str) -> AtomicUnit {
+    fn call(&mut self, name: &'static str) -> NodeId {
         let n = self.tok(name);
         let lp = self.tok("(");
         let rp = self.tok(")");
         let sc = self.tok(";");
         self.add(Kind::Call, "", vec![n, lp, rp, sc])
     }
-    fn list(
-        &mut self,
-        elems: Vec<AtomicUnit>,
-    ) -> AtomicUnit {
+    fn list(&mut self, elems: Vec<NodeId>) -> NodeId {
         self.add(Kind::List, "", elems)
     }
     /// `{ stmts }`
-    fn block(&mut self, list: AtomicUnit) -> AtomicUnit {
+    fn block(&mut self, list: NodeId) -> NodeId {
         let lb = self.tok("{");
         let rb = self.tok("}");
         self.add(Kind::Block, "", vec![lb, list, rb])
@@ -809,8 +1010,8 @@ impl Builder {
     fn if_stmt(
         &mut self,
         cond_name: &'static str,
-        body: AtomicUnit,
-    ) -> AtomicUnit {
+        body: NodeId,
+    ) -> NodeId {
         let kw = self.tok("if");
         let lp = self.tok("(");
         let c = self.tok(cond_name);
@@ -823,7 +1024,7 @@ impl Builder {
         )
     }
     /// `int main ( ) body`
-    fn func(&mut self, body: AtomicUnit) -> AtomicUnit {
+    fn func(&mut self, body: NodeId) -> NodeId {
         let t = self.tok("int");
         let m = self.tok("main");
         let lp = self.tok("(");
@@ -856,6 +1057,6 @@ fn example_tree() -> Tree {
     let l0 = b.list(vec![if1, n3, n4]);
     let body = b.block(l0);
     let root = b.func(body);
-    Tree::new(root, b.nodes)
+    Tree::new(root, b.id2node)
 }
 // ANCHOR_END: all

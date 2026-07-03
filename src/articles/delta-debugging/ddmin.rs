@@ -6,12 +6,17 @@
 use std::collections::HashSet;
 use std::iter::successors;
 
+// ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-type AtomicUnit = u32;
+/// Different inputs have different atomic units, so the framework fixes
+/// no concrete type: anything copyable, hashable, and orderable serves.
+trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+// ANCHOR_END: atomic-unit
 
 // ANCHOR: configuration
 /// The units we keep. Reduction shrinks this set.
-type Configuration = HashSet<AtomicUnit>;
+type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
 // ANCHOR: oracle
@@ -21,19 +26,19 @@ enum Verdict {
     NotInteresting, // does not trigger the bug or is invalid
 }
 
-type Oracle = dyn Fn(&Configuration) -> Verdict;
+type Oracle<U> = dyn Fn(&Configuration<U>) -> Verdict;
 // ANCHOR_END: oracle
 
 // ANCHOR: loop
 /// A candidate removal set
-type Delta = HashSet<AtomicUnit>;
+type Delta<U> = HashSet<U>;
 
 /// The main loop of delta debugging
-fn reduce<P: Policy>(
-    units: Configuration,
-    oracle: &Oracle,
+fn reduce<U: AtomicUnit, P: Policy<U>>(
+    units: Configuration<U>,
+    oracle: &Oracle<U>,
     mut policy: P,
-) -> Configuration {
+) -> Configuration<U> {
     let mut config = units;
     loop {
         let mut reduced = None;
@@ -68,12 +73,12 @@ fn reduce<P: Policy>(
 // ANCHOR_END: loop
 
 // ANCHOR: policy
-trait Policy {
+trait Policy<U: AtomicUnit> {
     /// Generate candidate removal sets *lazily*.
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta>;
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>>;
 
     /// React to a reduction pass.
     /// `reduced` is `Some` if the pass removed anything,
@@ -82,7 +87,7 @@ trait Policy {
     /// The default stops at the fixpoint.
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<U>>,
     ) -> bool {
         reduced.is_some()
     }
@@ -91,11 +96,11 @@ trait Policy {
 
 // ANCHOR: partition
 /// Split `config` into at most `n` roughly-equal, disjoint subsets.
-fn partition(
-    config: &Configuration,
+fn partition<U: AtomicUnit>(
+    config: &Configuration<U>,
     n: usize,
-) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> =
+) -> Vec<Delta<U>> {
+    let mut items: Vec<U> =
         config.iter().copied().collect();
     items.sort_unstable(); // deterministic chunks for a reproducible demo
     let len = items.len();
@@ -113,11 +118,11 @@ fn partition(
 // ANCHOR: ddmin
 struct DDMin; // no state — granularity lives inside one `propose` call
 
-impl Policy for DDMin {
+impl<U: AtomicUnit> Policy<U> for DDMin {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>> {
         let units = config.len();
 
         // Granularities n = 2, 4, 8, ... up to `units`
@@ -142,14 +147,14 @@ impl Policy for DDMin {
 fn main() {
     println!("minimizing the set 1..=8; interesting iff it keeps 2 and 7");
 
-    let input: Configuration = (1..=8).collect();
+    let input: Configuration<u32> = (1..=8).collect();
 
     let oracle_calls =
         std::rc::Rc::new(std::cell::Cell::new(0u32));
     let counter = oracle_calls.clone();
-    let keeps_2_and_7 = move |c: &Configuration| {
+    let keeps_2_and_7 = move |c: &Configuration<u32>| {
         counter.set(counter.get() + 1);
-        let mut probe: Vec<AtomicUnit> =
+        let mut probe: Vec<u32> =
             c.iter().copied().collect();
         probe.sort_unstable();
         let verdict = if c.contains(&2) && c.contains(&7) {
@@ -176,6 +181,7 @@ fn main() {
         oracle_calls.get()
     );
     assert_eq!(result, [2, 7]);
+    assert_eq!(oracle_calls.get(), 33);
 }
 // ANCHOR_END: main
 // ANCHOR_END: all

@@ -47,18 +47,19 @@ essential, and its probability jumps straight to `1`.
 
 ```rust,edition2024
 # use std::collections::HashMap;
-# type AtomicUnit = u32;
+# trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+# impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 {{#include probdd.rs:update}}
 #
-# fn show(probs: &HashMap<AtomicUnit, f64>) -> Vec<String> {
-#     let mut v: Vec<(AtomicUnit, f64)> =
+# fn show(probs: &HashMap<u32, f64>) -> Vec<String> {
+#     let mut v: Vec<(u32, f64)> =
 #         probs.iter().map(|(&u, &p)| (u, p)).collect();
 #     v.sort_by_key(|&(u, _)| u);
 #     v.iter().map(|(u, p)| format!("{u}:{p:.3}")).collect()
 # }
 #
 # fn main() {
-#     let mut probs: HashMap<AtomicUnit, f64> =
+#     let mut probs: HashMap<u32, f64> =
 #         [(1, 0.1), (2, 0.1), (3, 0.1)].into_iter().collect();
 #     println!("prior:                 {:?}", show(&probs));
 #     bayes_update(&mut probs, &[1, 2, 3]);
@@ -116,7 +117,7 @@ Now, let's see how ProbDD works on the same example as DDMin.
 > [!NOTE]
 > How many oracle calls did DDMin and ProbDD make respectively?
 >
-> 33 v.s. 12.
+> 33 v.s. 12. <!-- kept in sync with the asserts in ddmin.rs/probdd.rs main -->
 
 [DDMin]: https://dl.acm.org/doi/10.1109/32.988498
 [HDD]: https://dl.acm.org/doi/10.1145/1134285.1134307

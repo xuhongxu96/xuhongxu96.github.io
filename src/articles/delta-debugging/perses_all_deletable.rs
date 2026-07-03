@@ -10,11 +10,18 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::iter::successors;
 
-/// An indivisible piece of the input: here, a node of the parse tree.
-type AtomicUnit = u32;
+/// An indivisible piece of the input: a char, token, line, etc.
+/// Different inputs have different atomic units, so the framework fixes
+/// no concrete type: anything copyable, hashable, and orderable serves.
+trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
+impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+
+/// This chapter's atomic unit: a token of the program, identified by
+/// its position in source order (0, 1, 2, ...).
+type Token = u32;
 
 /// The units we keep. Reduction shrinks this set.
-type Configuration = HashSet<AtomicUnit>;
+type Configuration<U> = HashSet<U>;
 
 #[derive(PartialEq)]
 enum Verdict {
@@ -22,17 +29,17 @@ enum Verdict {
     NotInteresting, // does not trigger the bug or is invalid
 }
 
-type Oracle = dyn Fn(&Configuration) -> Verdict;
+type Oracle<U> = dyn Fn(&Configuration<U>) -> Verdict;
 
 /// A candidate removal set
-type Delta = HashSet<AtomicUnit>;
+type Delta<U> = HashSet<U>;
 
 /// The main loop of delta debugging
-fn reduce<P: Policy>(
-    units: Configuration,
-    oracle: &Oracle,
+fn reduce<U: AtomicUnit, P: Policy<U>>(
+    units: Configuration<U>,
+    oracle: &Oracle<U>,
     mut policy: P,
-) -> Configuration {
+) -> Configuration<U> {
     let mut config = units;
     loop {
         let mut reduced = None;
@@ -65,28 +72,32 @@ fn reduce<P: Policy>(
     config
 }
 
-trait Policy {
+trait Policy<U: AtomicUnit> {
     /// Generate candidate removal sets *lazily*.
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta>;
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>>;
 
     /// React to a reduction pass.
+    /// `reduced` is `Some` if the pass removed anything,
+    /// `None` if it made no progress.
+    /// Return `true` to keep going, `false` to stop.
+    /// The default stops at the fixpoint.
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<U>>,
     ) -> bool {
         reduced.is_some()
     }
 }
 
 /// Split `config` into at most `n` roughly-equal, disjoint subsets.
-fn partition(
-    config: &Configuration,
+fn partition<U: AtomicUnit>(
+    config: &Configuration<U>,
     n: usize,
-) -> Vec<Delta> {
-    let mut items: Vec<AtomicUnit> =
+) -> Vec<Delta<U>> {
+    let mut items: Vec<U> =
         config.iter().copied().collect();
     items.sort_unstable();
     let len = items.len();
@@ -102,11 +113,11 @@ fn partition(
 
 struct DDMin;
 
-impl Policy for DDMin {
+impl<U: AtomicUnit> Policy<U> for DDMin {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<U>,
+    ) -> impl Iterator<Item = Delta<U>> {
         let units = config.len();
         successors(Some(2), move |&n| {
             (n < units).then(|| (2 * n).min(units))
@@ -123,66 +134,96 @@ impl Policy for DDMin {
     }
 }
 
-/// A parse tree: every token is a leaf, so concatenating the surviving leaves
+/// Identifies a node of the parse tree. *Not* an atomic unit: internal
+/// nodes never appear in a Configuration. A leaf (token) node corresponds
+/// to exactly one atomic unit: its source-order index, `tree.leaf2token[&id]`.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
+struct NodeId(u32);
+
+/// A parse tree: every token is a leaf, so concatenating the surviving tokens
 /// *is* the program.
 struct Node {
     label: &'static str, // the source text, for a leaf
-    children: Vec<AtomicUnit>,
+    children: Vec<NodeId>,
 }
 
 struct Tree {
-    nodes: HashMap<AtomicUnit, Node>,
-    root: AtomicUnit,
-    depth: HashMap<AtomicUnit, usize>,
-    parent: HashMap<AtomicUnit, AtomicUnit>,
+    id2node: HashMap<NodeId, Node>,
+    root: NodeId,
+    node2depth: HashMap<NodeId, usize>,
+    node2parent: HashMap<NodeId, NodeId>,
     max_depth: usize,
+    leaf2token: HashMap<NodeId, Token>, // a leaf's token is its source-order index
+    token2leaf: HashMap<Token, NodeId>, // inverse of `leaf2token`
 }
 
 impl Tree {
     fn new(
-        root: AtomicUnit,
-        nodes: HashMap<AtomicUnit, Node>,
+        root: NodeId,
+        id2node: HashMap<NodeId, Node>,
     ) -> Tree {
-        let mut depth = HashMap::new();
-        let mut parent = HashMap::new();
+        let mut node2depth = HashMap::new();
+        let mut node2parent = HashMap::new();
         let mut max_depth = 0;
         let mut frontier = vec![root];
         let mut d = 0;
         while !frontier.is_empty() {
             let mut next = Vec::new();
             for &id in &frontier {
-                depth.insert(id, d);
+                node2depth.insert(id, d);
                 max_depth = d;
-                for &c in &nodes[&id].children {
-                    parent.insert(c, id);
+                for &c in &id2node[&id].children {
+                    node2parent.insert(c, id);
                     next.push(c);
                 }
             }
             frontier = next;
             d += 1;
         }
+        // DFS in child order (= source order): the k-th leaf from the left
+        // is the token with source-order index k, i.e. atomic unit k.
+        let mut leaf2token = HashMap::new();
+        let mut token2leaf = HashMap::new();
+        let mut stack = vec![root];
+        while let Some(id) = stack.pop() {
+            let node = &id2node[&id];
+            if node.children.is_empty() {
+                let u = token2leaf.len() as Token;
+                leaf2token.insert(id, u);
+                token2leaf.insert(u, id);
+            } else {
+                // push in reverse so children pop left-to-right
+                stack.extend(
+                    node.children.iter().rev().copied(),
+                );
+            }
+        }
         Tree {
-            nodes,
+            id2node,
             root,
-            depth,
-            parent,
+            node2depth,
+            node2parent,
             max_depth,
+            leaf2token,
+            token2leaf,
         }
     }
 
-    /// The present leaves in the subtree rooted at `id` (for a leaf, itself).
+    /// Node space -> unit space: the surviving atomic units in the subtree
+    /// rooted at `id` (for a leaf, its own token if kept).
     fn leaves_under(
         &self,
-        id: AtomicUnit,
-        present: &Configuration,
-    ) -> Delta {
+        id: NodeId,
+        present: &Configuration<Token>,
+    ) -> Delta<Token> {
         let mut out = Delta::new();
         let mut stack = vec![id];
         while let Some(n) = stack.pop() {
-            let node = &self.nodes[&n];
+            let node = &self.id2node[&n];
             if node.children.is_empty() {
-                if present.contains(&n) {
-                    out.insert(n);
+                let u = self.leaf2token[&n];
+                if present.contains(&u) {
+                    out.insert(u);
                 }
             } else {
                 stack.extend(node.children.iter().copied());
@@ -192,18 +233,18 @@ impl Tree {
     }
 
     // ANCHOR: alive-all
-    /// The level-`level` subtrees still holding a leaf -- the candidates HDD may
-    /// delete at this level. Every node but the root is eligible (the grammar
-    /// restriction to `List` elements is lifted).
+    /// The level-`level` subtrees still holding a token -- the candidates HDD
+    /// may delete at this level. Every node but the root is eligible (the
+    /// grammar restriction to `List` elements is lifted).
     fn alive_level_nodes(
         &self,
         level: usize,
-        present: &Configuration,
-    ) -> Configuration {
+        present: &Configuration<Token>,
+    ) -> Configuration<NodeId> {
         present
             .iter()
-            .copied()
-            .filter(|leaf| self.depth[leaf] >= level)
+            .map(|&u| self.token2leaf[&u])
+            .filter(|leaf| self.node2depth[leaf] >= level)
             .map(|leaf| self.ancestor_at(leaf, level))
             .filter(|&node| node != self.root)
             .collect()
@@ -212,42 +253,31 @@ impl Tree {
 
     fn ancestor_at(
         &self,
-        mut id: AtomicUnit,
+        mut id: NodeId,
         level: usize,
-    ) -> AtomicUnit {
-        while self.depth[&id] > level {
-            id = self.parent[&id];
+    ) -> NodeId {
+        while self.node2depth[&id] > level {
+            id = self.node2parent[&id];
         }
         id
     }
+
 }
 
-/// Render a configuration by concatenating the surviving leaf tokens in source
-/// order -- for a parse tree, that *is* the program.
-fn render(tree: &Tree, present: &Configuration) -> String {
-    fn go(
-        tree: &Tree,
-        id: AtomicUnit,
-        present: &Configuration,
-        out: &mut String,
-    ) {
-        let node = &tree.nodes[&id];
-        if node.children.is_empty() {
-            if present.contains(&id) {
-                if !out.is_empty() {
-                    out.push(' ');
-                }
-                out.push_str(node.label);
-            }
-        } else {
-            for &c in &node.children {
-                go(tree, c, present, out);
-            }
-        }
-    }
-    let mut out = String::new();
-    go(tree, tree.root, present, &mut out);
-    out
+/// Render a configuration by concatenating the surviving tokens in source
+/// order -- for a parse tree, that *is* the program. Because a unit is its
+/// token's source-order index, "in source order" is just ascending units.
+fn render(tree: &Tree, present: &Configuration<Token>) -> String {
+    let mut units: Vec<Token> =
+        present.iter().copied().collect();
+    units.sort_unstable();
+    units
+        .iter()
+        .map(|&u| {
+            tree.id2node[&tree.token2leaf[&u]].label
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 /// HDD walks the tree level by level and lets a fresh list-minimizer drop the
@@ -257,13 +287,13 @@ struct Hdd<'t, F, P> {
     new_minimizer: F,
     level: usize,
     minimizer: Option<P>, // The inner minimizer for the current level
-    level_subtrees: Configuration, // a field, not a local, so `propose`'s returned iterator can borrow it
+    level_subtrees: Configuration<NodeId>, // a field, not a local, so `propose`'s returned iterator can borrow it
 }
 
 impl<'t, F, P> Hdd<'t, F, P>
 where
     F: Fn() -> P,
-    P: Policy,
+    P: Policy<NodeId>,
 {
     fn new(
         tree: &'t Tree,
@@ -280,15 +310,15 @@ where
     }
 }
 
-impl<'t, F, P> Policy for Hdd<'t, F, P>
+impl<'t, F, P> Policy<Token> for Hdd<'t, F, P>
 where
     F: Fn() -> P,
-    P: Policy,
+    P: Policy<NodeId>,
 {
     fn propose(
         &mut self,
-        config: &Configuration,
-    ) -> impl Iterator<Item = Delta> {
+        config: &Configuration<Token>,
+    ) -> impl Iterator<Item = Delta<Token>> {
         let tree = self.tree;
         let level = self.level;
         // Build this level's minimizer on its first pass. `on_reduced` clears it
@@ -304,7 +334,7 @@ where
         // Lazily: `reduce` stops pulling at the first success, so a stateful
         // inner policy only ever advances its model over *confirmed* failures.
         minimizer.propose(subtrees).map(
-            move |drop| -> Delta {
+            move |drop| -> Delta<Token> {
                 drop.iter()
                     .flat_map(|&id| {
                         tree.leaves_under(id, config)
@@ -316,16 +346,24 @@ where
 
     fn on_reduced(
         &mut self,
-        reduced: Option<&Configuration>,
+        reduced: Option<&Configuration<Token>>,
     ) -> bool {
-        if reduced.is_some() {
-            return true; // progress at this level; keep going
+        let (tree, level) = (self.tree, self.level);
+        // Report the pass outcome to the inner minimizer
+        // in its own space: this level's still-live
+        // subtrees, or `None` when nothing was found.
+        // Driving the inner policy through its full
+        // protocol keeps HDD agnostic to the inner policy.
+        let subtrees = reduced
+            .map(|c| tree.alive_level_nodes(level, c));
+        let inner = self.minimizer.as_mut().unwrap();
+        if inner.on_reduced(subtrees.as_ref()) {
+            return true; // inner isn't minimal here yet
         }
-        // A whole `propose` stream failed: this level is minimal, so descend and
-        // rebuild the minimizer for the next one.
+        // The inner policy is minimal: descend and rebuild.
         self.level += 1;
         self.minimizer = None;
-        self.level <= self.tree.max_depth
+        self.level <= tree.max_depth
     }
 }
 
@@ -418,18 +456,16 @@ fn parses(src: &str) -> bool {
 fn main() {
     // nested `if`s, with crash() at the bottom and noise() statements throughout
     let tree = std::rc::Rc::new(example_tree());
-    let all: Configuration = tree
-        .nodes
-        .iter()
-        .filter(|(_, n)| n.children.is_empty())
-        .map(|(&id, _)| id)
-        .collect();
+    // The configuration is every token of the program: units 0..n in
+    // source order. Tree nodes are bookkeeping; they never sit in it.
+    let all: Configuration<Token> =
+        (0..tree.token2leaf.len() as Token).collect();
 
-    let crash = tree
-        .nodes
+    let crash: Token = tree
+        .id2node
         .iter()
         .find(|(_, n)| n.label == "crash")
-        .map(|(&id, _)| id)
+        .map(|(id, _)| tree.leaf2token[id])
         .unwrap();
 
     // Interesting iff the program still contains crash() *and* still parses.
@@ -437,7 +473,7 @@ fn main() {
         std::rc::Rc::new(std::cell::Cell::new(0u32));
     let counter = calls.clone();
     let otree = tree.clone();
-    let oracle = move |c: &Configuration| {
+    let oracle = move |c: &Configuration<Token>| {
         counter.set(counter.get() + 1);
         let src = render(&otree, c);
         let ok = c.contains(&crash) && parses(&src);
@@ -452,8 +488,11 @@ fn main() {
         }
     };
 
-    let hdd_all =
-        reduce(all, &oracle, Hdd::new(&*tree, 0, || DDMin));
+    let hdd_all = reduce(
+        all,
+        &oracle,
+        Hdd::new(&*tree, 0, || DDMin),
+    );
     println!(
         "HDD (all deletable) => {:?}  in {} calls",
         render(&tree, &hdd_all),
@@ -465,50 +504,48 @@ fn main() {
         render(&tree, &hdd_all),
         "int main ( ) { crash ( ) ; }"
     );
+    assert_eq!(calls.get(), 105);
 }
 // ANCHOR_END: main
 
 /// A tiny builder so the nested example reads top-down instead of as a giant map.
 struct Builder {
-    nodes: HashMap<AtomicUnit, Node>,
-    next: AtomicUnit,
+    id2node: HashMap<NodeId, Node>,
+    next: u32,
 }
 impl Builder {
     fn new() -> Builder {
         Builder {
-            nodes: HashMap::new(),
+            id2node: HashMap::new(),
             next: 0,
         }
     }
     fn add(
         &mut self,
         label: &'static str,
-        children: Vec<AtomicUnit>,
-    ) -> AtomicUnit {
-        let id = self.next;
+        children: Vec<NodeId>,
+    ) -> NodeId {
+        let id = NodeId(self.next);
         self.next += 1;
-        self.nodes.insert(id, Node { label, children });
+        self.id2node.insert(id, Node { label, children });
         id
     }
-    fn tok(&mut self, s: &'static str) -> AtomicUnit {
+    fn tok(&mut self, s: &'static str) -> NodeId {
         self.add(s, vec![])
     }
     /// `name ( ) ;`  -- an expression statement.
-    fn call(&mut self, name: &'static str) -> AtomicUnit {
+    fn call(&mut self, name: &'static str) -> NodeId {
         let n = self.tok(name);
         let lp = self.tok("(");
         let rp = self.tok(")");
         let sc = self.tok(";");
         self.add("", vec![n, lp, rp, sc])
     }
-    fn list(
-        &mut self,
-        elems: Vec<AtomicUnit>,
-    ) -> AtomicUnit {
+    fn list(&mut self, elems: Vec<NodeId>) -> NodeId {
         self.add("", elems)
     }
     /// `{ stmts }`
-    fn block(&mut self, list: AtomicUnit) -> AtomicUnit {
+    fn block(&mut self, list: NodeId) -> NodeId {
         let lb = self.tok("{");
         let rb = self.tok("}");
         self.add("", vec![lb, list, rb])
@@ -517,8 +554,8 @@ impl Builder {
     fn if_stmt(
         &mut self,
         cond_name: &'static str,
-        body: AtomicUnit,
-    ) -> AtomicUnit {
+        body: NodeId,
+    ) -> NodeId {
         let kw = self.tok("if");
         let lp = self.tok("(");
         let c = self.tok(cond_name);
@@ -527,7 +564,7 @@ impl Builder {
         self.add("", vec![kw, lp, cond, rp, body])
     }
     /// `int main ( ) body`
-    fn func(&mut self, body: AtomicUnit) -> AtomicUnit {
+    fn func(&mut self, body: NodeId) -> NodeId {
         let t = self.tok("int");
         let m = self.tok("main");
         let lp = self.tok("(");
@@ -560,5 +597,5 @@ fn example_tree() -> Tree {
     let l0 = b.list(vec![if1, n3, n4]);
     let body = b.block(l0);
     let root = b.func(body);
-    Tree::new(root, b.nodes)
+    Tree::new(root, b.id2node)
 }

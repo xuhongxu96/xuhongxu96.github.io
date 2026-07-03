@@ -628,11 +628,20 @@ where
 
     // ANCHOR: perses-active
     /// Pick the *active* `List`: the largest live one not yet retired.
-    /// Recomputed every pass, so a collapse that kills a node never
-    /// strands the driver on it. Switching away from a node discards
-    /// its minimizer.
+    /// Once picked, the driver *sticks with it* until its minimizer
+    /// declares it minimal---switching away mid-run would discard what
+    /// the inner policy has learned. Only retirement, or a collapse
+    /// that kills the list outright, moves the choice on (so a kill
+    /// still never strands the driver).
     fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
+        if let Some(a) = self.active {
+            if !self.done.contains(&a)
+                && nodes.contains(&a)
+            {
+                return; // still minimizing the current list
+            }
+        }
         let active = nodes.iter().copied().find(|&id| {
             tree.id2node[&id].kind == Kind::List
                 && !self.done.contains(&id)

@@ -663,8 +663,17 @@ where
     }
 
     /// Pick the *active* `List`: the largest live one not yet retired.
+    /// Sticky: keep the current list until its minimizer declares it
+    /// minimal or a collapse kills it (see the Perses page).
     fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
+        if let Some(a) = self.active {
+            if !self.done.contains(&a)
+                && nodes.contains(&a)
+            {
+                return; // still minimizing the current list
+            }
+        }
         let active = nodes.iter().copied().find(|&id| {
             tree.id2node[&id].kind == Kind::List
                 && !self.done.contains(&id)
@@ -1059,32 +1068,41 @@ impl Policy<Token> for TPdd<'_> {
 
 // ANCHOR: main
 fn main() {
-    // The exact same nested-if tree the Perses page built: crash() at the
-    // bottom of three ifs, one noise() call at every level.
+    // The scattered bug: reproducing it needs three cooperating calls,
+    // far apart -- setup() at the top level, corrupt() one nest down, and
+    // crash() at the bottom -- with noise everywhere in between.
     let tree = std::rc::Rc::new(example_tree());
     // The configuration is every token of the program: units 0..n in
     // source order. Tree nodes are bookkeeping; they never sit in it.
     let all: Configuration<Token> =
         (0..tree.token2leaf.len() as Token).collect();
 
-    let crash: Token = tree
-        .id2node
+    // The three scattered essentials, found by label.
+    let needed: Vec<Token> = ["setup", "corrupt", "crash"]
         .iter()
-        .find(|(_, n)| n.label == "crash")
-        .map(|(id, _)| tree.leaf2token[id])
-        .unwrap();
+        .map(|want| {
+            tree.id2node
+                .iter()
+                .find(|(_, n)| n.label == *want)
+                .map(|(id, _)| tree.leaf2token[id])
+                .unwrap()
+        })
+        .collect();
 
     // ANCHOR: make-oracle
-    // Interesting iff the program still contains crash() *and* still parses.
+    // Interesting iff *all three* scattered calls survive and the
+    // program still parses.
     let make_oracle = || {
         let calls =
             std::rc::Rc::new(std::cell::Cell::new(0u32));
         let counter = calls.clone();
         let otree = tree.clone();
+        let needed = needed.clone();
         let oracle = move |c: &Configuration<Token>| {
             counter.set(counter.get() + 1);
             let src = render(&otree, c);
-            let ok = c.contains(&crash) && parses(&src);
+            let ok = needed.iter().all(|t| c.contains(t))
+                && parses(&src);
             println!(
                 "  test {src:?}  ->  {}",
                 if ok { "keep" } else { "reject" }
@@ -1106,7 +1124,7 @@ fn main() {
         Hdd::new(&*tree, 0, || DDMin),
     );
     println!(
-        "HDD        => {:?}  in {} calls\n",
+        "HDD           => {:?}  in {} calls\n",
         render(&tree, &hdd),
         hdd_calls.get()
     );
@@ -1121,7 +1139,7 @@ fn main() {
         }),
     );
     println!(
-        "HDD+ProbDD => {:?}  in {} calls\n",
+        "HDD+ProbDD    => {:?}  in {} calls\n",
         render(&tree, &hddp),
         hddp_calls.get()
     );
@@ -1133,9 +1151,24 @@ fn main() {
         Perses::new(&*tree, || DDMin),
     );
     println!(
-        "Perses     => {:?}  in {} calls\n",
+        "Perses        => {:?}  in {} calls\n",
         render(&tree, &perses),
         perses_calls.get()
+    );
+
+    let (pp_oracle, pp_calls) = make_oracle();
+    let pp = reduce(
+        all.clone(),
+        &pp_oracle,
+        Perses::new(&*tree, || ProbDD {
+            unit2prob: HashMap::new(),
+            p0: 0.1,
+        }),
+    );
+    println!(
+        "Perses+ProbDD => {:?}  in {} calls\n",
+        render(&tree, &pp),
+        pp_calls.get()
     );
 
     let (tpdd_oracle, tpdd_calls) = make_oracle();
@@ -1145,28 +1178,30 @@ fn main() {
         TPdd::new(&*tree, 0.5),
     );
     println!(
-        "T-PDD      => {:?}  in {} calls\n",
+        "T-PDD         => {:?}  in {} calls\n",
         render(&tree, &tpdd),
         tpdd_calls.get()
     );
 
-    // The deleters bottom out at the mandatory `if` nesting; only Perses's
-    // replacement move can collapse it.
-    let nested =
-        "int main ( ) { if ( c1 ) { if ( c2 ) { if ( c3 ) { crash ( ) ; } } } }";
-    assert_eq!(render(&tree, &hdd), nested);
-    assert_eq!(render(&tree, &hddp), nested);
-    assert_eq!(render(&tree, &tpdd), nested);
+    // The three deleters keep the if nest (they can only delete);
+    // Perses's replacement strips it -- at a price the page discusses.
+    let kept = "int main ( ) { setup ( ) ; if ( c1 ) { corrupt ( ) ; if ( c2 ) { crash ( ) ; } } }";
+    assert_eq!(render(&tree, &hdd), kept);
+    assert_eq!(render(&tree, &hddp), kept);
+    assert_eq!(render(&tree, &tpdd), kept);
     assert_eq!(
         render(&tree, &perses),
-        "int main ( ) { crash ( ) ; }"
+        "int main ( ) { setup ( ) ; { corrupt ( ) ; crash ( ) ; } }"
     );
-    assert_eq!(hdd_calls.get(), 9);
-    assert_eq!(hddp_calls.get(), 14);
-    assert_eq!(perses_calls.get(), 3);
-    assert_eq!(tpdd_calls.get(), 9);
+    assert_eq!(render(&tree, &pp), render(&tree, &perses));
+    assert_eq!(hdd_calls.get(), 12);
+    assert_eq!(hddp_calls.get(), 13);
+    assert_eq!(perses_calls.get(), 64);
+    assert_eq!(pp_calls.get(), 63);
+    assert_eq!(tpdd_calls.get(), 8);
 }
 // ANCHOR_END: main
+
 
 /// A tiny builder so the nested example reads top-down instead of as a giant map.
 struct Builder {
@@ -1246,25 +1281,22 @@ fn example_tree() -> Tree {
     // innermost: { crash(); noise(); }
     let crash = b.call("crash");
     let n0 = b.call("noise");
-    let l3 = b.list(vec![crash, n0]);
-    let blk3 = b.block(l3);
-    let if3 = b.if_stmt("c3", blk3);
-    // { if (c3) {...} noise(); }
-    let n1 = b.call("noise");
-    let l2 = b.list(vec![if3, n1]);
+    let l2 = b.list(vec![crash, n0]);
     let blk2 = b.block(l2);
     let if2 = b.if_stmt("c2", blk2);
-    // { if (c2) {...} noise(); }
-    let n2 = b.call("noise");
-    let l1 = b.list(vec![if2, n2]);
+    // { corrupt(); if (c2) {...} noise(); }
+    let corrupt = b.call("corrupt");
+    let n1 = b.call("noise");
+    let l1 = b.list(vec![corrupt, if2, n1]);
     let blk1 = b.block(l1);
     let if1 = b.if_stmt("c1", blk1);
-    // int main() { if (c1) {...} noise(); noise(); }
-    let n3 = b.call("noise");
-    let n4 = b.call("noise");
-    let l0 = b.list(vec![if1, n3, n4]);
+    // int main() { setup(); if (c1) {...} noise(); }
+    let setup = b.call("setup");
+    let n2 = b.call("noise");
+    let l0 = b.list(vec![setup, if1, n2]);
     let body = b.block(l0);
     let root = b.func(body);
     Tree::new(root, b.id2node)
 }
 // ANCHOR_END: all
+

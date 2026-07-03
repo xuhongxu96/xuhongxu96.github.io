@@ -345,9 +345,11 @@ oracle accepts on the demo, collapsing all three `if`s in one test.
 across passes (that is how DDMin escalates granularity and how ProbDD
 learns), and state needs a home. Perses keeps **one** persisted minimizer,
 attached to the *active* `List`: the largest live list not yet retired.
-Because the choice is recomputed every pass, a collapse that kills the
-active list never strands the driver---the next pass simply picks the
-largest survivor:
+Once picked, the driver sticks with that list until the minimizer declares
+it minimal---switching mid-run would throw away everything the inner
+policy has learned about it. Only two things move the choice on:
+retirement, or a collapse that kills the list outright (so a kill still
+never strands the driver---the next pass picks the largest survivor):
 
 ```rust,ignore
 {{#include perses.rs:perses-active}}

@@ -11,7 +11,10 @@ use std::iter::successors;
 /// Different inputs have different atomic units, so the framework fixes
 /// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
-impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
+impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit
+    for T
+{
+}
 // ANCHOR_END: atomic-unit
 
 // ANCHOR: configuration
@@ -131,11 +134,13 @@ impl<U: AtomicUnit> Policy<U> for DDMin {
         })
         .flat_map(move |n| {
             let subsets = partition(config, n); // n roughly-equal subsets
-                                                // First every δ = ∇ᵢ (keep only Δᵢ), then every δ = Δᵢ (drop Δᵢ).
             let keep_only = subsets
                 .clone()
                 .into_iter()
                 .map(move |d| config - &d);
+
+            // First every δ = ∇ᵢ (keep only Δᵢ),
+            // then every δ = Δᵢ (drop Δᵢ).
             keep_only.chain(subsets)
         })
         .filter(|delta| !delta.is_empty())

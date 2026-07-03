@@ -15,6 +15,11 @@ reduction. Failed removals then inform the model to avoid similar attempts.
 Give every unit a probability that it is **essential**---that it survives into
 the minimized result. Everything starts at a small prior `p0`.
 
+The model only learns from *failed* removals; a success just shrinks the
+configuration behind its back. `sync` realigns them each round: forget
+removed units---or we would propose them forever---and seed new ones at
+`p0` (that's the first round, where the model starts empty).
+
 ```rust,ignore
 {{#include probdd.rs:model}}
 ```

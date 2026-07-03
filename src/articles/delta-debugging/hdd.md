@@ -84,12 +84,12 @@ ancestor at level `L`. If units `{0,...,5}` survive, level 1 holds
 
 HDD's plan is to reuse a plain list-minimizer at every level: hand it the
 set of live level-`L` subtrees and let it discover which of them are
-removable. And nothing stands in the way, because an *atomic unit is
-relative to the reduction problem*. For the inner minimizer's
-problem---shrink this level's list of subtrees---the indivisible pieces
-are the subtrees themselves, so `NodeId` serves as its atomic unit: the
-inner minimizer runs as a `Policy<NodeId>`, and `DDMin`/`ProbDD` satisfy
-it unchanged.
+removable. A subtree is hardly "atomic"---it holds many tokens---but
+atomicity is *relative to the reduction problem*: it means whatever pieces
+that problem never splits. The inner problem---shrink this level's list of
+subtrees---only keeps or drops whole subtrees, so there `NodeId` is the
+atomic unit: the inner minimizer runs as a `Policy<NodeId>`, and
+`DDMin`/`ProbDD` satisfy it unchanged.
 
 HDD itself is a `Policy<Token>` toward the `reduce` loop: whatever the
 inner policy decides in node space is expanded through `leaves_under`
@@ -154,7 +154,8 @@ oracle             still crashes  =>  reduced
 > Because HDD only ever removes whole subtrees, every candidate it hands the
 > oracle is a syntactically valid tree. The original [DDMin] on a flattened
 > token list would spend most of its tests on inputs that don't even parse;
-> HDD never wastes a test on a parse error.
+> HDD never wastes a test on a parse error. (Measured in
+> [The Flat Baseline](#the-flat-baseline) below.)
 
 > [!NOTE]
 > The demos start HDD at **level 1**, not level 0. Level 0 holds only the
@@ -209,6 +210,49 @@ count.
 > The hierarchy and the statistics never talk. Closing that gap would
 > need a policy that reasons across the whole tree at once,
 > a different problem than the one explored here.
+
+## The Flat Baseline
+
+How much did the tree actually buy? Let's strip it away and measure, with
+plain [DDMin] and [ProbDD] as the policy---each is already a
+`Policy<Token>`, so no adapter is needed. But stripping the tree changes
+what a "token" is. The 14 units above were *statements*---a grouping the
+tree gave us. A flat minimizer sees the raw token stream, keywords, braces,
+and semicolons included: 58 units, most of them punctuation.
+
+```rust,ignore
+{{#include hdd_flat.rs:tokens}}
+```
+
+The oracle changes too. HDD removed only whole subtrees, so every candidate
+parsed by construction, and "interesting" could reduce to "does `crash()`
+survive". A flat delta can drop a `{` and keep its `}`, so the oracle must
+now parse each candidate before it can possibly crash:
+
+```rust,ignore
+{{#include hdd_flat.rs:parser}}
+```
+
+A candidate is interesting iff it parses *and* the four-token call
+`crash ( ) ;` survives whole.
+
+```rust,edition2024
+{{#rustdoc_include hdd_flat.rs:main}}
+```
+
+> [!NOTE]
+> Flat DDMin: **253** calls, 249 of them rejected as parse errors
+> (HDD + DDMin: **11**, parse errors impossible). Flat ProbDD: **80**
+> calls, 68 parse errors (HDD + ProbDD: **15**).
+> <!-- kept in sync with the asserts in hdd_flat.rs main -->
+>
+> And the wasted calls didn't even buy a clean result: chunk boundaries
+> that ignore syntax leave junk like `fn f3 { s ; }` (DDMin) or empty
+> functions (ProbDD) that no *single* token removal can shrink further.
+
+This is the tree's real payoff. It groups tokens into units worth removing
+together, and it makes every candidate valid by construction---a flat
+minimizer must rediscover both, one rejected oracle call at a time.
 
 ## On Minimality
 

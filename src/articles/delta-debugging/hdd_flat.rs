@@ -417,5 +417,25 @@ fn main() {
             if run == 0 { 249 } else { 68 }
         );
     }
+
+    // Token deltas are strictly more expressive than subtree deltas:
+    // stripping the `if guard { ... }` wrapper -- tokens 5, 6, 7 and the
+    // matching `}` at 14 -- keeps a valid, crashing program that HDD can
+    // never reach. Neither blind policy above found it.
+    let optimum: Configuration<Token> =
+        [0, 1, 2, 10, 11, 12, 13, 17].into_iter().collect();
+    let keep: Vec<&str> = {
+        let mut ks: Vec<Token> =
+            optimum.iter().copied().collect();
+        ks.sort_unstable();
+        ks.iter().map(|&u| TOKENS[u as usize]).collect()
+    };
+    assert!(parses(&keep));
+    assert!(crash_call.clone().all(|u| optimum.contains(&u)));
+    println!(
+        "\nnote: the flat optimum \"{}\" parses and crashes,\n\
+         but neither policy found it",
+        render(&optimum)
+    );
 }
 // ANCHOR_END: main

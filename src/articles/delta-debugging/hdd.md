@@ -261,8 +261,20 @@ HDD inherits a weaker, tree-shaped cousin. Because it walks top-down and never
 revisits a level, it guarantees only that no single *subtree* can be removed
 *given the levels above it*---**1-tree-minimality**. A subtree high in the tree
 might have become removable only after something below it was cut, and plain HDD
-won't go back to find out. Variants like HDD+ and HDD\* iterate to close that
-gap; [Perses] attacks it with the grammar.
+won't go back to find out.
+
+The flat baseline above shows both sides of that trade. Token deltas can
+do what subtree deltas can't: the flat optimum `fn bar { crash ( ) ; }`
+strips the `if guard { ... }` wrapper, which is no subtree---HDD can never
+reach it. (The demo's last lines verify it parses and crashes.) Yet
+neither flat policy found it; both stalled on junk *larger* than HDD's
+answer, because 1-minimality only rules out *single*-token removals:
+DDMin's contiguous chunks never align with the wrapper's scattered
+tokens, and ProbDD pinned whole groups "essential" without testing them
+alone. The freedom of token space is real---blind search can't spend it.
+
+Variants like HDD+ and HDD\* iterate to close the tree-side gap; [Perses]
+attacks it with the grammar.
 
 [1-minimality]: ./ddmin.md
 [DDMin]: https://dl.acm.org/doi/10.1109/32.988498

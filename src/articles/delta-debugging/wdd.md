@@ -70,12 +70,12 @@ Hdd::new(&tree, 1, || Wdd { unit2weight: &unit2weight })
 ```
 
 > [!NOTE]
-> WDD weights the level's subtrees by their leaf count.
-> Since HDD minimizes top-down,
-> when WDD runs on a level,
-> none of that level's subtrees have been touched yet.
-> Therefore every leaf under a surviving subtree is still present,
-> and this is why the leaf count works.
+> `leaf_counts` is computed once, from the *original* tree---but a weight
+> should be a subtree's *current* size. Doesn't reduction make the counts
+> stale? It can't: HDD walks top-down, and every deletion removes a whole
+> subtree at the current level or above. A subtree still alive when its
+> level is minimized has never been touched inside, so every leaf under it
+> survives---the static count *is* its current size.
 
 ## Run It
 

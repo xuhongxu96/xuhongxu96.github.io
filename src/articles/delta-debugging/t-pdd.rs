@@ -1016,8 +1016,7 @@ fn best_candidate(
 // ANCHOR_END: choose
 
 // ANCHOR: update
-/// A deletion at `d` just failed: raise its belief (the same shape of
-/// posterior ProbDD uses).
+/// A deletion at `d` just failed: raise its belief.
 fn update(
     tree: &Tree,
     p: &mut HashMap<NodeId, f64>,

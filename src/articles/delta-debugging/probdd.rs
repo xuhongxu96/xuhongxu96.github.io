@@ -145,8 +145,7 @@ fn best_prefix<U: AtomicUnit>(
 // ANCHOR_END: choose
 
 // ANCHOR: update
-/// A removal of `pre` just failed.
-/// Raise their beliefs by the Bayesian posterior `p / (1 - ∏ (1 - p))`.
+/// A removal of `pre` just failed: raise the belief of every unit in it.
 fn bayes_update<U: AtomicUnit>(
     unit2prob: &mut HashMap<U, f64>,
     pre: &[U],

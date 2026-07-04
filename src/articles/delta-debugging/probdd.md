@@ -40,10 +40,20 @@ ProbDD sorts units by probability and removes the prefix that maximizes that gai
 
 ## Learning From Failure
 
-When a removal *fails*, at least one of those units was essential after all.
-[ProbDD] raises their probabilities with a Bayesian update.
-A removal of a single unit that fails is conclusive---that unit is
-essential, and its probability jumps straight to `1`.
+When a removal *fails*, at least one of those units was essential after
+all, so every unit in it becomes more suspect. Bayes' rule says exactly
+how much. The evidence is "this removal failed", which the model expected
+with probability $1 - \prod_i (1 - p_i)$ (the removal succeeds only if
+*every* unit in it is non-essential). And if a given unit *is* essential,
+the failure was certain---the likelihood is $1$. Prior times likelihood
+over evidence:
+
+$$
+p \leftarrow \frac{p \cdot 1}{1 - \prod_i (1 - p_i)}
+$$
+
+A removal of a single unit that fails is conclusive: the denominator
+reduces to $p$ itself, so that unit's probability jumps straight to `1`.
 
 > [!TIP]
 > Press play to watch three units start at the prior `0.1`, rise after a failed

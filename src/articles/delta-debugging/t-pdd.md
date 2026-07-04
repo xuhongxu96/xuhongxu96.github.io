@@ -208,8 +208,12 @@ be wrong; failures are about to correct it.
 ## Learning From Failure
 
 When a candidate $d$ fails,
-at least one token under it was essential after all.
-So the belief $p_d$ must be updated (raised) to reflect that:
+at least one token under it was essential after all,
+so the belief $p_d$ must rise. The step is the same Bayes rule
+[ProbDD derived](./probdd.md#learning-from-failure): the model expected
+the failure with probability $1 - \text{pass}(d)$, and if $d$ truly must
+survive, the failure was certain---prior times likelihood $1$ over
+evidence:
 
 $$
 p_d \leftarrow \frac{p_d}{1 - \text{pass}(d)}

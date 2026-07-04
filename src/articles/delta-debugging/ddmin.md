@@ -45,15 +45,15 @@ Given a configuration, the oracle returns a **Verdict**, i.e., whether it still 
 
 ## The Loop
 
-The main loop of delta debugging is very simple: propose removals, keep the
-first one the oracle still finds interesting, and repeat until the policy
-says to stop (usually at the fixpoint, i.e., when no more progress can be made).
+The whole framework is one loop: propose removals, keep the first one the
+oracle still finds interesting, and repeat. Everything else---what to
+propose, when to stop---is delegated:
 
 ```rust,ignore
 {{#include ddmin.rs:loop}}
 ```
 
-A **Delta** is a candidate removal set, i.e., a subset of the current configuration that we propose to remove.
+A **Delta** is a subset of the current configuration that we propose to remove.
 
 Everything algorithm-specific lives in the **Policy**.
 
@@ -62,8 +62,7 @@ Everything algorithm-specific lives in the **Policy**.
 ```
 
 For many delta debugging algorithms, including [DDMin],
-the default implementation of `on_reduced` is enough:
-keep going only if the pass made progress.
+the default implementation of `on_reduced` is enough.
 
 ## DDMin Policy
 
@@ -74,7 +73,7 @@ The granularity `n` starts at 2 and doubles whenever the algorithm fails to make
 {{#rustdoc_include ddmin.rs:ddmin}}
 ```
 
-The `partition` function is a utility that splits a configuration into `n` chunks, as evenly as possible.
+The `partition` utility it relies on:
 
 > [!TIP]
 > Press play to see how it chunks `{1, ..., 8}` as the granularity `n` grows:

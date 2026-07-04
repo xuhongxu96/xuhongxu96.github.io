@@ -70,8 +70,7 @@ unremovable except a `List` element
 {{#include perses.rs:deletable}}
 ```
 
-HDD consults it where it gathers each level's deletion candidates---the level-`L`
-ancestors of the surviving tokens---keeping only the removable ones:
+HDD consults it where it gathers each level's deletion candidates:
 
 ```rust,ignore
 {{#include perses.rs:alive}}
@@ -394,8 +393,7 @@ unit-delta:
 {{#include perses.rs:perses-delete}}
 ```
 
-Assembled, `propose` reads as the four questions in order---order the nodes,
-pick the active list, offer replacements, then the active list's deletions:
+Assembled, `propose` is the four questions in order:
 
 ```rust,ignore
 {{#include perses.rs:perses-propose}}
@@ -443,8 +441,7 @@ int main() {
 }
 ```
 
-Both run against the same oracle: interesting iff the program still contains
-`crash` *and* still parses. It also counts how many times it's called:
+Both run against the same oracle:
 
 ```rust,ignore
 {{#include perses.rs:make-oracle}}

@@ -12,8 +12,6 @@ use std::iter::successors;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 // ANCHOR_END: atomic-unit
@@ -23,7 +21,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 type Token = u32;
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
@@ -345,9 +343,7 @@ impl Tree {
 
 
     // ANCHOR: live
-    /// Does this node still exist in the reduced program? The configuration
-    /// tracks only which tokens survive, so an internal node's presence is
-    /// recovered here.
+    /// Does this node still exist in the reduced program?
     fn live(
         &self,
         id: NodeId,
@@ -355,16 +351,15 @@ impl Tree {
     ) -> bool {
         let node = &self.id2node[&id];
         match node.kind {
-            // a token exists iff it is kept
             Kind::Token => {
                 config.contains(&self.leaf2token[&id])
             }
-            // a list has no tokens of its own -> it exists iff its block does
+            // no tokens of its own: defer to the parent block
             Kind::List => self
                 .node2parent
                 .get(&id)
                 .is_some_and(|&p| self.live(p, config)),
-            // a regular node exists iff its mandatory (non-list) children do
+            // all mandatory (non-List) children
             _ => node
                 .children
                 .iter()
@@ -377,11 +372,8 @@ impl Tree {
     // ANCHOR_END: live
 
     // ANCHOR: anchor-of
-    /// The node whose grammar slot `n` is *effectively* filling. After an
-    /// earlier replacement, `n`'s own parent may be dead -- `n` was promoted
-    /// into some ancestor's place. Walk up through the dead chain to the
-    /// first node whose own parent is live (or the root): that ancestor's
-    /// slot is the one `n` occupies now.
+    /// The node whose grammar slot `n` is *effectively* filling: the top
+    /// of the dead chain `n` was promoted through.
     fn anchor_of(
         &self,
         n: NodeId,
@@ -399,9 +391,8 @@ impl Tree {
     // ANCHOR_END: anchor-of
 
     // ANCHOR: can-replace
-    /// Can `d` replace `n`? `d`'s kind must fit the slot `n` is effectively
-    /// filling: a `List` element's slot accepts any statement; a fixed slot
-    /// accepts only its own kind (a `Block` slot accepts only a `Block`).
+    /// Can `d` replace `n`? Its kind must fit the slot `n` is
+    /// effectively filling.
     fn can_replace(
         &self,
         n: NodeId,
@@ -424,9 +415,7 @@ impl Tree {
     // ANCHOR_END: can-replace
 
     // ANCHOR: sizes
-    /// How many surviving tokens each node's subtree still holds -- the
-    /// payoff of removing or replacing it. Recomputed per pass, since the
-    /// payoffs shrink as the program does.
+    /// Surviving tokens under each node.
     fn subtree_sizes(
         &self,
         config: &Configuration<Token>,
@@ -442,7 +431,7 @@ impl Tree {
 
     // ANCHOR: live-nodes
     /// The live internal nodes, largest subtree first (ties by id for a
-    /// reproducible demo) -- the order in which Perses spends its tests.
+    /// reproducible demo).
     fn live_internal_largest_first(
         &self,
         config: &Configuration<Token>,
@@ -653,10 +642,8 @@ where
     // ANCHOR_END: perses-active
 
     // ANCHOR: perses-replace
-    /// Replacement candidates, biggest payoff first: for each live node
-    /// `n` (largest first), try its compatible live descendants `d`,
-    /// smallest first -- the biggest jump that still parses. The delta
-    /// is the wrapper: `n`'s tokens minus `d`'s.
+    /// Replacement candidates. The delta is the wrapper: `n`'s tokens
+    /// minus `d`'s.
     fn replacements(
         &self,
         nodes: &[NodeId],
@@ -697,11 +684,8 @@ where
     // ANCHOR_END: perses-replace
 
     // ANCHOR: perses-delete
-    /// Deletion candidates: drive the active `List`'s persisted
-    /// minimizer lazily, exactly as HDD drives one level's. Its present
-    /// elements go in a field so the returned iterator can borrow them;
-    /// `reduce` stops at the first success, so a stateful inner policy
-    /// advances only over confirmed failures.
+    /// Deletion candidates from the active `List`. Its present elements
+    /// go in a field so the returned iterator can borrow them.
     fn deletions(
         &mut self,
         config: &Configuration<Token>,
@@ -762,8 +746,7 @@ where
         let tree = self.tree;
         match self.active {
             Some(a) => {
-                // Forward the outcome to the active minimizer in
-                // its own space: the List's still-present elements.
+                // the outcome, in the minimizer's space
                 let elems =
                     reduced.map(|c| tree.elems_of(a, c));
                 let inner =
@@ -951,7 +934,6 @@ fn main() {
         perses_calls.get()
     );
 
-    // HDD is stuck at the mandatory `if` nesting; Perses collapses it.
     assert_eq!(
         render(&tree, &hdd),
         "int main ( ) { if ( c1 ) { if ( c2 ) { if ( c3 ) { crash ( ) ; } } } }"

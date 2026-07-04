@@ -12,8 +12,6 @@ use std::collections::HashSet;
 use std::iter::successors;
 
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 
@@ -21,7 +19,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 /// its position in source order (0, 1, 2, ...).
 type Token = u32;
 
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 
 #[derive(PartialEq)]
@@ -141,16 +139,14 @@ impl<U: AtomicUnit> Policy<U> for DDMin {
 }
 
 struct ProbDD<U: AtomicUnit> {
-    /// `unit2prob[u]` is the model's belief that `u` is *essential*,
-    /// i.e. that it survives into the minimized result.
+    /// `unit2prob[u]`: the belief that `u` is *essential*.
     unit2prob: HashMap<U, f64>,
-    /// The prior probability for a unit we haven't seen before.
+    /// The prior for unseen units.
     p0: f64,
 }
 
 impl<U: AtomicUnit> ProbDD<U> {
-    /// Keep the model in step with the configuration: forget units that are
-    /// gone, and give freshly seen units the prior `p0`.
+    /// Realign the model with `config`.
     fn sync(&mut self, config: &Configuration<U>) {
         self.unit2prob.retain(|u, _| config.contains(u));
         for &u in config {
@@ -177,7 +173,7 @@ fn best_prefix<U: AtomicUnit>(
     let (mut best_k, mut best_gain) = (0, 0.0);
     for (i, u) in units.iter().enumerate() {
         survive *= 1.0 - unit2prob[u];
-        // The gain is the number of units we expect to remove: k · ∏(1 - p)
+        // gain = k · ∏(1 - p)
         let gain = (i + 1) as f64 * survive;
         if gain > best_gain {
             (best_k, best_gain) = (i + 1, gain);
@@ -214,12 +210,10 @@ impl<U: AtomicUnit> Policy<U> for ProbDD<U> {
         self.sync(config);
         let unit2prob = &mut self.unit2prob;
 
-        // The loop only pulls the *next* delta when the previous one failed,
-        // so each iteration after the first means "that removal failed".
+        // pulling the next delta means the previous one failed
         let mut last: Option<Vec<U>> = None;
         std::iter::from_fn(move || {
             if let Some(pre) = &last {
-                // if the previous removal failed, update the model
                 bayes_update(unit2prob, pre);
             }
             // Done once every survivor is believed essential (p = 1).
@@ -237,8 +231,7 @@ impl<U: AtomicUnit> Policy<U> for ProbDD<U> {
 }
 
 // ANCHOR: tokens
-/// The HDD demo's program, but as the raw token stream a flat minimizer
-/// really sees: keywords, braces, and semicolons are units too.
+/// The demo program as a raw token stream.
 const TOKENS: &[&str] = &[
     // fn bar { b1 ; if guard { g ; crash ( ) ; } b2 ; }
     "fn", "bar", "{", "b1", ";", "if", "guard", "{", "g",
@@ -418,10 +411,8 @@ fn main() {
         );
     }
 
-    // Token deltas are strictly more expressive than subtree deltas:
-    // stripping the `if guard { ... }` wrapper -- tokens 5, 6, 7 and the
-    // matching `}` at 14 -- keeps a valid, crashing program that HDD can
-    // never reach. Neither blind policy above found it.
+    // The flat optimum: strip the `if guard { ... }` wrapper (tokens 5-7
+    // and the matching `}` at 14). Neither policy above found it.
     let optimum: Configuration<Token> =
         [0, 1, 2, 10, 11, 12, 13, 17].into_iter().collect();
     let keep: Vec<&str> = {

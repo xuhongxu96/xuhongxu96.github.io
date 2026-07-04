@@ -11,8 +11,6 @@ use std::collections::HashSet;
 use std::iter::successors;
 
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 
@@ -20,7 +18,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 /// its position in source order (0, 1, 2, ...).
 type Token = u32;
 
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 
 #[derive(PartialEq)]
@@ -234,8 +232,7 @@ impl Tree {
 
     // ANCHOR: alive-all
     /// The level-`level` subtrees still holding a token -- the candidates HDD
-    /// may delete at this level. Every node but the root is eligible (the
-    /// grammar restriction to `List` elements is lifted).
+    /// may delete at this level. Every node but the root is eligible.
     fn alive_level_nodes(
         &self,
         level: usize,
@@ -499,7 +496,6 @@ fn main() {
         calls.get()
     );
 
-    // Same result as Perses -- but it took far more oracle calls to get there.
     assert_eq!(
         render(&tree, &hdd_all),
         "int main ( ) { crash ( ) ; }"

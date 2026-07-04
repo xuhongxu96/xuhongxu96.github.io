@@ -10,14 +10,12 @@ use std::collections::HashSet;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 // ANCHOR_END: atomic-unit
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
@@ -98,16 +96,14 @@ trait Policy<U: AtomicUnit> {
 
 // ANCHOR: model
 struct ProbDD<U: AtomicUnit> {
-    /// `unit2prob[u]` is the model's belief that `u` is *essential*,
-    /// i.e. that it survives into the minimized result.
+    /// `unit2prob[u]`: the belief that `u` is *essential*.
     unit2prob: HashMap<U, f64>,
-    /// The prior probability for a unit we haven't seen before.
+    /// The prior for unseen units.
     p0: f64,
 }
 
 impl<U: AtomicUnit> ProbDD<U> {
-    /// Keep the model in step with the configuration: forget units that are
-    /// gone, and give freshly seen units the prior `p0`.
+    /// Realign the model with `config`.
     fn sync(&mut self, config: &Configuration<U>) {
         self.unit2prob.retain(|u, _| config.contains(u));
         for &u in config {
@@ -136,7 +132,7 @@ fn best_prefix<U: AtomicUnit>(
     let (mut best_k, mut best_gain) = (0, 0.0);
     for (i, u) in units.iter().enumerate() {
         survive *= 1.0 - unit2prob[u];
-        // The gain is the number of units we expect to remove: k · ∏(1 - p)
+        // gain = k · ∏(1 - p)
         let gain = (i + 1) as f64 * survive;
         if gain > best_gain {
             (best_k, best_gain) = (i + 1, gain);
@@ -177,12 +173,10 @@ impl<U: AtomicUnit> Policy<U> for ProbDD<U> {
         self.sync(config);
         let unit2prob = &mut self.unit2prob;
 
-        // The loop only pulls the *next* delta when the previous one failed,
-        // so each iteration after the first means "that removal failed".
+        // pulling the next delta means the previous one failed
         let mut last: Option<Vec<U>> = None;
         std::iter::from_fn(move || {
             if let Some(pre) = &last {
-                // if the previous removal failed, update the model
                 bayes_update(unit2prob, pre);
             }
             // Done once every survivor is believed essential (p = 1).

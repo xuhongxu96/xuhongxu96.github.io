@@ -18,7 +18,7 @@ reduction shrinks---contain?
 
 Not tree nodes. The atomic units are still exactly what they were in
 [DDMin]: the indivisible pieces of the **input**. For a program those are
-its tokens, and we identify each token by its position in source order:
+its tokens:
 
 ```rust,ignore
 {{#include hdd.rs:unit}}
@@ -28,9 +28,7 @@ The tree is a separate, static map *over* those units, so its nodes get
 their own id type. An internal node like `fn bar` spans many tokens,
 but it is not itself an input---it is a *name for a region* of the
 input---so it must never be confused with one of the input's tokens.
-Only the leaves touch the input: each leaf
-node corresponds to one token,
-recorded in the `leaf2token` map (and its inverse, `token2leaf`):
+Only the leaves touch the input:
 
 ```rust,ignore
 {{#include hdd.rs:tree}}
@@ -99,9 +97,7 @@ into a token-delta before the oracle ever sees it.
 
 **HDD is itself just another `Policy`**---to the `reduce` loop it looks
 exactly like DDMin: a stream of unit-deltas. All the hierarchy hides behind
-`propose`. Its state is the tree, a factory that builds a fresh inner
-minimizer, a cursor for the shallowest level not yet known to be minimal,
-and the minimizer currently working that level:
+`propose`:
 
 ```rust,ignore
 {{#include hdd.rs:hdd-struct}}
@@ -232,9 +228,6 @@ now parse each candidate before it can possibly crash:
 ```rust,ignore
 {{#include hdd_flat.rs:parser}}
 ```
-
-A candidate is interesting iff it parses *and* the four-token call
-`crash ( ) ;` survives whole.
 
 ```rust,edition2024
 {{#rustdoc_include hdd_flat.rs:main}}

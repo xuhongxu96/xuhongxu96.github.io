@@ -15,8 +15,6 @@ use std::iter::successors;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 // ANCHOR_END: atomic-unit
@@ -26,7 +24,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 type Token = u32;
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
@@ -723,8 +721,7 @@ where
         reps
     }
 
-    /// Deletion candidates: drive the active `List`'s persisted
-    /// minimizer lazily, exactly as HDD drives one level's.
+    /// Deletion candidates from the active `List`'s persisted minimizer.
     fn deletions(
         &mut self,
         config: &Configuration<Token>,
@@ -905,9 +902,7 @@ impl<'t> TPdd<'t> {
 // ANCHOR_END: model
 
 // ANCHOR: priors
-/// A static prior from the tree's shape:
-/// a `List` element is optional (`sigma`),
-/// everything else is mandatory (`1.0`).
+/// A static prior from the tree's shape.
 fn priors(
     tree: &Tree,
     sigma: f64,
@@ -924,9 +919,7 @@ fn priors(
 // ANCHOR_END: priors
 
 // ANCHOR: q
-/// Bottom-up within `d`'s own subtree: the model's belief that `n`'s
-/// subtree ends up contributing no surviving token at all -- either `n`
-/// itself is gone, or it survives but every one of its live children does.
+/// The model's belief that `n`'s subtree contributes no surviving token.
 fn q(
     tree: &Tree,
     p: &HashMap<NodeId, f64>,
@@ -950,7 +943,6 @@ fn q(
 // ANCHOR_END: q
 
 // ANCHOR: pass-prob
-/// Fold `q(d)` up through `d`'s ancestors.
 fn pass_prob(
     tree: &Tree,
     p: &HashMap<NodeId, f64>,
@@ -971,8 +963,7 @@ fn pass_prob(
 // ANCHOR_END: pass-prob
 
 // ANCHOR: expected-gain
-/// The expected number of tokens a deletion at `d` removes, discounted by
-/// the model's belief that the test would still pass.
+/// The expected number of tokens a deletion at `d` removes.
 fn expected_gain(
     tree: &Tree,
     p: &HashMap<NodeId, f64>,
@@ -988,11 +979,8 @@ fn expected_gain(
 /// Below this expected gain, T-PDD gives up (the paper's threshold).
 const MIN_GAIN: f64 = 1.0;
 
-/// The live node with the highest expected gain. Two exclusions: the root
-/// (it has no parent to condition on, so no entry in `p`), and any node
-/// the model is already *certain* survives (`p = 1`). Mandatory nodes
-/// start certain, and a failed candidate is pinned certain -- either way,
-/// deleting one is a test the model already knows the answer to.
+/// The live node with the highest expected gain, excluding the root and
+/// any node already certain to survive (`p = 1`).
 fn best_candidate(
     tree: &Tree,
     p: &HashMap<NodeId, f64>,
@@ -1025,8 +1013,8 @@ fn best_candidate(
 // ANCHOR_END: choose
 
 // ANCHOR: update
-/// A deletion at `d` just failed. Raise its belief with the same shape of
-/// Bayesian posterior ProbDD uses -- `p / (1 - pass_prob)`.
+/// A deletion at `d` just failed: raise its belief (the same shape of
+/// posterior ProbDD uses).
 fn update(
     tree: &Tree,
     p: &mut HashMap<NodeId, f64>,
@@ -1051,8 +1039,7 @@ impl Policy<Token> for TPdd<'_> {
         let tree = self.tree;
         let p = &mut self.p;
 
-        // The loop only pulls the *next* delta when the previous one failed,
-        // so each iteration after the first means "that candidate failed".
+        // pulling the next delta means the previous one failed
         let mut last: Option<NodeId> = None;
         std::iter::from_fn(move || {
             if let Some(d) = last {
@@ -1068,12 +1055,9 @@ impl Policy<Token> for TPdd<'_> {
 
 // ANCHOR: main
 fn main() {
-    // The scattered bug: reproducing it needs three cooperating calls,
-    // far apart -- setup() at the top level, corrupt() one nest down, and
-    // crash() at the bottom -- with noise everywhere in between.
+    // The scattered bug: three cooperating calls, far apart.
     let tree = std::rc::Rc::new(example_tree());
-    // The configuration is every token of the program: units 0..n in
-    // source order. Tree nodes are bookkeeping; they never sit in it.
+    // the starting configuration: every token
     let all: Configuration<Token> =
         (0..tree.token2leaf.len() as Token).collect();
 
@@ -1183,8 +1167,6 @@ fn main() {
         tpdd_calls.get()
     );
 
-    // The three deleters keep the if nest (they can only delete);
-    // Perses's replacement strips it -- at a price the page discusses.
     let kept = "int main ( ) { setup ( ) ; if ( c1 ) { corrupt ( ) ; if ( c2 ) { crash ( ) ; } } }";
     assert_eq!(render(&tree, &hdd), kept);
     assert_eq!(render(&tree, &hddp), kept);

@@ -272,8 +272,7 @@ int main() {
 }
 ```
 
-The oracle keeps a candidate only if all three scattered calls survive
-and the program still parses:
+Every reducer runs against the same oracle:
 
 ```rust,ignore
 {{#include t-pdd.rs:make-oracle}}

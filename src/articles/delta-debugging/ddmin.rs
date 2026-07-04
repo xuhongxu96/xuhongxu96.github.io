@@ -8,8 +8,6 @@ use std::iter::successors;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit
     for T
@@ -18,7 +16,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit
 // ANCHOR_END: atomic-unit
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 

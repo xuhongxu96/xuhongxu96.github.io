@@ -12,8 +12,6 @@ use std::iter::successors;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 // ANCHOR_END: atomic-unit
@@ -25,7 +23,7 @@ type Token = u32;
 // ANCHOR_END: unit
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
@@ -322,8 +320,7 @@ impl Tree {
 
     // ANCHOR: leaves-under
     /// Node space -> unit space: the surviving atomic units in the subtree
-    /// rooted at `id`. This is how dropping a node becomes a removal of
-    /// atomic units the `reduce` loop can test.
+    /// rooted at `id`.
     fn leaves_under(
         &self,
         id: NodeId,
@@ -348,8 +345,7 @@ impl Tree {
 
     // ANCHOR: alive-level
     /// Unit space -> node space: the level-`level` subtrees that still hold
-    /// a surviving token, found by walking each survivor's leaf node up to
-    /// its ancestor at that level.
+    /// a surviving token.
     fn alive_level_nodes(
         &self,
         level: usize,
@@ -438,8 +434,7 @@ where
             tree.alive_level_nodes(level, config);
         let subtrees = &self.level_subtrees;
         let minimizer = self.minimizer.as_mut().unwrap();
-        // Lazily: `reduce` stops pulling at the first success, so a stateful
-        // inner policy only ever advances its model over *confirmed* failures.
+        // lazily: the inner policy may only learn from confirmed failures
         minimizer.propose(subtrees).map(
             move |drop| -> Delta<Token> {
                 // dropping a subtree drops the units under it
@@ -459,11 +454,7 @@ where
         reduced: Option<&Configuration<Token>>,
     ) -> bool {
         let (tree, level) = (self.tree, self.level);
-        // Report the pass outcome to the inner minimizer
-        // in its own space: this level's still-live
-        // subtrees, or `None` when nothing was found.
-        // Driving the inner policy through its full
-        // protocol keeps HDD agnostic to the inner policy.
+        // the pass outcome, in the inner policy's space
         let subtrees = reduced
             .map(|c| tree.alive_level_nodes(level, c));
         let inner = self.minimizer.as_mut().unwrap();
@@ -530,25 +521,13 @@ fn render(tree: &Tree, present: &Configuration<Token>) -> String {
 
 // ANCHOR: main
 fn main() {
-    // A small "program" syntax tree. fn bar holds the bug; the other functions
-    // are noise. The top level is wide so coarse pruning has real work to do.
-    //
-    //   program
-    //   ├─ fn bar { stmt; if guard { stmt; crash(); } stmt; }  (the bug)
-    //   ├─ fn f2 { stmt; stmt; }                               (irrelevant)
-    //   ├─ fn f3 { stmt; stmt; }                               (irrelevant)
-    //   ├─ fn f4 { stmt; stmt; }                               (irrelevant)
-    //   ├─ fn f5 { stmt; stmt; }                               (irrelevant)
-    //   └─ fn f6 { stmt; stmt; }                               (irrelevant)
+    // The chapter's demo tree: one buggy function among five noise functions.
     let tree = std::rc::Rc::new(example_tree());
-    // The configuration is every token of the program: units 0..n in
-    // source order. Tree nodes are bookkeeping; they never sit in it.
+    // the starting configuration: every token
     let all: Configuration<Token> =
         (0..tree.token2leaf.len() as Token).collect();
 
     // Interesting iff the program still contains the crash() token.
-    // Keeping that one unit keeps its whole ancestor chain in the rendered
-    // tree: program → fn bar → if → crash().
     let crash: Token = tree
         .id2node
         .iter()
@@ -584,8 +563,7 @@ fn main() {
             verdict
         };
 
-        // Start at level 1: level 0 holds only the root, and deleting the
-        // whole program can never stay interesting.
+        // start at level 1 (the chapter's note explains why)
         let result = if run == 0 {
             reduce(
                 all.clone(),

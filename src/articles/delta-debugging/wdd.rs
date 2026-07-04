@@ -13,8 +13,6 @@ use std::iter::successors;
 
 // ANCHOR: atomic-unit
 /// An indivisible piece of the input: a char, token, line, etc.
-/// Different inputs have different atomic units, so the framework fixes
-/// no concrete type: anything copyable, hashable, and orderable serves.
 trait AtomicUnit: Copy + Eq + std::hash::Hash + Ord {}
 impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 // ANCHOR_END: atomic-unit
@@ -24,7 +22,7 @@ impl<T: Copy + Eq + std::hash::Hash + Ord> AtomicUnit for T {}
 type Token = u32;
 
 // ANCHOR: configuration
-/// The units we keep. Reduction shrinks this set.
+/// The units we keep.
 type Configuration<U> = HashSet<U>;
 // ANCHOR_END: configuration
 
@@ -152,8 +150,7 @@ impl<U: AtomicUnit> Policy<U> for DDMin {
 // ANCHOR_END: ddmin
 
 // ANCHOR: weighted-partition
-/// Split `config` into at most `n` chunks of roughly equal *total weight*
-/// (compare `partition`, which makes chunks of roughly equal *count*).
+/// Split `config` into at most `n` chunks of roughly equal *total weight*.
 fn weighted_partition<U: AtomicUnit>(
     config: &Configuration<U>,
     n: usize,
@@ -203,7 +200,7 @@ fn weighted_partition<U: AtomicUnit>(
 // ANCHOR_END: weighted-partition
 
 // ANCHOR: wdd
-/// WDD is DDMin with a single change: it partitions by *weight*, not by count.
+/// DDMin, partitioning by weight instead of count.
 struct Wdd<'w, U: AtomicUnit> {
     unit2weight: &'w HashMap<U, u64>,
 }
@@ -216,12 +213,10 @@ impl<U: AtomicUnit> Policy<U> for Wdd<'_, U> {
         let units = config.len();
         let unit2weight = self.unit2weight;
 
-        // The same n = 2, 4, 8, ... escalation as DDMin ...
         successors(Some(2), move |&n| {
             (n < units).then(|| (2 * n).min(units))
         })
         .flat_map(move |n| {
-            // ... only the partitioning is weight-aware.
             let subsets =
                 weighted_partition(config, n, unit2weight);
             let keep_only = subsets
@@ -315,8 +310,7 @@ impl Tree {
 
     // ANCHOR: leaves-under
     /// Node space -> unit space: the surviving atomic units in the subtree
-    /// rooted at `id`. This is how dropping a node becomes a removal of
-    /// atomic units the `reduce` loop can test.
+    /// rooted at `id`.
     fn leaves_under(
         &self,
         id: NodeId,
@@ -341,8 +335,7 @@ impl Tree {
 
     // ANCHOR: alive-level
     /// Unit space -> node space: the level-`level` subtrees that still hold
-    /// a surviving token, found by walking each survivor's leaf node up to
-    /// its ancestor at that level.
+    /// a surviving token.
     fn alive_level_nodes(
         &self,
         level: usize,
@@ -372,8 +365,7 @@ impl Tree {
 
     // ANCHOR: weight
     /// The weight of every node: how many tokens (atomic units) its subtree
-    /// ultimately contains. Weights live in *node space* -- they describe
-    /// subtrees, the things HDD's inner minimizer picks among.
+    /// ultimately contains.
     fn leaf_counts(&self) -> HashMap<NodeId, u64> {
         fn go(
             tree: &Tree,
@@ -548,20 +540,12 @@ fn render(tree: &Tree, present: &Configuration<Token>) -> String {
 
 // ANCHOR: main
 fn main() {
-    // A "program" tree with very *uneven* subtree sizes. `fn big` holds the bug
-    // and is large; every other function/statement is tiny noise. At each level
-    // HDD hands the surviving subtrees to a list-minimizer -- and one of them is
-    // far heavier than the rest:
-    //
-    //   program                                level 1: big(9) vs six 1-leaf fns
-    //   ├─ fn big { ...; block { ...; if guard { crash() } } }   (the bug, heavy)
-    //   └─ fn n2 .. fn n7                       (six tiny noise functions)
+    // The chapter's demo tree: uneven subtrees -- one heavy buggy
+    // function, six one-leaf noise functions.
     let tree = std::rc::Rc::new(example_tree());
-    // The configuration is every token of the program: units 0..n in
-    // source order. Tree nodes are bookkeeping; they never sit in it.
+    // the starting configuration: every token
     let all: Configuration<Token> =
         (0..tree.token2leaf.len() as Token).collect();
-    // Each node's weight = how many tokens it contains. Precompute once.
     let unit2weight = tree.leaf_counts();
 
     // Interesting iff the program still contains the crash() token.

@@ -618,8 +618,9 @@ where
     }
 
     // ANCHOR: perses-active
-    /// Pick the *active* `List`: the largest live one not in `done`.
-    /// Once picked, stick with it---switching away mid-run would
+    /// Pick the *active* `List`: the first one in `nodes` not in `done`
+    /// (`nodes` is sorted largest-first, so this is the largest such
+    /// list). Once picked, stick with it---switching away mid-run would
     /// discard what the inner policy has learned about it.
     fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
@@ -753,8 +754,7 @@ where
                     self.minimizer.as_mut().unwrap();
                 let keep = inner.on_reduced(elems.as_ref());
                 if reduced.is_some() {
-                    // a reduction can expose new deletions in any
-                    // `List`: reconsider them all
+                    // reconsider every `List`
                     self.done.clear();
                     true
                 } else if keep {

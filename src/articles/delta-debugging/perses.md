@@ -385,9 +385,13 @@ largest live list not in `done`:
 ```
 
 The active list's deletions are generated exactly as HDD generates a
-level's: hand the minimizer the list's present elements (in node space),
+level's: hand the minimizer the list's elements, gathered by `elems_of`,
 stream its choices lazily, and map each through `leaves_under` into a
 unit-delta:
+
+```rust,ignore
+{{#include perses.rs:elems-of}}
+```
 
 ```rust,ignore
 {{#include perses.rs:perses-delete}}
@@ -413,6 +417,15 @@ own space---the list's still-present elements---and updates `done`:
 ```rust,ignore
 {{#include perses.rs:perses-on-reduced}}
 ```
+
+Why does a success clear `done`? A deletion that failed once is not doomed
+forever: the oracle judges the *whole* surviving program, so shrinking it
+elsewhere can flip the verdict. Suppose `int y = 0;` sits in one list and
+its only use `y++;` in another. Deleting the declaration fails while the
+use survives---the program no longer compiles, so it cannot crash. The moment
+a collapse elsewhere removes `y++;`, the declaration is free to go. A
+`done` mark is only valid for the program it was measured on, and every
+reduction changes that program.
 
 Here is the protocol at work on the demo run, pass by pass:
 

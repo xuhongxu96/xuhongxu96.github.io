@@ -660,9 +660,10 @@ where
         }
     }
 
-    /// Pick the *active* `List`: the largest live one not in `done`.
-    /// Sticky: keep the current list until its minimizer declares it
-    /// minimal or a collapse kills it (see the Perses page).
+    /// Pick the *active* `List`: the first one in `nodes` (sorted
+    /// largest-first) not in `done`. Sticky: keep the current list
+    /// until its minimizer declares it minimal or a collapse kills it
+    /// (see the Perses page).
     fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
         if let Some(a) = self.active {

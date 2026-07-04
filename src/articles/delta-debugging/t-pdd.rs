@@ -662,7 +662,7 @@ where
         }
     }
 
-    /// Pick the *active* `List`: the largest live one not yet retired.
+    /// Pick the *active* `List`: the largest live one not in `done`.
     /// Sticky: keep the current list until its minimizer declares it
     /// minimal or a collapse kills it (see the Perses page).
     fn pick_active(&mut self, nodes: &[NodeId]) {
@@ -793,8 +793,8 @@ where
                 } else if keep {
                     true // the inner policy isn't minimal yet
                 } else {
-                    // exhausted: retire it and move to the next;
-                    // an all-failing pass then ends the run.
+                    // nothing more to delete here: mark the list
+                    // done; an all-failing pass then ends the run.
                     self.done.insert(a);
                     true
                 }

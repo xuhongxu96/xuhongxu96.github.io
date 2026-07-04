@@ -277,7 +277,8 @@ straight from the grammar:
 - if the anchor is a `List` element, the slot is `stmt`---any statement kind
   (`IfStmt`, `Block`, `Call`) fits;
 - if the anchor is a fixed child (like `func`'s body), the slot admits
-  exactly one kind---`d` must match it (a `Block` only a `Block`).
+  exactly one kind---`d` must match it (a `Block` slot accepts only a
+  `Block`).
 
 ```rust,ignore
 {{#include perses.rs:can-replace}}
@@ -288,7 +289,7 @@ straight from the grammar:
 Like HDD, Perses is still a [`Policy`](./ddmin.md): the same `reduce` loop
 drives it, and all its strategy lives behind `propose`/`on_reduced`. Its
 state is the tree, one *active* `List` with a persisted deletion minimizer
-(the same trick HDD uses per level), and a set of retired `List`s:
+(the same trick HDD uses per level), and a bookkeeping set `done`:
 
 ```rust,ignore
 {{#include perses.rs:perses-struct}}
@@ -311,16 +312,34 @@ subtree sizes and orders the live internal nodes largest first:
 {{#include perses.rs:live-nodes}}
 ```
 
-On the demo program's first pass the ordering starts:
+From here on we trace the chapter's running demo: the nested-`if` program
+from the top, with a `noise();` call added at every level. Each call is 4
+tokens (`noise ( ) ;`), each `if (cN)` header is 4, each brace pair 2, and
+the `int main ( )` header 4---48 tokens in all:
 
-| live node                  | surviving tokens |
-|----------------------------|------------------|
-| `func` (root)              | 48               |
-| `block` (`main`'s body)    | 44               |
-| `stmt*` (outermost list)   | 42               |
-| `if_stmt` (`if (c1) ...`)  | 34               |
-| `block` (`if (c1)`'s body) | 30               |
-| ⋮                          | ⋮                |
+```c
+int main() {
+   if (c1) {
+      if (c2) {
+         if (c3) { crash(); noise(); }
+         noise();
+      }
+      noise();
+   }
+   noise(); noise();
+}
+```
+
+On its first pass the ordering starts:
+
+| live node                  | its surviving tokens                      | count |
+|----------------------------|-------------------------------------------|-------|
+| `func` (root)              | the whole program                         | 48    |
+| `block` (`main`'s body)    | `{ if (c1) {...} noise(); noise(); }`     | 44    |
+| `stmt*` (outermost list)   | the same, minus its `{` `}`               | 42    |
+| `if_stmt` (`if (c1) ...`)  | `if (c1) { if (c2) {...} noise(); }`      | 34    |
+| `block` (`if (c1)`'s body) | `{ if (c2) {...} noise(); }`              | 30    |
+| ⋮                          | ⋮                                         | ⋮     |
 
 ### Generating Replacements
 
@@ -334,22 +353,33 @@ cautious ones.
 {{#include perses.rs:perses-replace}}
 ```
 
-Trace it on `main`'s body (size 44). Its compatible live descendants are the
-three nested blocks, tried smallest first: the innermost block (size 10)
-first---delta = 34 wrapper tokens. That very first candidate is the one the
-oracle accepts on the demo, collapsing all three `if`s in one test.
+Trace it on `main`'s body (`n`), the 44-token block:
+
+```c
+{ if (c1) { if (c2) { if (c3) { crash(); noise(); } noise(); } noise(); } noise(); noise(); }
+```
+
+Its compatible live descendants are the three nested `if` bodies, tried
+smallest first, so the innermost one comes out first as `d`, 10 tokens:
+
+```c
+{ crash(); noise(); }
+```
+
+The delta is everything in `n` but not in `d`---the 34-token wrapper. On
+the demo that very first candidate is accepted, collapsing all three
+`if`s in one test.
 
 ### One Active List at a Time
 
 *Where does deletion happen?* Deletion needs a stateful minimizer driven
 across passes (that is how DDMin escalates granularity and how ProbDD
-learns), and state needs a home. Perses keeps **one** persisted minimizer,
-attached to the *active* `List`: the largest live list not yet retired.
-Once picked, the driver sticks with that list until the minimizer declares
-it minimal---switching mid-run would throw away everything the inner
-policy has learned about it. Only two things move the choice on:
-retirement, or a collapse that kills the list outright (so a kill still
-never strands the driver---the next pass picks the largest survivor):
+learns), and state needs a home. Perses keeps **one** persisted minimizer
+at a time, attached to the *active* `List`. The active list changes in
+only two cases: its minimizer declares it minimal (the list joins
+`done`), or a replacement elsewhere deletes the list's last surviving
+tokens (the list stops being live). Either way, the next pass picks the
+largest live list not in `done`:
 
 ```rust,ignore
 {{#include perses.rs:perses-active}}
@@ -376,14 +406,11 @@ pick the active list, offer replacements, then the active list's deletions:
 > parent. We keep the descendant search simple and skip the splice---the collapse
 > here is pure statement-for-statement replacement.
 
-### Retiring Lists
+### Finishing a List
 
 *When is a list finished---and when is the whole run?* `on_reduced` closes
-the loop. Each pass's outcome is forwarded to the active minimizer in its own
-space; when the minimizer declares its list minimal, the list is **retired**
-into `done` and the next pass moves to the next-largest one. But any
-successful reduction re-opens every retired list---a collapse can expose
-deletions anywhere:
+the loop: it forwards each pass's outcome to the active minimizer in its
+own space---the list's still-present elements---and updates `done`:
 
 ```rust,ignore
 {{#include perses.rs:perses-on-reduced}}
@@ -400,8 +427,8 @@ Here is the protocol at work on the demo run, pass by pass:
 
 ## Run It
 
-Time to compare HDD and Perses head to head. The input is the nested-`if` program
-from the top, now with one `noise();` call added at every level for them to prune:
+Time to compare HDD and Perses head to head. The input is the running demo
+program, repeated here:
 
 ```c
 int main() {

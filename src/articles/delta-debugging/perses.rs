@@ -160,9 +160,9 @@ enum Kind {
     Expr, // a condition
     Func, // the function definition (root)
 
-    IfStmt, // if ( cond ) block        \
-    Block, // { stmt-list }            |- these three are statements
-    Call,  // name ( ) ;               /
+    IfStmt, // if ( cond ) block       ┐
+    Block, // { stmt-list }            │- these three are statements
+    Call,  // name ( ) ;               ┘
 }
 
 fn is_stmt(kind: Kind) -> bool {
@@ -401,7 +401,7 @@ impl Tree {
     // ANCHOR: can-replace
     /// Can `d` replace `n`? `d`'s kind must fit the slot `n` is effectively
     /// filling: a `List` element's slot accepts any statement; a fixed slot
-    /// accepts only its own kind (a `Block` only a `Block`).
+    /// accepts only its own kind (a `Block` slot accepts only a `Block`).
     fn can_replace(
         &self,
         n: NodeId,
@@ -606,7 +606,9 @@ struct Perses<'t, F, P> {
     // the active node's present elements, in a field so the
     // returned iterator can borrow them (as HDD does per level)
     active_elems: Configuration<NodeId>,
-    done: HashSet<NodeId>, // `List` nodes exhausted since a reduction
+    // `List`s whose minimizer found nothing more to delete;
+    // cleared whenever any reduction succeeds
+    done: HashSet<NodeId>,
 }
 // ANCHOR_END: perses-struct
 
@@ -627,12 +629,9 @@ where
     }
 
     // ANCHOR: perses-active
-    /// Pick the *active* `List`: the largest live one not yet retired.
-    /// Once picked, the driver *sticks with it* until its minimizer
-    /// declares it minimal---switching away mid-run would discard what
-    /// the inner policy has learned. Only retirement, or a collapse
-    /// that kills the list outright, moves the choice on (so a kill
-    /// still never strands the driver).
+    /// Pick the *active* `List`: the largest live one not in `done`.
+    /// Once picked, stick with it---switching away mid-run would
+    /// discard what the inner policy has learned about it.
     fn pick_active(&mut self, nodes: &[NodeId]) {
         let tree = self.tree;
         if let Some(a) = self.active {
@@ -771,16 +770,17 @@ where
                     self.minimizer.as_mut().unwrap();
                 let keep = inner.on_reduced(elems.as_ref());
                 if reduced.is_some() {
-                    // a reduction can expose deletions anywhere:
-                    // re-open every retired `List`
+                    // a reduction can expose new deletions in any
+                    // `List`: reconsider them all
                     self.done.clear();
                     true
                 } else if keep {
                     true // the inner policy isn't minimal yet
                 } else {
-                    // exhausted: retire it and move to the next.
-                    // Once every list is retired, `active` is None
-                    // and the next all-failing pass ends the run.
+                    // nothing more to delete here: mark the list
+                    // done and move on. Once every list is done,
+                    // `active` is None and the next all-failing
+                    // pass ends the run.
                     self.done.insert(a);
                     true
                 }

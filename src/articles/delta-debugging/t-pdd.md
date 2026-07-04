@@ -1,6 +1,7 @@
 # T-PDD
 
-[HDD]'s closing note flagged a gap: its inner minimizer---DDMin, or the
+The HDD chapter [flagged a gap](./hdd.md#swapping-the-minimizer): its
+inner minimizer---DDMin, or the
 probabilistic [ProbDD]---is rebuilt from scratch at *every level*. Whatever
 it learned about this level's noise is thrown away the instant HDD steps
 down to the next. The hierarchy and the statistics never talk.
@@ -331,7 +332,9 @@ Each reducer's result and bill follow from those two structural facts:
 
 ## No Node Replacement
 
-T-PDD is one answer to the note [HDD]'s chapter closed on---the hierarchy
+T-PDD is one answer to
+[the gap the HDD chapter flagged](./hdd.md#swapping-the-minimizer)---the
+hierarchy
 and the statistics now share one model for the whole run---but it inherits
 [HDD]'s other limitation untouched: it only ever *deletes*.
 

@@ -209,6 +209,18 @@ A node that still exists is **live**:
 {{#include perses.rs:live}}
 ```
 
+`live` asks whether a node still fills its grammar slot. Some of the
+machinery below needs only a weaker question---does *any* token under the
+node survive?---answered by `present`:
+
+```rust,ignore
+{{#include perses.rs:present}}
+```
+
+The two disagree exactly on the `?` nodes above: the promoted block's
+tokens still sit under them, so every `?` node is `present`, yet none of
+them is `live`.
+
 ## Node Replacement
 
 With liveness in hand we can build the move itself. It has three parts: what
@@ -346,7 +358,11 @@ On its first pass the ordering starts:
 smallest compatible descendant `d` removes the most---so candidates are
 emitted per node largest-`n`-first, and within a node smallest-`d`-first:
 the biggest jump that still parses comes out of the iterator before the
-cautious ones.
+cautious ones. The pool of candidate `d`s comes from `descendants`:
+
+```rust,ignore
+{{#include perses.rs:descendants}}
+```
 
 ```rust,ignore
 {{#include perses.rs:perses-replace}}
@@ -392,6 +408,9 @@ unit-delta:
 ```rust,ignore
 {{#include perses.rs:elems-of}}
 ```
+
+The assert holds because `elems_of` is only ever called on the active
+list, and `pick_active` filters for `Kind::List` when choosing it.
 
 ```rust,ignore
 {{#include perses.rs:perses-delete}}

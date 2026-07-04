@@ -517,6 +517,8 @@ impl Tree {
         list: NodeId,
         config: &Configuration<Token>,
     ) -> Configuration<NodeId> {
+        // `pick_active` only ever selects `List` nodes
+        assert!(self.id2node[&list].kind == Kind::List);
         self.id2node[&list]
             .children
             .iter()

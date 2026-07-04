@@ -266,6 +266,9 @@ impl Tree {
         out
     }
 
+    // ANCHOR_END: leaves-under
+
+    // ANCHOR: present
     /// Does any token under `id` survive?
     fn present(
         &self,
@@ -274,7 +277,7 @@ impl Tree {
     ) -> bool {
         !self.leaves_under(id, config).is_empty()
     }
-    // ANCHOR_END: leaves-under
+    // ANCHOR_END: present
 
     // ANCHOR: descendants
     /// Every present proper descendant of `id`.
@@ -463,6 +466,8 @@ impl Tree {
         list: NodeId,
         config: &Configuration<Token>,
     ) -> Configuration<NodeId> {
+        // `pick_active` only ever selects `List` nodes
+        assert!(self.id2node[&list].kind == Kind::List);
         self.id2node[&list]
             .children
             .iter()

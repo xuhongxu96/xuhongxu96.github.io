@@ -2,7 +2,7 @@
 
 ## Papers
 
-- `ISSTA'26` Automated Dependency Optimization for Artifact-Based Build Systems (to appear) [[GitHub]](https://github.com/xuhongxu96/depreduce) <br>
+- `ISSTA'26` Automated Dependency Optimization for Artifact-Based Build Systems (to appear) [[GitHub]](https://github.com/xuhongxu96/depreduce) [[Paper]](./issta26-depreduce.pdf) <br>
   **Hongxu Xu**, Zhenyang Xu, Shane McIntosh, Chengnian Sun
 - `ASPLOS'26` [LPO: Discovering Missed Peephole Optimizations with Large Language Models](https://dl.acm.org/doi/abs/10.1145/3779212.3790184) <br>
   Zhenyang Xu, **Hongxu Xu (Co-First)**, Yongqiang Tian, Xintong Zhou, Chengnian Sun

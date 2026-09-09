@@ -12,7 +12,7 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 [Seed/Data Speech Team](https://seed.bytedance.com/en/direction/speech) <br>
 [ByteDance](https://www.bytedance.com/en/), Shanghai, China
 
-*Led the development of the Text-to-Speech engine and contributed to the Doubao AI assistant application.*
+*Led systems architecture and performance optimization for ByteDance's production Text-to-Speech engine across global mobile and cloud infrastructure. Engineered high-performance neural-inference pipelines for large speech models powering the Doubao AI assistant.*
 
 <!-- - Led the architectural design and development of the Text-to-Speech
   front-end engine, overseeing its overall system integration.
@@ -34,7 +34,7 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 MSAI Team <br>
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China
 
-*Led the development of Microsoft WordBreaker and initiated a modern NLP toolkit for Office 365.*
+*Led engineering and release cycles for Microsoft WordBreaker, a mission-critical linguistic engine with nearly 30 years of history that powers Bing Search and Office 365 worldwide. Architected a workflow-based NLP runtime toolkit for Office 365.*
 
 <!-- - Led the development of Microsoft WordBreaker and initiated a
   modern workflow-based NLP toolkit for Office 365.
@@ -44,10 +44,9 @@ MSAI Team <br>
 ## SDE (Jul 2018 -- Aug 2021)
 
 MSAI Team <br>
-[Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca)
-Beijing, China (Relocated to Suzhou, Jiangsu, China in May 2019)
+[Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Beijing & Suzhou, China
 
-*Worked on Microsoft WordBreaker.*
+*Maintained Microsoft WordBreaker, a multilingual text-segmentation engine used by Bing and Office with a 30-year history and a C++98/C++17 codebase. Improved Korean WordBreaker performance by more than 20% through stateless refactoring and replacing regular expressions with an automaton-based rule engine.*
 
 <!-- - Maintained Microsoft WordBreaker,
   multilingual text segmentation tool used in Bing and Office,
@@ -62,7 +61,7 @@ Beijing, China (Relocated to Suzhou, Jiangsu, China in May 2019)
 Windows APS Team (temporary assignment) <br>
 [Microsoft STC-Asia](https://www.microsoft.com/en-us/aprd/aboutus/team-stca), Suzhou, China
 
-*Contributed to the formation of the new team and Windows 11 application development (MS Calculator).*
+*Contributed to the formation of the new team and Windows 11 application development, including Microsoft Calculator.*
 
 <!-- - Authored design document templates and established DevOps processes to
   facilitate the formation of a new team for Windows 11 application

@@ -2,7 +2,7 @@
 
 <img class="right circle" src="https://avatars.githubusercontent.com/u/2201482?v=4" alt="Hongxu Xu" width="160px">
 
-**PhD Student (May 2025 -- Present)** <br>
+**PhD Student in Computer Science (May 2025 -- Present)** <br>
 Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun) <br>
 [Cheriton School of Computer Science](https://cs.uwaterloo.ca/) <br>
 [University of Waterloo](https://uwaterloo.ca/), Canada
@@ -12,10 +12,10 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun) <br>
 
 ## Research Interests
 
-- Software Engineering
-- Programming Languages
-
-with a focus on compiler optimizations, software testing, and formal verification.
+- **Compiler Optimization:** AI-assisted optimization discovery, synthesis, and verification; declarative pattern matching and rewriting; compiler observability and debuggability.
+- **Software Testing & Debugging:** Delta debugging, program reduction, and fault localization.
+- **Build Systems:** Build graph analysis and dependency optimization.
+- **Broad Areas:** Software engineering, programming languages, and formal methods.
 
 ## Socials
 

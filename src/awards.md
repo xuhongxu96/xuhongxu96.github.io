@@ -1,5 +1,6 @@
 # Awards
 
+- Graduate Student Research Dissemination Award, University of Waterloo, Winter 2026
 - ByteDance ByteStyle Team Award, ByteDance, 2025 & 2024
 
 ## Undergraduate & Earlier
@@ -12,4 +13,4 @@
 - First-Class Academic Scholarship, Beijing Normal University, 2014--2016
 - Outstanding Student Leader Award, Beijing Normal University, 2015--2016
 - Top Ten Volunteer Award, Beijing Normal University, 2015
-- First Prize, National Olympiad in Informatics in Provinces (NOIP), Shandong, China, 2013
+- First Prize, National Olympiad in Informatics in Provinces (NOI-P), Shandong, China, 2013

@@ -19,6 +19,10 @@
 
 ## Selected Substack Posts
 
+### Banff Trip Notes (Sep 2026)
+
+<div class="substack-post-embed"><p lang="en">Banff Trip Notes (Sep 2026) by Hongxu Xu</p><p>A 5-day, 6-night Road Trip for Two</p><a data-post-link href="https://hongxuxu.substack.com/p/banff-trip-notes-sep-2026">Read on Substack</a></div><script async src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>
+
 ### My First ASPLOS - The Journey and the Learning
 
 <div class="substack-post-embed"><p lang="en">My First ASPLOS by Hongxu Xu</p><p>The Journey and the Learning</p><a data-post-link href="https://hongxuxu.substack.com/p/my-first-asplos">Read on Substack</a></div><script async src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>

@@ -17,9 +17,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  MDBOOK_VERSION: 0.5.2
-  MDBOOK_KATEX_VERSION: 0.10.0-alpha
-  MDBOOK_MERMAID_VERSION: 0.17.0
+  MDBOOK_VERSION: 0.5.4
+  MDBOOK_KATEX_VERSION: 0.10.0
+  MDBOOK_MERMAID_VERSION: 0.17.1
 
 jobs:
   build:

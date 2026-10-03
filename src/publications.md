@@ -5,6 +5,7 @@
 - `arXiv'26` [Can Coding Agents Implement Missed Compiler Optimizations? Evaluating LLM Agents on LLVM Peephole Optimizations](https://arxiv.org/abs/2607.02684) (under review) <br>
   **Hongxu Xu**, Chunhao Liao, Xintong Zhou, Chengnian Sun
 - `ISSTA'26` [Automated Dependency Optimization for Artifact-Based Build Systems](https://dl.acm.org/doi/10.1145/3832191) <br>
+  <span style="color: #a00">Distinguished Artifact Award</span> <br>
   [[GitHub]](https://github.com/xuhongxu96/depreduce) [[Preprint]](./issta26-depreduce.pdf) <br>
   **Hongxu Xu**, Zhenyang Xu, Shane McIntosh, Chengnian Sun
 - `ASPLOS'26` [LPO: Discovering Missed Peephole Optimizations with Large Language Models](https://dl.acm.org/doi/abs/10.1145/3779212.3790184) <br>

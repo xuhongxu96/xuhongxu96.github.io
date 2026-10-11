@@ -6,8 +6,9 @@
 [Experience](experience.md)
 [Awards](awards.md)
 [Teaching](teaching.md)
+[Service](service.md)
 [My Thoughts and Life](life.md)
-[Useful Resources](resources.md)
+<!-- [Useful Resources](resources.md) -->
 
 ---
 

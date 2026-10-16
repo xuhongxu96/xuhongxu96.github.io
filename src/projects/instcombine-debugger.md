@@ -18,6 +18,9 @@ InstCombine Instrumentor is a browser-based debugger that skips all of that.
 Paste IR, hit run, and see exactly what InstCombine did to it ---
 instruction by instruction, iteration by iteration.
 
+> Announcement on the LLVM Discourse:
+> [Web-based trace viewer for InstCombine rewrites](https://discourse.llvm.org/t/web-based-trace-viewer-for-instcombine-rewrites/90889)
+
 ## What you get
 
 - **Input IR** --- paste any LLVM IR .ll snippet

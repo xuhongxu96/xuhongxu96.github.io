@@ -9,7 +9,7 @@ Supervised by [Prof. Chengnian Sun](https://cs.uwaterloo.ca/~cnsun)
 
 ## Senior SDE (Sep 2022 -- Mar 2025)
 
-[Seed/Data Speech Team](https://seed.bytedance.com/en/direction/speech) <br>
+[Seed/Data Speech Team](https://seed.bytedance.com/en/realtime_voice) <br>
 [ByteDance](https://www.bytedance.com/en/), Shanghai, China
 
 *Led systems architecture and performance optimization for ByteDance's production Text-to-Speech engine across global mobile and cloud infrastructure. Engineered high-performance neural-inference pipelines for large speech models powering the Doubao AI assistant.*

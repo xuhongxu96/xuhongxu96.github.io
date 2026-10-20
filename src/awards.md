@@ -1,5 +1,6 @@
 # Awards
 
+- Distinguished Artifact Award, ISSTA'26, ACM SIGSOFT, 2026
 - Graduate Student Research Dissemination Award, University of Waterloo, Winter 2026
 - ByteDance ByteStyle Team Award, ByteDance, 2025 & 2024
 

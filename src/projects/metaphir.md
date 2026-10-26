@@ -1,6 +1,6 @@
 # MetaphIR Matcher
 
-<https://xuhongxu.com/metaphir-site/>
+<https://xuhongxu.com/metaphir/>
 
 ## Check How Often an IR Pattern Occurs in Real Code --- In Your Browser
 

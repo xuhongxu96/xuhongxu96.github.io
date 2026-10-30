@@ -13,6 +13,8 @@
 
 ## Talks & Presentations
 
+- `Oct 2026` **Automated Dependency Optimization for Artifact-Based Build Systems**, ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA'26), Oakland, CA, USA.
+
 - `Mar 2026` **LPO: Discovering Missed Peephole Optimizations with Large Language Models**, ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS'26), Pittsburgh, PA, USA.
 
 ## Books
